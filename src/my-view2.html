@@ -1,0 +1,193 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-column-group.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-selection-column.html">
+<link rel="import" href="../bower_components/paper-styles/color.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view2" theme-for="vaadin-grid">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block;
+      }
+
+      [part~="row"][odd] [part~="cell"] {
+        background: #f4f4f4;
+      }
+
+      [part~="row"]:hover [part~="cell"] {
+        background: #bdbdbd;
+      }
+
+      [part~="body-cell"] {
+        border-bottom: 1px solid #dbdbdb;
+      }
+
+      [part~="footer-cell"] {
+        border-top: 1px solid #dbdbdb;
+      }
+
+      [part~="cell"] {
+        padding: 0 13px;
+        font: 300 16px/1.55 "Open Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #373737;
+      }
+
+      [part~="header-cell"] {
+        background: rgba(220, 208, 192, 0.9);
+        border-bottom: 1px solid rgba(244, 244, 244, 0.9);
+        min-height: 35px;
+      }
+
+      [part~="resize-handle"] {
+        border-color: rgba(244, 244, 244, 0.9);
+      }
+
+      [part~="row"]:first-child [part~="footer-cell"]:not(empty) {
+        background: rgba(220, 208, 192, 0.9);
+        border-top: 1px solid rgba(244, 244, 244, 0.9);
+        min-height: 35px;
+      }
+
+      [part~="body-cell"]:not([part~="details-cell"]) {
+        height: 65px;
+      }
+
+      [part~="cell"]:first-child {
+        padding: 0 8px;
+      }
+
+      [part~="row"][selected] [part~="body-cell"]:not([part~="details-cell"]) {
+        background-color: var(--paper-grey-100);
+      }
+
+      vaadin-grid#transparent-header {
+        height: 700px;
+      }
+
+      vaadin-grid#transparent-header input[type=checkbox] {
+        height: 16px;
+        width: 16px;
+      }
+
+      vaadin-grid#transparent-header .image {
+        height: 40px;
+        width: 40px;
+        display: inline-block;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 15px;
+      }
+
+      vaadin-grid#transparent-header .header-content {
+        display: flex;
+        padding: 16px;
+        justify-content: space-between;
+      }
+    </style>
+
+    <div class="card">
+      <vaadin-grid multi-sort id="transparent-header" aria-label="Remote Data Example" data-provider="[[dataProvider]]" size="[[size]]">
+
+
+        <template class="row-details">
+          <div class="details-cell">
+            <h1>Hi, I'm [[item.name.first]]</h1>
+          </div>
+        </template>
+
+        <vaadin-grid-column-group>
+          <template class="header">
+            <div class="header-content">
+              <b>1-200 of 15,554</b>
+              <input placeholder="Search profiles" focus-target>
+            </div>
+          </template>
+
+          <vaadin-grid-selection-column width="66px" flex-grow="0" select-all="{{selectAll}}" auto-select>
+            <template class="header">
+              <paper-checkbox checked="{{selectAll::change}}"></paper-checkbox>
+            </template>
+            <template>
+              <paper-checkbox checked="{{selected::change}}"></paper-checkbox>
+            </template>
+          </vaadin-grid-selection-column>
+
+          <vaadin-grid-column resizable>
+            <template class="header">#</template>
+            <template>[[index]]</template>
+          </vaadin-grid-column>
+
+          <vaadin-grid-column resizable>
+            <template class="header">First Name</template>
+            <template>[[item.firstName]]</template>
+          </vaadin-grid-column>
+
+          <vaadin-grid-column>
+            <template class="header">Last Name</template>
+            <template>[[item.lastName]]</template>
+          </vaadin-grid-column>
+
+        </vaadin-grid-column-group>
+
+      </vaadin-grid>
+    </div>
+  </template>
+
+  <script>
+    class MyView2 extends Polymer.Element {
+      static get is() { return 'my-view2'; }
+
+      static get properties() {
+        return {
+          size: Number,
+          selected: {
+            type: Boolean,
+            value: false
+          },
+          selectAll: {
+            type: Boolean,
+            value: false
+          },
+
+          dataProvider: Object,
+
+          failure: {
+            type: Boolean,
+            notify: true,
+            readOnly: true
+          }
+        }
+      }
+
+      ready() {
+        super.ready();
+        this.size = 200;
+        this.dataProvider = function (params, callback) {
+          var xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            callback(JSON.parse(xhr.responseText).result);
+          };
+          var index = params.page * params.pageSize;
+          xhr.open('GET', 'https://demo.vaadin.com/demo-data/1.0/people?index=' + index + '&count=' + params.pageSize, true);
+          xhr.send();
+        };
+      }
+    }
+
+    window.customElements.define(MyView2.is, MyView2);
+  </script>
+</dom-module>

@@ -1,0 +1,140 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/prism-table/prism-data-table.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-view1">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block;
+
+        padding: 10px;
+      }
+    </style>
+
+    <div class="card">
+      <div class="selection">
+        <div>selected: [[value]]</div>
+        <div>selected-items: [[items]]</div>
+      </div>
+      <prism-data-table multiple responsive allow-checkbox bordered hover striped condensed key-names="email" selected="{{value}}"
+        selected-items="{{items}}" headers="[[header]]" rows="[[source]]"></prism-data-table>
+    </div>
+  </template>
+
+  <script>
+    class MyView1 extends Polymer.Element {
+      static get is() { return 'my-view1'; }
+
+      static get properties() {
+        return {
+          source: Array,
+
+          header: {
+            type: Array,
+            value: [
+              { name: 'id', label: 'ID' },
+              { name: 'name', label: 'Name' },
+              {
+                name: 'email', label: 'Email',
+                allowHtml: true,
+                render: 'template', template: `<a href="mailto:#{email}">#{email}</a>`
+              },
+              {
+                name: 'gender', label: 'Gender',
+                render: 'map', map: { M: 'Male', F: 'Female' }
+              },
+              {
+                name: 'disabled', label: 'Status',
+                render: 'state', trueText: 'Disabled', falseText: 'Enabled'
+              },
+              {
+                name: 'created', label: 'Created',
+                render: 'transform', transform: 'formatDate'
+              }
+            ]
+          },
+
+          failure: {
+            type: Boolean,
+            notify: true,
+            readOnly: true
+          }
+        }
+      }
+
+      constructor() {
+        super();
+        this.formatDate = function (value, row, column) {
+          let date = new Date(value),
+            year = date.getFullYear(),
+            month = date.getMonth() + 1,
+            day = date.getDate();
+          if (month < 10) month = `0${month}`;
+          if (day < 10) day = `0${day}`;
+          return `${day}-${month}-${year}`;
+        };
+      }
+
+      ready() {
+        super.ready();
+        this.addEventListener('sort', (e)=>{
+          console.log("mmmm")
+        }, false);
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this._fetchItems(3);
+      }
+
+      _sortMe(e) {
+        console.log(e)
+      }
+
+      _fetchItems(attempts) {
+        this._setFailure(false);
+        this._getResource({
+          url: '/src/data-table-source.json',
+          onLoad(e) {
+            this.set('source', JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            this._setFailure(true);
+          }
+        }, attempts);
+      }
+
+      _getResource(rq, attempts) {
+        let xhr = new XMLHttpRequest();
+        xhr.addEventListener('load', rq.onLoad.bind(this));
+        xhr.addEventListener('error', (e) => {
+          // Flaky connections might fail fetching resources
+          if (attempts > 1) {
+            this._getResourceDebouncer = Polymer.Debouncer.debounce(this._getResourceDebouncer,
+              Polymer.Async.timeOut.after(200), this._getResource.bind(this, rq, attempts - 1));
+          } else {
+            rq.onError.call(this, e);
+          }
+        });
+
+        xhr.open('GET', rq.url);
+        xhr.send();
+      }
+
+    }
+
+    window.customElements.define(MyView1.is, MyView1);
+  </script>
+</dom-module>
