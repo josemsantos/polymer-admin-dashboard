@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../bower_components/prism-table/prism-data-table.html">
+<link rel="import" href="elements/dash-request-manager.html">
 
 <link rel="import" href="shared-styles.html">
 
@@ -22,7 +23,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         padding: 10px;
       }
     </style>
-
+    <dash-request-manager></dash-request-manager>
     <div class="card">
       <div class="selection">
         <div>selected: [[value]]</div>
@@ -104,33 +105,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _fetchItems(attempts) {
+        let manager = this.shadowRoot.querySelector('dash-request-manager');
         this._setFailure(false);
-        this._getResource({
+        var _self = this;
+        manager.request('random-data', {
           url: '/src/data-table-source.json',
+          verb: 'GET',
           onLoad(e) {
-            this.set('source', JSON.parse(e.target.responseText));
+            _self.set('source', JSON.parse(e.target.responseText));
           },
           onError(e) {
-            this._setFailure(true);
+            _self._setFailure(true);
           }
         }, attempts);
-      }
-
-      _getResource(rq, attempts) {
-        let xhr = new XMLHttpRequest();
-        xhr.addEventListener('load', rq.onLoad.bind(this));
-        xhr.addEventListener('error', (e) => {
-          // Flaky connections might fail fetching resources
-          if (attempts > 1) {
-            this._getResourceDebouncer = Polymer.Debouncer.debounce(this._getResourceDebouncer,
-              Polymer.Async.timeOut.after(200), this._getResource.bind(this, rq, attempts - 1));
-          } else {
-            rq.onError.call(this, e);
-          }
-        });
-
-        xhr.open('GET', rq.url);
-        xhr.send();
       }
 
     }

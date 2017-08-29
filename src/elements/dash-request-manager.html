@@ -1,0 +1,234 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="dash-request-manager">
+  <script>
+    /**
+     * `dash-request-manager` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashRequestManager extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-request-manager';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          /** Settings object to test requests **/
+          _testSuite: {
+            type: Object,
+            value: {
+              mock: false,
+              response: {
+                status: 0,
+                body: {
+                  target: {
+                    response: {}
+                  }
+                }
+              }
+            }
+          },
+          /** Request headers, by default the Accept-Language, Accept and Content-Type are set */
+          headers: {
+            type: Object,
+            value: {
+              "Accept-Language": "en_GB",
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            }
+          },
+          /** The number of attempts the manager will try to obtain a resource */
+          attempts: {
+            type: Number,
+            value: 3
+          },
+
+          resources: {
+            type: Object,
+            value: {}
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+
+      /**
+       * Mock the desired request. Useful for tests
+       *
+       * @param {Object} request
+       * @returns {void}
+       */
+      _mockRequest(request) {
+
+        var isSuccess = this._testSuite.response.status >= 200 && this._testSuite.response.status < 300
+          || this._testSuite.response.status === 304;
+        if (isSuccess) {
+          request.onLoad.call(this, this._testSuite.response.body);
+        } else {
+          request.onError.call(this, this._testSuite.response.body);
+        }
+      }
+
+      /**
+       * Get the resource URL
+       * @param {String} resource
+       * @returns {String}
+       */
+      _getResourceUrl(resource) {
+        for (var r in this.resources) {
+          if (resource === r) {
+            return this.resources[r];
+          }
+        }
+        return null;
+      }
+
+      /**
+       * Append a resource identifier to a request
+       * @param {Object} rq
+       * @returns {Object} the request object
+       */
+      _appendToResourceUrl(rq) {
+        if (rq.identifier !== undefined) {
+          rq.url += "/" + rq.identifier;
+        }
+        return rq;
+      }
+
+      /**
+       * Request a resource from an API
+       * @param {Object} rq
+       * @param {Number} attemps
+       */
+      _getResource(rq, attempts) {
+
+        if (true === this._testSuite.mock) {
+          return this._mockRequest(rq);
+        }
+
+        let xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('load', function (e) {
+          let status = this.status;
+          let isSuccess = status >= 200 && status < 300 || status === 304;
+          
+          if (isSuccess) {
+            rq.onLoad.call(this, e);
+          } else {
+            rq.onError.call(this, e);
+          }
+        });
+
+        xhr.addEventListener('error', function (e) {
+          if (attempts > 1) {
+            this._debouncer = Polymer.Debouncer.debounce(
+              this._debouncer, // initially undefined
+              Polymer.Async.timeOut.after(200),
+              this._getResource.bind(this, rq, attempts - 1)
+            );
+          } else {
+            rq.onError.call(this, e);
+          }
+        }.bind(this));
+
+        xhr.open(rq.verb, rq.url);
+
+        for (var header in rq.headers) {
+          xhr.setRequestHeader(header, rq.headers[header]);
+        }
+        for (var header in rq.xtHeaders) {
+          xhr.setRequestHeader(header, rq.headers[header]);
+        }
+        xhr.withCredentials = false;
+        
+        if (rq.data) {
+          xhr.send(rq.data);
+        } else {
+          xhr.send();
+        }
+      }
+
+      /**
+       * set the Accept-Language header and the current locale
+       * @param {Object} locale
+       */
+      setAcceptedLanguage(locale) {
+        this.headers['Accept-Language'] = locale.code;
+        this.locale = locale;
+      }
+
+      /**
+       * set the cache-control header
+       * @param {Object} option
+       */
+      setCacheControl(option) {
+        this.headers['cache-control'] = option;
+      }
+
+      /**
+       * Request a resource from an API
+       * @param {String} resource
+       * @param {Object} rq
+       */
+      request(resource, rq) {
+        //This is only for error log
+        rq.resource = resource;
+        rq.url = rq.url || this._getResourceUrl(resource);
+        rq = this._appendToResourceUrl(rq);
+        if (rq.verb === "GET") {
+          if (null !== rq.data && undefined !== rq.data) {
+            rq.url += "?" + rq.data;
+          }
+          rq.data = null;
+        }
+        rq.headers = rq.headers || this.headers;
+        rq.xtHeaders = rq.xtHeaders || [];
+        rq.data = rq.data || null;
+
+        this._getResource(rq, this.attempts);
+      }
+
+      /**
+       * Set a mock response status and object
+       * @param {Number} status
+       * @param {Object} response
+       * @returns {void}
+       */
+      setMockResponse(status, response) {
+        this.requestReady = true;
+        this._testSuite = {
+          mock: true,
+          response: {
+            status: status,
+            body: {
+              target: {
+                response: response
+              }
+            }
+          }
+        };
+      }
+
+    }
+
+    window.customElements.define(DashRequestManager.is, DashRequestManager);
+  </script>
+</dom-module>

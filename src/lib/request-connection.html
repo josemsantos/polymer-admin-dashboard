@@ -1,0 +1,17 @@
+<link rel="import" href="../elements/dash-request-manager.html">
+
+<script>
+  'use strict';
+
+  class RequestConnection {
+
+    constructor(url, headers) {
+      this.requestManager = document.createElement('dash-request-manager');
+    }
+
+    fetch(request) {
+      console.log("fetch data", this.requestManager)
+    }
+  }
+
+</script>

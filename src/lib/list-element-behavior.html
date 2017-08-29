@@ -1,0 +1,55 @@
+<link rel="import" href="../configs/connections.html">
+<link rel="import" href="../lib/request-connection.html">
+
+<script>
+  'use strict';
+
+  function ListElementBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          data: {
+            type: Array,
+            value: []
+          },
+          columns: {
+            type: Array,
+            value: []
+          },
+          actions: {
+            type: Array,
+            value: []
+          },
+          requestConnections: {
+            type: Object,
+            value: {}
+          }
+        }
+      }
+
+      _setConnections () {
+        for (var namespace in Dash.connections) {
+          let url = Dash.connections[namespace].url;
+          let headers = Dash.connections[namespace].headers;
+
+          this.requestConnections[namespace] = new RequestConnection(url);
+        }
+      }
+
+      constructor () {
+        super();
+        this._setConnections();
+      }
+
+      fetch (namespace, request) {
+        this.requestConnections[namespace].fetch(request);
+      }
+
+      ready () {
+        super.ready();
+        this.fetch('seraph');
+      }
+    }
+  }
+
+</script>
