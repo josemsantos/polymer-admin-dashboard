@@ -8,9 +8,10 @@
     return class extends superClass {
       static get properties() {
         return {
-          data: {
-            type: Array,
-            value: []
+          response: {
+            type: Object,
+            value: {},
+            observer: '_responseChanged'
           },
           columns: {
             type: Array,
@@ -23,8 +24,20 @@
           requestConnections: {
             type: Object,
             value: {}
+          },
+          failure: {
+            type: Boolean,
+            value: false
           }
         }
+      }
+
+      _responseChanged (response) {
+        this.dispatchEvent(new CustomEvent('dash-response-changed', {detail: response}));
+      }
+
+      _setFailure (value) {
+        this.failure = value;
       }
 
       _setConnections () {
@@ -32,7 +45,7 @@
           let url = Dash.connections[namespace].url;
           let headers = Dash.connections[namespace].headers;
 
-          this.requestConnections[namespace] = new RequestConnection(url);
+          this.requestConnections[namespace] = new RequestConnection(url, headers);
         }
       }
 
@@ -47,7 +60,17 @@
 
       ready () {
         super.ready();
-        this.fetch('seraph');
+        var _self = this;
+        this.fetch('seraph',{
+          url: '/authorization/groups',
+          verb: 'GET',
+          onLoad(e) {
+            _self.set('response', JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
     }
   }

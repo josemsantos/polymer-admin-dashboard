@@ -38,6 +38,8 @@
               }
             }
           },
+          /** Host name */
+          host: String,
           /** Request headers, by default the Accept-Language, Accept and Content-Type are set */
           headers: {
             type: Object,
@@ -149,7 +151,7 @@
           }
         }.bind(this));
 
-        xhr.open(rq.verb, rq.url);
+        xhr.open(rq.verb, this.host + rq.url);
 
         for (var header in rq.headers) {
           xhr.setRequestHeader(header, rq.headers[header]);
@@ -163,6 +165,12 @@
           xhr.send(rq.data);
         } else {
           xhr.send();
+        }
+      }
+
+      appendHeaders(headers) {
+        for (var header in headers) {
+          this.headers[header] = headers[header];
         }
       }
 

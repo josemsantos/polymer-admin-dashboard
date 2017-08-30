@@ -7,10 +7,12 @@
 
     constructor(url, headers) {
       this.requestManager = document.createElement('dash-request-manager');
+      this.requestManager.host = url;
+      this.requestManager.appendHeaders(headers)
     }
 
     fetch(request) {
-      console.log("fetch data", this.requestManager)
+      this.requestManager.request('', request);
     }
   }
 

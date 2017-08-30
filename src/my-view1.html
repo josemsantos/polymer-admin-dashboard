@@ -91,7 +91,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ready() {
         super.ready();
         this.addEventListener('sort', (e)=>{
-          console.log("mmmm")
+          
         }, false);
       }
 
@@ -106,6 +106,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _fetchItems(attempts) {
         let manager = this.shadowRoot.querySelector('dash-request-manager');
+        manager.host = '';
         this._setFailure(false);
         var _self = this;
         manager.request('random-data', {

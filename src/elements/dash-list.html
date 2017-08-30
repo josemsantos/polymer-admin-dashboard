@@ -1,0 +1,188 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-column-group.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-selection-column.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-sorter.html">
+<link rel="import" href="../../bower_components/paper-styles/color.html">
+<link rel="import" href="../lib/list-element-behavior.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="dash-list" theme-for="vaadin-grid">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+
+      [part~="row"][odd] [part~="cell"] {
+        background: #f4f4f4;
+      }
+
+      [part~="row"]:hover [part~="cell"] {
+        background: #bdbdbd;
+      }
+
+      [part~="body-cell"] {
+        border-bottom: 1px solid #dbdbdb;
+      }
+
+      [part~="footer-cell"] {
+        border-top: 1px solid #dbdbdb;
+      }
+
+      [part~="cell"] {
+        padding: 0 13px;
+        font: 300 16px/1.55 "Open Sans", sans-serif;
+        -webkit-font-smoothing: antialiased;
+        color: #373737;
+      }
+
+      [part~="header-cell"] {
+        background: #f4f4f4;
+        border-bottom: 1px solid #dbdbdb;
+        min-height: 35px;
+      }
+
+      [part~="resize-handle"] {
+        border-color: rgba(244, 244, 244, 0.9);
+      }
+
+      [part~="body-cell"]:not([part~="details-cell"]) {
+        height: 65px;
+      }
+
+      [part~="cell"]:first-child {
+        padding: 0 8px;
+      }
+
+      [part~="row"][selected] [part~="body-cell"]:not([part~="details-cell"]) {
+        background-color: var(--paper-grey-100);
+      }
+
+      vaadin-grid#transparent-header input[type=checkbox] {
+        height: 16px;
+        width: 16px;
+      }
+
+      vaadin-grid#transparent-header .image {
+        height: 40px;
+        width: 40px;
+        display: inline-block;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 15px;
+      }
+
+      vaadin-grid#transparent-header .header-content {
+        display: flex;
+        padding: 16px;
+        justify-content: space-between;
+      }
+    </style>
+
+    <div class="card">
+      <vaadin-grid multi-sort id="transparent-header" aria-label="Remote Data Example" items="[[items]]" multi-sort>
+
+        <vaadin-grid-column-group>
+          <template class="header">
+            <div class="header-content">
+              <b>1-[[_totalFetched]] of [[totalItems]]</b>
+              <input placeholder="Search profiles" focus-target>
+            </div>
+          </template>
+
+          <vaadin-grid-selection-column width="66px" flex-grow="0" select-all="{{selectAll}}" auto-select>
+            <template class="header">
+              <paper-checkbox checked="{{selectAll::change}}"></paper-checkbox>
+            </template>
+            <template>
+              <paper-checkbox checked="{{selected::change}}"></paper-checkbox>
+            </template>
+          </vaadin-grid-selection-column>
+
+          <template is="dom-repeat" items="[[columns]]" as="column">
+
+            <vaadin-grid-column resizable>
+              <template class="header">
+                <vaadin-grid-sorter path="[[column.index]]">[[column.header]]</vaadin-grid-sorter>
+              </template>
+              <template>[[_getColumnValue(item, column.index)]]</template>
+            </vaadin-grid-column>
+
+          </template>
+
+        </vaadin-grid-column-group>
+
+      </vaadin-grid>
+    </div>
+
+
+  </template>
+
+  <script>
+    /**
+         * `dash-list` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+    class DashList extends ListElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          columns: {
+            type: Array,
+            value: []
+          },
+          items: {
+            type: Array,
+            value: []
+          },
+          totalItems: Number,
+          _totalFetched: Number
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      _getColumnValue(item, index) {
+        item = item || {};
+        return item[index] || 'Invalid index ' + index;
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.addEventListener('dash-response-changed', (e) => {
+          this.set('items', e.detail.response.groups);
+          this.totalItems = e.detail.response.total;
+          this._totalFetched = this.items.length;
+        })
+      }
+
+    }
+
+    window.customElements.define(DashList.is, DashList);
+  </script>
+</dom-module>

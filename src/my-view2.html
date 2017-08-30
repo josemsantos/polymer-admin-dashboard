@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-column-group.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-selection-column.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-sorter.html">
 <link rel="import" href="../bower_components/paper-styles/color.html">
 <link rel="import" href="shared-styles.html">
 
@@ -132,7 +133,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           </vaadin-grid-column>
 
           <vaadin-grid-column resizable>
-            <template class="header">First Name</template>
+              <template class="header">
+                <vaadin-grid-sorter path="firstName">First Name</vaadin-grid-sorter>
+              </template>
             <template>[[item.firstName]]</template>
           </vaadin-grid-column>
 
