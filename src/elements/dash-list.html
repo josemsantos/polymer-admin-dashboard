@@ -1,11 +1,12 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api-column.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 
+<link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../lib/list-element-behavior.html">
+<link rel="import" href="dash-list-cell-content.html">
+
 <link rel="import" href="../shared-styles.html">
 
 <dom-module id="dash-list">
@@ -16,6 +17,10 @@
           --paper-card: {
             margin: 16px;
             width: calc(100% - 32px);
+          }
+          --paper-datatable-api-custom-td: {
+            width: 100px;
+            text-align:center;
           }
         }
         paper-datatable-api {
@@ -59,11 +64,12 @@
           <template is="dom-repeat" items="[[columns]]" as="column">
             <paper-datatable-api-column 
               header="[[column.header]]" 
-              draggable-column="[[_isData(column.type)]]"
+              draggable-column="[[_isDraggable(column)]]"
               sortable="[[_isData(column.type)]]"
+              td-custom-style="[[!_isDraggable(column)]]"
               property="[[column.index]]">
               <template>
-                <span>{{value}}</span>
+                <dash-list-cell-content column="[[column]]">[[value]]</dash-list-cell-content>
               </template>
             </paper-datatable-api-column>
           </template>
@@ -83,7 +89,7 @@
          * @polymer
          * @extends {Polymer.Element}
          */
-    class DashList extends ListElementBehavior(Polymer.Element) {
+    class DashList extends ListElementBehavior(CellElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -126,6 +132,10 @@
         };
       }
 
+      _isDraggable(column) {
+        return this._isData(column.type) && column.index != this.key;
+      }
+
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -133,16 +143,6 @@
        */
       constructor() {
         super();
-      }
-
-      _isData(type) {
-        console.log(type);
-        return type === 'data';
-      }
-
-      _isActions(type) {
-        console.log(type);
-        return type === 'actions';
       }
 
       /**
