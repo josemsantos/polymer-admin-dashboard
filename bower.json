@@ -12,15 +12,22 @@
     "iron-media-query": "PolymerElements/iron-media-query#^2.0.0",
     "iron-pages": "PolymerElements/iron-pages#^2.0.0",
     "iron-selector": "PolymerElements/iron-selector#^2.0.0",
-    "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.1",
     "polymer": "Polymer/polymer#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
     "prism-table": "Prhythm/prism-table#^2.0.0",
     "paper-checkbox": "^2.0.1",
-    "paper-styles": "^2.0.0"
+    "paper-styles": "^2.0.0",
+    "paper-datatable-api": "^2.0.7",
+    "paper-card": "PolymerElements/paper-card#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "iron-icon": "PolymerElements/iron-icon#^2.0.1",
+    "iron-icons": "PolymerElements/iron-icons#^2.0.1"
   },
   "resolutions": {
-    "polymer": "^2.0.0"
+    "polymer": "^2.0.0",
+    "paper-checkbox": "^2.0.1",
+    "paper-icon-button": "^2.0.1"
   },
   "devDependencies": {
     "web-component-tester": "Polymer/web-component-tester#^6.0.0",

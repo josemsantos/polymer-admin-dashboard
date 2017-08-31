@@ -9,7 +9,11 @@
       }
     </style>
     
-    <dash-list columns="[[columns]]"></dash-list>
+    <dash-list 
+      heading="User Groups"
+      heading-style="yellow"
+      key="id" 
+      columns="[[columns]]"></dash-list>
   </template>
 
   <script>
@@ -39,11 +43,18 @@
             value: [
               {
                 header: 'Id',
-                index: 'id'
+                index: 'id',
+                type: 'data'
               },
               {
                 header: 'Name',
-                index: 'name'
+                index: 'name',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'key',
+                type: 'actions'
               },
             ]
           }
