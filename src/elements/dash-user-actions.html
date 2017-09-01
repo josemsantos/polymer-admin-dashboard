@@ -1,0 +1,119 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-image/iron-image.html">
+
+
+<dom-module id="dash-user-actions">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+      iron-image.user {
+        width: 48px;
+        height: 48px;
+        border-radius: 32px;
+      }
+      paper-menu-button {
+        padding: 0;
+      }
+      paper-button {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        font-size: 14px;
+      }
+      paper-button .user-name{
+        margin-right: 8px;
+        --paper-button-flat-keyboard-focus: {
+          font-weight: normal;
+        }
+        --paper-button-raised-keyboard-focus: {
+          font-weight: normal;
+        }
+      }
+      paper-listbox {
+        width: 200px;
+        background-color: var(--paper-blue-grey-700);
+        color: #FFF;
+        padding: 0px;
+      }
+      hr {
+        margin: 0px;
+        border: none;
+        height: 1px;
+        background-color: var(--paper-blue-grey-300);
+      }
+      paper-item:hover {
+        background-color: var(--paper-blue-grey-400);
+      }
+    </style>
+    <paper-menu-button horizontal-align="right" no-overlap>
+      <paper-button slot="dropdown-trigger">
+        <span class="user-name">José Santos</span>
+        <iron-image class="user" src="/images/jsantos.jpeg" sizing="contain"></iron-image>
+      </paper-button>
+      <paper-listbox slot="dropdown-content">
+        <paper-item>My Profile</paper-item>
+        <hr noshade>
+        <paper-item>Log Out</paper-item>
+      </paper-listbox>
+    </paper-menu-button>
+
+
+  </template>
+
+  <script>
+    /**
+     * `dash-user-actions` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashUserActions extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-user-actions';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          user: Object
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+        });
+      }
+
+    }
+
+    window.customElements.define(DashUserActions.is, DashUserActions);
+  </script>
+</dom-module>

@@ -1,7 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api-column.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
 
 <link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../lib/list-element-behavior.html">
@@ -14,10 +15,6 @@
     <style include="shared-styles">
        :host {
           display: block;
-          --paper-card: {
-            margin: 16px;
-            width: calc(100% - 32px);
-          }
           --paper-datatable-api-custom-td: {
             width: 100px;
             text-align:center;
@@ -28,8 +25,16 @@
           --paper-datatable-api-tr-hover-background-color: var(--paper-grey-200);
           --paper-datatable-api-tr-odd-background-color: var(--paper-grey-100);
         }
+        .header {
+          padding: 32px 16px 16px;
+        }
         .yellow {
           background-color: var(--paper-yellow-600);
+          color: #FFF;
+        }
+
+        .blue-grey {
+          background-color: var(--paper-blue-grey-400);
           color: #FFF;
         }
 
@@ -37,19 +42,32 @@
           background-color: #FFF;
           color: #000;
         }
-
-        paper-card  {
-          --paper-card-header-image: {
-            opacity: 0.1;
-          }
+        paper-material {
+          display: block;
+          margin: 16px;
+        }
+        hr {
+          border: none;
+          height: 1px;
+          background-color: var(--paper-blue-grey-200);
+          margin: 0;
+        }
+        h2 {
+          margin: 0;
+        }
+        h2 iron-icon {
+          --iron-icon-width: 48px;
+          --iron-icon-height: 48px;
+          padding-right: 16px;
         }
     </style>
 
-    <paper-card heading="[[heading]]" image="/images/bg.jpg" class$="[[headingStyle]]" elevation="2">
+    <paper-material elevation="2">
       <div class="card-content">
-        filters
-      </div>
-      <div class="card-content">
+        <div class$="header [[headingStyle]]">
+          <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
+        </div>
+        <hr/>
         <paper-datatable-api 
           data="[[items]]" 
           page="{{page}}"
@@ -76,7 +94,7 @@
         </paper-datatable-api>
 
       </div>
-    </paper-card>
+    </paper-material>
 
   </template>
 
@@ -103,6 +121,7 @@
       static get properties() {
         return {
           heading: String,
+          icon: String,
           headingStyle: String,
           key: String,
           columns: {
