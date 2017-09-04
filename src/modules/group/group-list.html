@@ -82,13 +82,13 @@
       }
 
       onResponseChanged (e) {
-          let list = this.shadowRoot.querySelector('dash-list');
-          list.items = e.detail.response.groups;
-          list.totalItems = e.detail.response.total;
-          list._totalFetched = e.detail.response.groups.length;
-          list.totalPages = Math.ceil(list.totalItems/list.perPage);
+        let list = this.shadowRoot.querySelector('dash-list');
+        list.items = e.detail.response.groups;
+        list.totalItems = e.detail.response.total;
+        list._totalFetched = e.detail.response.groups.length;
+        list.totalPages = Math.ceil(list.totalItems/list.perPage);
 
-          list.page=0;
+        list.page=0;
       }
 
       /**
