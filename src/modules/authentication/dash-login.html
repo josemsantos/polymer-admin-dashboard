@@ -15,12 +15,13 @@
         justify-content: center;
 
         --form-title: {
-          background-color: var(--paper-blue-grey-400);
-          color: #FFF;
-          padding: 16px;
+          padding: 32px;
+          font-size: 24px;
+          font-weight: 300;
+          text-align: center;
         }
         --form-body: {
-          padding: 16px 32px 32px;
+          padding: 0px 32px 32px;
         }
       }
 
@@ -28,17 +29,29 @@
         display: block;
         margin: 16px 16px 80px;
         background-color: #FFF;
-        width: 500px;
+        width: 384px;
       }
       iron-icon {
-        padding-right: 8px;
+        width: 96px;
+        height: 96px;
+        background-color: var(--paper-blue-grey-300);
+        color: #FFF;
+        border-radius: 56px;
+        padding: 8px;
+      }
+      .title {
+        margin-top: 16px;
       }
     </style>
     <user-model></user-model>
     <paper-material elevation="2">
       <dash-form
         fields="[[loginForm.fields]]"
-        actions="[[loginForm.actions]]"><iron-icon icon="social:person"></iron-icon>Login Form</dash-form>
+        actions="[[loginForm.actions]]"
+        on-submit="_signIn">
+          <iron-icon icon="social:person"></iron-icon>
+          <div class="title">LOGIN TO YOUR ACCOUNT</div>
+      </dash-form>
     </paper-material>
   </template>
 
@@ -70,6 +83,10 @@
           },
           loginForm: Object
         };
+      }
+
+      _signIn (e) {
+        console.log(e.detail);
       }
 
       /**

@@ -159,7 +159,7 @@
         for (var header in rq.xtHeaders) {
           xhr.setRequestHeader(header, rq.headers[header]);
         }
-        xhr.withCredentials = false;
+        xhr.withCredentials = true;
         
         if (rq.data) {
           xhr.send(rq.data);

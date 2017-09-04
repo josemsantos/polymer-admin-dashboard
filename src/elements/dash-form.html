@@ -16,10 +16,11 @@
         @apply --form-body;
       }
       .action-box {
-        text-align: right;
-        padding: 8px;
-        border-top: solid 1px var(--paper-blue-grey-100);
-        background-color: var(--paper-blue-grey-50);
+        text-align: center;
+        padding: 32px;
+      }
+      paper-button {
+        width: 100px;
       }
       .submit {
         background-color:  var(--paper-green-500);
@@ -36,7 +37,7 @@
       }
     </style>
     <iron-form>
-      <form method="get" action="/form/handler">
+      <form>
         <div class="title"><slot></slot></div>
         <div class="body">
           <template is="dom-repeat" items="[[fields]]" as="field">
@@ -48,8 +49,7 @@
           <template is="dom-repeat" items="[[actions]]" as="action">
             <paper-button 
               data-action$="[[action.type]]" 
-              on-tap="executeMe" 
-              raised 
+              on-tap="executeMe"
               class$="[[action.type]]">[[action.label]]</paper-button>
           </template>
         </div>
@@ -101,7 +101,7 @@
         let form = this.shadowRoot.querySelector('iron-form');
         switch(e.currentTarget.dataset['action']) {
           case 'submit':
-            form.submit();
+            this.dispatchEvent(new CustomEvent('submit', {detail: form.serializeForm()}));
             break;
           case 'reset' :
             this._formReset();
