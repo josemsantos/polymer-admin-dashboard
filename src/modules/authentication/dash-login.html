@@ -1,65 +1,100 @@
-<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../models/user-model.html">
 
 <dom-module id="dash-login">
-    <template>
-        <style>
-            :host {
-                display: block
-            }
-        </style>
+  <template>
+    <style>
+       :host {
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        
-
-    </template>
-
-    <script>
-        /**
-         * `dash-login` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
-        class DashLogin extends Polymer.Element {
-            /**
-             * String providing the tag name to register the element under.
-             */
-            static get is() {
-                return 'dash-login';
-            }
-
-            /**
-             * Object describing property-related metadata used by Polymer features
-             */
-            static get properties() {
-                return {
-                    
-                };
-            }
-
-            /**
-             * Instance of the element is created/upgraded. Use: initializing state,
-             * set up event listeners, create shadow dom.
-             * @constructor
-             */
-            constructor() {
-                super();
-            }
-
-            /**
-             * Use for one-time configuration of your component after local DOM is initialized. 
-             */
-            ready() {
-                super.ready();
-
-                Polymer.RenderStatus.afterNextRender(this, function() {
-                    
-                });
-            }
-
+        --form-title: {
+          background-color: var(--paper-blue-grey-400);
+          color: #FFF;
+          padding: 16px;
         }
+        --form-body: {
+          padding: 16px 32px 32px;
+        }
+      }
 
-        window.customElements.define(DashLogin.is, DashLogin);
-    </script>
+      paper-material {
+        display: block;
+        margin: 16px 16px 80px;
+        background-color: #FFF;
+        width: 500px;
+      }
+      iron-icon {
+        padding-right: 8px;
+      }
+    </style>
+    <user-model></user-model>
+    <paper-material elevation="2">
+      <dash-form
+        fields="[[loginForm.fields]]"
+        actions="[[loginForm.actions]]"><iron-icon icon="social:person"></iron-icon>Login Form</dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `dash-login` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashLogin extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-login';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          loginForm: Object
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'user-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+          this.loginForm = this.shadowRoot.querySelector(this.model).getLoginForm();
+        });
+      }
+
+    }
+
+    window.customElements.define(DashLogin.is, DashLogin);
+  </script>
 </dom-module>

@@ -83,6 +83,39 @@
         });
       }
 
+      getLoginForm () {
+        return {
+          fields: [
+            {
+              label: 'Username',
+              name: 'username',
+              type: 'text',
+              validators: [
+
+              ]
+            },
+            {
+              label: 'Password',
+              name: 'password',
+              type: 'password',
+              validators: [
+
+              ]
+            }
+          ],
+          actions: [
+            {
+              label: 'login',
+              type: 'submit'
+            },
+            {
+              label: 'Cancel',
+              type: 'reset'
+            },
+          ]
+        };
+      }
+
     }
 
     window.customElements.define(UserModel.is, UserModel);

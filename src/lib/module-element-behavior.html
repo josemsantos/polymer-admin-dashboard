@@ -8,6 +8,10 @@
     return class extends superClass {
       static get properties() {
         return {
+          pageType: {
+            type: String,
+            value: 'list'
+          },
           namespace: String,
           modelElement: HTMLElement,
           requestConnections: {
@@ -38,13 +42,24 @@
           this.modelElement.connection = this.requestConnections[this.namespace];
 
           this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
-
-          this.modelElement.search();
+          if (this.pageType === 'list') {
+            this.getList();
+          } else if (this.pageType === 'form') {
+            this.getForm();
+          }
         });
       }
 
       onResponseChanged (e) {
-        
+
+      }
+
+      getList () {
+        this.modelElement.search();
+      }
+
+      getForm () {
+
       }
     }
   }

@@ -1,0 +1,141 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="dash-form">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+      .title {
+        @apply --form-title;
+      }
+      .body {
+        @apply --form-body;
+      }
+      .action-box {
+        text-align: right;
+        padding: 8px;
+        border-top: solid 1px var(--paper-blue-grey-100);
+        background-color: var(--paper-blue-grey-50);
+      }
+      .submit {
+        background-color:  var(--paper-green-500);
+        color: #FFF;
+      }
+      .reset {
+        background-color:  var(--paper-grey-100);
+      }
+      .link {
+
+      }
+      .button {
+
+      }
+    </style>
+    <iron-form>
+      <form method="get" action="/form/handler">
+        <div class="title"><slot></slot></div>
+        <div class="body">
+          <template is="dom-repeat" items="[[fields]]" as="field">
+            <paper-input name$="[[field.name]]" label="[[field.label]]" type="[[field.type]]"></paper-input>
+          </template>
+        </div>
+
+        <div class="action-box">
+          <template is="dom-repeat" items="[[actions]]" as="action">
+            <paper-button 
+              data-action$="[[action.type]]" 
+              on-tap="executeMe" 
+              raised 
+              class$="[[action.type]]">[[action.label]]</paper-button>
+          </template>
+        </div>
+      </form>
+    </iron-form>
+  </template>
+
+  <script>
+    /**
+     * `dash-form` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashForm extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-form';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          fields: {
+            type: Array,
+            value: []
+          },
+          actions: {
+            type: Array,
+            value: []
+          }
+        };
+      }
+
+      _formReset () {
+        this.fields.forEach(fld => {
+          let el = this.shadowRoot.querySelector('paper-input[name=' + fld.name + ']');
+          el.value = ''
+        });
+      }
+
+      executeMe (e) {
+        let form = this.shadowRoot.querySelector('iron-form');
+        switch(e.currentTarget.dataset['action']) {
+          case 'submit':
+            form.submit();
+            break;
+          case 'reset' :
+            this._formReset();
+            break;
+          case 'link':
+            break;
+          case 'button':
+        }
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        let form = this.shadowRoot.querySelector('iron-form');
+        form.attached();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+        });
+      }
+
+    }
+
+    window.customElements.define(DashForm.is, DashForm);
+  </script>
+</dom-module>
