@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="group-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+
+
+
+  </template>
+
+  <script>
+    /**
+     * `group-model` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class GroupModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'group-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          id: Number,
+          name: String,
+          roles: {
+            type: Array,
+            value: []
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/authorization/groups';
+      }
+
+      _responseChanged (response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+        });
+      }
+
+    }
+
+    window.customElements.define(GroupModel.is, GroupModel);
+  </script>
+</dom-module>

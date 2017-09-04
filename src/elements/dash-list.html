@@ -5,7 +5,6 @@
 <link rel="import" href="../../bower_components/iron-icons/social-icons.html">
 
 <link rel="import" href="../lib/cell-element-behavior.html">
-<link rel="import" href="../lib/list-element-behavior.html">
 <link rel="import" href="dash-list-cell-content.html">
 
 <link rel="import" href="../shared-styles.html">
@@ -107,7 +106,7 @@
          * @polymer
          * @extends {Polymer.Element}
          */
-    class DashList extends ListElementBehavior(CellElementBehavior(Polymer.Element)) {
+    class DashList extends CellElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -169,14 +168,6 @@
        */
       ready() {
         super.ready();
-        this.addEventListener('dash-response-changed', (e) => {
-          this.set('items', e.detail.response.groups);
-          this.totalItems = e.detail.response.total;
-          this._totalFetched = this.items.length;
-          this.totalPages = Math.ceil(this.totalItems/this.perPage);
-
-          this.page=0;
-        })
       }
 
     }

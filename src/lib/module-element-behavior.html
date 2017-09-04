@@ -1,0 +1,52 @@
+<link rel="import" href="../configs/connections.html">
+<link rel="import" href="../lib/request-connection.html">
+
+<script>
+  'use strict';
+
+  function ModuleElementBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          namespace: String,
+          modelElement: HTMLElement,
+          requestConnections: {
+            type: Object,
+            value: {}
+          },
+        }
+      }
+
+      _setConnections () {
+        for (var ns in Dash.connections) {
+          let url = Dash.connections[ns].url;
+          let headers = Dash.connections[ns].headers;
+
+          this.requestConnections[ns] = new RequestConnection(url, headers);
+        }
+      }
+
+      constructor () {
+        super();
+        this._setConnections();
+      }
+
+      ready () {
+        super.ready();
+        Polymer.RenderStatus.afterNextRender(this, function () {
+          this.modelElement = this.shadowRoot.querySelector(this.model);
+          this.modelElement.connection = this.requestConnections[this.namespace];
+
+          this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
+
+          this.modelElement.search();
+        });
+      }
+
+      onResponseChanged (e) {
+        
+      }
+    }
+  }
+
+</script>

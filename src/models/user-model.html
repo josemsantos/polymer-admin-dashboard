@@ -1,0 +1,89 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="user-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+
+
+
+  </template>
+
+  <script>
+    /**
+     * `user-model` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class UserModel extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'user-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          id: Number,
+          username: String,
+          email: String,
+          inactive: Boolean,
+          password: String,
+          last_login: {
+            type: Object,
+            value: {
+              date: null,
+              timezone_type: null,
+              timezone: null
+            }
+          },
+          locked: Boolean,
+          expired: Boolean,
+          expires_at: String,
+          groups: {
+            type: Array,
+            value: []
+          },
+          roles: {
+            type: Array,
+            value: []
+          },
+          credentials_expired: Boolean
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+        });
+      }
+
+    }
+
+    window.customElements.define(UserModel.is, UserModel);
+  </script>
+</dom-module>

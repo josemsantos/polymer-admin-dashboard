@@ -1,0 +1,54 @@
+<script>
+  'use strict';
+
+  function ModelBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          connection: Object,
+          endpoint: String,
+          failure: Boolean,
+          response: {
+            type: Object,
+            observer: '_responseChanged'
+          }
+        };
+      }
+      _setFailure (bool) {
+        this.failure = bool;
+      }
+
+      search(method) {
+        method = method || 'GET';
+        var _self = this;
+        this.connection.fetch({
+          url: this.endpoint,
+          verb: method,
+          onLoad(e) {
+            _self.set('response', JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
+      }
+
+      fetch(method) {
+        method = method || 'GET';
+      }
+
+      create(method) {
+        method = method || 'POST';
+      }
+
+      update(method) {
+        method = method || 'PUT';
+      }
+
+      delete(method) {
+        method = method || 'DELETE';
+      }
+    }
+  }
+
+</script>

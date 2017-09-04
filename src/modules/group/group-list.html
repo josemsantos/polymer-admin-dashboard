@@ -1,5 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/group-model.html">
 
 <dom-module id="group-list">
   <template>
@@ -15,6 +17,8 @@
       icon="social:group"
       key="id" 
       columns="[[columns]]"></dash-list>
+
+    <group-model></group-model>
   </template>
 
   <script>
@@ -26,7 +30,7 @@
          * @polymer
          * @extends {Polymer.Element}
          */
-    class GroupList extends Polymer.Element {
+    class GroupList extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -39,6 +43,11 @@
        */
       static get properties() {
         return {
+          model: String,
+          namespace: {
+            type: String,
+            value: 'seraph'
+          },
           columns: {
             type: Array,
             value: [
@@ -69,6 +78,17 @@
        */
       constructor() {
         super();
+        this.model = 'group-model';
+      }
+
+      onResponseChanged (e) {
+          let list = this.shadowRoot.querySelector('dash-list');
+          list.items = e.detail.response.groups;
+          list.totalItems = e.detail.response.total;
+          list._totalFetched = e.detail.response.groups.length;
+          list.totalPages = Math.ceil(list.totalItems/list.perPage);
+
+          list.page=0;
       }
 
       /**
@@ -76,10 +96,6 @@
        */
       ready() {
         super.ready();
-
-        Polymer.RenderStatus.afterNextRender(this, function () {
-
-        });
       }
 
     }
