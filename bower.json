@@ -15,7 +15,6 @@
     "paper-icon-button": "PolymerElements/paper-icon-button#^2.0.1",
     "polymer": "Polymer/polymer#^2.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0",
-    "prism-table": "Prhythm/prism-table#^2.0.0",
     "paper-checkbox": "^2.0.1",
     "paper-styles": "^2.0.0",
     "paper-datatable-api": "^2.0.7",
