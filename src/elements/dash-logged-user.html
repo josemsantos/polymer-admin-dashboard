@@ -31,6 +31,10 @@
             type: Array,
             value: []
           },
+          rememberMe: {
+            type: Boolean,
+            observer: '_rememberMeChanged'
+          },
           isLoggedIn: {
             type: Boolean,
             value: false,
@@ -57,6 +61,12 @@
         Polymer.RenderStatus.afterNextRender(this, function () {
 
         });
+      }
+
+      _rememberMeChanged (rememberMe) {
+        if (rememberMe) {
+          console.log("I will be remember")
+        }
       }
 
       _userChanged (user) {

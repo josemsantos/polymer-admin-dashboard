@@ -94,8 +94,9 @@
 
       _responseChanged (response) {
         let data = response.response;
+        let rememberMe = response.rememberMe;
         if (data.user) {
-          this.mapUser(data.user);
+          this.mapUser(data.user, rememberMe);
           let credentials = {
             'X-AUTH-API-KEY': data.api_key,
             'X-AUTH-API-SECRET': data.secret
@@ -104,9 +105,9 @@
         }
       }
 
-      mapUser (data) {
+      mapUser (data, rememberMe) {
         this.model = data;
-        this.dispatchEvent(new CustomEvent('user-logged', {detail: {user: this.model}}));
+        this.dispatchEvent(new CustomEvent('user-logged', {detail: {user: this.model, rememberMe: rememberMe}}));
       }
 
       requestSignIn (payload) {
@@ -117,7 +118,9 @@
           verb: 'POST',
           data: JSON.stringify(payload),
           onLoad(e) {
-            _self.set('response', JSON.parse(e.target.responseText));
+            let response = JSON.parse(e.target.responseText);
+            response['rememberMe'] = payload.rememberme === 'on';
+            _self.set('response', response);
           },
           onError(e) {
             _self._setFailure(true);
@@ -154,6 +157,12 @@
                   stop: true
                 }
               ]
+            },
+            {
+              label: 'Remember me',
+              name: 'rememberme',
+              type: 'checkbox',
+              validators: []
             }
           ],
           actions: [

@@ -101,7 +101,6 @@
       }
 
       _signIn (e) {
-        console.log(e.detail)
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.loginForm.fields, e.detail);
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -117,7 +116,8 @@
       _notifyUserLogged (e) {
         let appUser = {
           user: e.detail.user,
-          permissions: e.detail.user.roles
+          permissions: e.detail.user.roles,
+          rememberMe: e.detail.rememberMe
         };
         this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: appUser}));
       }

@@ -108,7 +108,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <dash-logged-user
       user="[[user]]"
       permissions="[[permissions]]"
-      is-logged-in="{{isUserLogged}}"></dash-logged-user>
+      is-logged-in="{{isUserLogged}}"
+      remember-me="[[rememberMe]]"></dash-logged-user>
 
     <!-- Main content -->
     <app-header-layout fullbleed>
@@ -153,6 +154,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return {
           user: Object,
           permissions: Array,
+          rememberMe: Boolean,
           isUserLogged: {
             type: Boolean,
           },
@@ -178,6 +180,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _setUser (e) {
         this.user = e.detail.user;
         this.permissions = e.detail.permission;
+        this.rememberMe = e.detail.rememberMe;
       }
 
       _drawerToggle(e) {
