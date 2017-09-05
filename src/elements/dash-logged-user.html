@@ -26,6 +26,7 @@
         return {
           user: {
             type: Object,
+            notify: true,
             observer: '_userChanged'
           },
           permissions: {
@@ -60,7 +61,7 @@
         super.ready();
 
         Polymer.RenderStatus.afterNextRender(this, function () {
-
+          this._checkLastLogin();
         });
       }
 
@@ -74,6 +75,17 @@
         if (user) {
           this.isLoggedIn = true;
         }
+      }
+
+      _checkLastLogin () {
+        this.read('user').then(user => {
+          if (user) {
+            this.user = user;
+            this.permissions = user.roles;
+            this.rememberMe = true;
+            this.isLoggedIn = true;
+          }
+        });
       }
 
     }

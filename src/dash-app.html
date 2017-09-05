@@ -106,7 +106,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         tail="{{subroute}}"></app-route>
 
     <dash-logged-user
-      user="[[user]]"
+      user="{{user}}"
       permissions="[[permissions]]"
       is-logged-in="{{isUserLogged}}"
       remember-me="[[rememberMe]]"></dash-logged-user>
@@ -117,8 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       <app-header slot="header" fixed shadow hidden$="[[!isUserLogged]]">
         <app-toolbar>
           <paper-icon-button icon="my-icons:menu" on-tap="_drawerToggle"></paper-icon-button>
-          <div main-title>My App</div>
-          <dash-user-actions></dash-user-actions>
+          <paper-icon-button icon="dashboard" on-tap="goToDashBoard"></paper-icon-button>
+          <div main-title>[[appName]]</div>
+          <dash-user-actions user="[[user]]"></dash-user-actions>
         </app-toolbar>
       </app-header>
 
@@ -137,8 +138,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               attr-for-selected="name"
               fallback-selection="view404"
               role="main">
+            <dash-home name="dashboard"></dash-home>
             <group-list name="group"></group-list>
-            <dash-login name="authentication" on-dash-user-logged="_setUser"></dash-login>
+            <dash-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></dash-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
         </app-drawer-layout>
@@ -152,11 +154,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get properties() {
         return {
+          appName: {
+            type: String,
+            value: 'Dashboard'
+          },
+          loginPage: {
+            type: String,
+            value: 'authentication'
+          },
           user: Object,
           permissions: Array,
           rememberMe: Boolean,
           isUserLogged: {
             type: Boolean,
+            observer: '_isUserLoggedChanged'
           },
           page: {
             type: String,
@@ -192,6 +203,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
+      _isUserLoggedChanged (userLogged) {
+        this.redirectIf();
+      }
+
       _routePageChanged(page) {
         // If no page was found in the route data, page will be an empty string.
         // Deault to 'view1' in that case.
@@ -205,6 +220,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _pageChanged(page) {
         // Load page import on demand. Show 404 page if fails
         page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.page + this.subroute.path;
+
+        this.redirectIf();
         
         var resolvedPageUrl = this.resolveUrl(page + '.html');
         Polymer.importHref(
@@ -216,6 +233,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showPage404() {
         this.page = 'view404';
+      }
+
+      redirectIf () {
+        if (this.isUserLogged && this.currentPage(this.loginPage)) {
+            this.goToDashBoard();
+        }
+      }
+
+      currentPage (page) {
+        return this.page === page;
+      }
+
+      redirectTo (page, data) {
+        this.set('route.path', page);
+        if (undefined !== data) {
+          this.set('_queryParams', data);
+        }
+      }
+
+      goToLoginPage () {
+        this.redirectTo(this.rootPath + 'authentication/dash-login');
+      }
+
+      goToDashBoard () {
+        this.redirectTo(this.rootPath + 'dashboard/dash-home');
+      }
+
+      goToHomePage() {
+        this.goToDashBoard();
       }
     }
 
