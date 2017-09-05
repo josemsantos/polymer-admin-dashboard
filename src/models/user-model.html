@@ -111,6 +111,7 @@
 
       requestSignIn (payload) {
         var _self = this;
+
         this.connection.fetch({
           url: this.authEndpoint,
           verb: 'POST',
@@ -120,6 +121,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self.dispatchEvent(new CustomEvent('sign-in-failed', {detail: {error: JSON.parse(e.target.responseText)}}));
           }
         });
       }
@@ -132,7 +134,12 @@
               name: 'username',
               type: 'text',
               validators: [
-
+                {
+                  type: 'regex',
+                  regex: '^(.){5,}$',
+                  message: 'Invalid credentials user',
+                  stop: true
+                }
               ]
             },
             {
@@ -140,7 +147,12 @@
               name: 'password',
               type: 'password',
               validators: [
-
+                {
+                  type: 'regex',
+                  regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&])[A-Za-z\d$@$!%*?&]{8,}',
+                  message: 'Invalid credentials pass',
+                  stop: true
+                }
               ]
             }
           ],

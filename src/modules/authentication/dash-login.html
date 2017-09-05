@@ -25,6 +25,11 @@
         }
       }
 
+      .error {
+        color: var(--paper-red-600);
+        font-size: 16px;
+      }
+
       paper-material {
         display: block;
         margin: 16px 16px 80px;
@@ -45,7 +50,8 @@
     </style>
     <user-model
       on-update-request-credentials="_setAuthHeaders"
-      on-user-logged="_notifyUserLogged"></user-model>
+      on-user-logged="_notifyUserLogged"
+      on-sign-in-failed="_showSignInError"></user-model>
     <paper-material elevation="2">
       <dash-form
         fields="[[loginForm.fields]]"
@@ -53,6 +59,7 @@
         on-submit="_signIn">
           <iron-icon icon="social:person"></iron-icon>
           <div class="title">LOGIN TO YOUR ACCOUNT</div>
+          <div class="error">[[errorMessage]]</div>
       </dash-form>
     </paper-material>
   </template>
@@ -88,12 +95,23 @@
             type: String,
             value: 'form'
           },
-          loginForm: Object
+          loginForm: Object,
+          errorMessage: String
         };
       }
 
       _signIn (e) {
+        console.log(e.detail)
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.loginForm.fields, e.detail);
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
         this.userModel.requestSignIn(e.detail);
+      }
+
+      _showSignInError (e) {
+        this.errorMessage = e.detail.error.message;
       }
 
       _notifyUserLogged (e) {

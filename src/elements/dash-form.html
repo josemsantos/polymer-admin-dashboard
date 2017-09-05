@@ -97,6 +97,29 @@
         });
       }
 
+      validate (fields, request) {
+        var errors = [];
+        for (let i in fields) {
+          let validators = fields[i].validators;
+          for (let v in validators) {
+            switch (validators[v].type) {
+              case 'regex':
+                if (null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name]) {
+                  errors.push(validators[v].message);
+                } else  if (null === request[fields[i].name].match(validators[v].regex)) {
+                  errors.push(validators[v].message);
+                }
+                break;
+            }
+            
+            if (validators[v].stop) {
+              return errors;
+            }
+          }
+        }
+        return errors;
+      }
+
       executeMe (e) {
         let form = this.shadowRoot.querySelector('iron-form');
         switch(e.currentTarget.dataset['action']) {
