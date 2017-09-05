@@ -35,31 +35,40 @@
        */
       static get properties() {
         return {
-          id: Number,
-          username: String,
-          email: String,
-          inactive: Boolean,
-          password: String,
-          last_login: {
+          authEndpoint: {
+            type: String,
+            value: '/authentication/login'
+          },
+          model: {
             type: Object,
             value: {
-              date: null,
-              timezone_type: null,
-              timezone: null
+              id: Number,
+              username: String,
+              email: String,
+              inactive: Boolean,
+              password: String,
+              last_login: {
+                type: Object,
+                value: {
+                  date: null,
+                  timezone_type: null,
+                  timezone: null
+                }
+              },
+              locked: Boolean,
+              expired: Boolean,
+              expires_at: String,
+              groups: {
+                type: Array,
+                value: []
+              },
+              roles: {
+                type: Array,
+                value: []
+              },
+              credentials_expired: Boolean
             }
-          },
-          locked: Boolean,
-          expired: Boolean,
-          expires_at: String,
-          groups: {
-            type: Array,
-            value: []
-          },
-          roles: {
-            type: Array,
-            value: []
-          },
-          credentials_expired: Boolean
+          }
         };
       }
 
@@ -80,6 +89,38 @@
 
         Polymer.RenderStatus.afterNextRender(this, function () {
 
+        });
+      }
+
+      _responseChanged (response) {
+        let data = response.response;
+        if (data.user) {
+          this.mapUser(data.user);
+          let credentials = {
+            'X-AUTH-API-KEY': data.api_key,
+            'X-AUTH-API-SECRET': data.secret
+          }
+          this.dispatchEvent(new CustomEvent('update-request-credentials', {detail: credentials}));
+        }
+      }
+
+      mapUser (data) {
+        this.model = data;
+        this.dispatchEvent(new CustomEvent('user-logged', {detail: {user: this.model}}));
+      }
+
+      requestSignIn (payload) {
+        var _self = this;
+        this.connection.fetch({
+          url: this.authEndpoint,
+          verb: 'POST',
+          data: JSON.stringify(payload),
+          onLoad(e) {
+            _self.set('response', JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
         });
       }
 

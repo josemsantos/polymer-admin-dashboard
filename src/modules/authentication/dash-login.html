@@ -43,7 +43,9 @@
         margin-top: 16px;
       }
     </style>
-    <user-model></user-model>
+    <user-model
+      on-update-request-credentials="_setAuthHeaders"
+      on-user-logged="_notifyUserLogged"></user-model>
     <paper-material elevation="2">
       <dash-form
         fields="[[loginForm.fields]]"
@@ -77,6 +79,11 @@
        */
       static get properties() {
         return {
+          namespace: {
+            type: String,
+            value: 'seraph'
+          },
+          userModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -86,7 +93,22 @@
       }
 
       _signIn (e) {
-        console.log(e.detail);
+        this.userModel.requestSignIn(e.detail);
+      }
+
+      _notifyUserLogged (e) {
+        let appUser = {
+          user: e.detail.user,
+          permissions: e.detail.user.roles
+        };
+        this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: appUser}));
+      }
+
+      _setAuthHeaders (e) {
+        let headers = e.detail;
+        for (var header in headers) {
+          Dash.connections[this.namespace].headers[header] = headers[header];
+        }
       }
 
       /**
@@ -106,7 +128,8 @@
         super.ready();
 
         Polymer.RenderStatus.afterNextRender(this, function () {
-          this.loginForm = this.shadowRoot.querySelector(this.model).getLoginForm();
+          this.userModel = this.shadowRoot.querySelector(this.model);
+          this.loginForm = this.userModel.getLoginForm();
         });
       }
 

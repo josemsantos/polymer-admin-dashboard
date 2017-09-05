@@ -20,7 +20,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
 <link rel="import" href="/src/elements/dash-user-actions.html">
+<link rel="import" href="/src/elements/dash-logged-user.html">
 
 
 <link rel="import" href="my-icons.html">
@@ -90,6 +92,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         @apply --layout-flex;
         width: 100%;
       }
+
+      app-header[hidden] {
+        visibility: hidden;
+      }
     </style>
 
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
@@ -99,10 +105,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
+    <dash-logged-user
+      user="[[user]]"
+      permissions="[[permissions]]"
+      is-logged-in="{{isUserLogged}}"></dash-logged-user>
+
     <!-- Main content -->
     <app-header-layout fullbleed>
 
-      <app-header slot="header" fixed shadow>
+      <app-header slot="header" fixed shadow hidden$="[[!isUserLogged]]">
         <app-toolbar>
           <paper-icon-button icon="my-icons:menu" on-tap="_drawerToggle"></paper-icon-button>
           <div main-title>My App</div>
@@ -110,7 +121,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-toolbar>
       </app-header>
 
-      <app-drawer-layout id="drawerLayout" narrow="{{narrow}}" >
+      <app-drawer-layout id="drawerLayout" narrow="{{narrow}}" force-narrow="[[!isUserLogged]]">
           <!-- Drawer content -->
           <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
             <div class="drawer-content">
@@ -126,7 +137,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               fallback-selection="view404"
               role="main">
             <group-list name="group"></group-list>
-            <dash-login name="authentication"></dash-login>
+            <dash-login name="authentication" on-dash-user-logged="_setUser"></dash-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
         </app-drawer-layout>
@@ -140,6 +151,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get properties() {
         return {
+          user: Object,
+          permissions: Array,
+          isUserLogged: {
+            type: Boolean,
+          },
           page: {
             type: String,
             reflectToAttribute: true,
@@ -157,6 +173,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return [
           '_routePageChanged(routeData.page)',
         ];
+      }
+
+      _setUser (e) {
+        this.user = e.detail.user;
+        this.permissions = e.detail.permission;
       }
 
       _drawerToggle(e) {
