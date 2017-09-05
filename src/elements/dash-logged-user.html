@@ -24,6 +24,11 @@
        */
       static get properties() {
         return {
+          authHeaders: {
+            type: Object,
+            notify: true,
+            observer: '_authHeadersChanged'
+          },
           user: {
             type: Object,
             notify: true,
@@ -65,9 +70,16 @@
         });
       }
 
+      _authHeadersChanged () {
+        this._rememberMeChanged(this.rememberMe);
+      }
+
       _rememberMeChanged (rememberMe) {
         if (rememberMe) {
           this.store('user', this.user, 8);
+          if (this.authHeaders) {
+            this.store('auth-headers', this.authHeaders, 8);
+          }
         }
       }
 
@@ -78,14 +90,19 @@
       }
 
       _checkLastLogin () {
-        this.read('user').then(user => {
-          if (user) {
-            this.user = user;
-            this.permissions = user.roles;
-            this.rememberMe = true;
-            this.isLoggedIn = true;
+        this.read('auth-headers').then(authHeaders => {
+          if (authHeaders) {
+            this.authHeaders = authHeaders;
           }
-        });
+          this.read('user').then(user => {
+            if (user) {
+              this.user = user;
+              this.permissions = user.roles;
+              this.rememberMe = true;
+              this.isLoggedIn = true;
+            }
+          });
+        })
       }
 
     }

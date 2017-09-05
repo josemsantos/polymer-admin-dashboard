@@ -49,7 +49,7 @@
       }
     </style>
     <user-model
-      on-update-request-credentials="_setAuthHeaders"
+      on-update-request-credentials="_notifyAuthHeaders"
       on-user-logged="_notifyUserLogged"
       on-sign-in-failed="_showSignInError"></user-model>
     <paper-material elevation="2">
@@ -122,11 +122,12 @@
         this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: appUser}));
       }
 
-      _setAuthHeaders (e) {
-        let headers = e.detail;
-        for (var header in headers) {
-          Dash.connections[this.namespace].headers[header] = headers[header];
-        }
+      _notifyAuthHeaders (e) {
+        let headers = {
+          headers: e.detail,
+          conn: this.namespace
+        };
+        this.dispatchEvent(new CustomEvent('dash-add-auth-headers', {detail: headers}));
       }
 
       /**

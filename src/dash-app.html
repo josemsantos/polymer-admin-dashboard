@@ -109,7 +109,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       user="{{user}}"
       permissions="[[permissions]]"
       is-logged-in="{{isUserLogged}}"
-      remember-me="[[rememberMe]]"></dash-logged-user>
+      remember-me="[[rememberMe]]"
+      auth-headers="{{authHeaders}}"></dash-logged-user>
 
     <!-- Main content -->
     <app-header-layout fullbleed>
@@ -161,6 +162,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           loginPage: {
             type: String,
             value: 'authentication'
+          },
+          authHeaders: {
+            type: Object,
+            observer: '_authHeadersChanged'
           },
           user: Object,
           permissions: Array,
@@ -233,6 +238,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _showPage404() {
         this.page = 'view404';
+      }
+
+      _authHeadersChanged (e) {
+        this._addAuthHeadersToConnection(e.detail.conn, e.detail.headers);
+      }
+
+      _addAuthHeadersToConnection(conn, headers) {
+        for (var header in headers) {
+          Dash.connections[conn].headers[header] = headers[header];
+        }
+      }
+
+      ready () {
+        super.ready();
+        this.addEventListener('dash-add-auth-headers', function (e) {
+          this._authHeadersChanged(e);
+          this.authHeaders = {
+            conn: e.detail.conn,
+            headers: e.detail.headers
+          };
+        }.bind(this));
       }
 
       redirectIf () {
