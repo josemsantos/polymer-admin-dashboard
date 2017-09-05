@@ -1,0 +1,76 @@
+<script>
+  'use strict';
+
+  /** 
+   * Behavior that manages the app life cycles events
+   *
+   * @polymerBehavior DashCookieBehavior
+   */
+  function DashCookieBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+
+      /**
+       * Add a cookie
+       * @param {String} cname cookie name
+       * @param {String} cvalue cookie value
+       * @param {Number} hours cookie ttl in hours
+       * @returns {void}
+       */
+      addCookie (cname, cvalue, hours) {
+        var d = new Date();
+        d.setTime(d.getTime() + (hours*60*60*1000));
+        var expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+      /**
+       * Update a cookie, fires a app-cookie-not-found event
+       * @param {String} cname cookie name
+       * @param {String} cvalue cookie value
+       * @param {Number} hours cookie ttl in hours
+       * @returns {void}
+       */
+      updateCookie (cname, cvalue, hours) {
+        if ("" !== this.getCookie(cname)) {
+          this.addCookie(cname, cvalue, hours);
+        } else {
+          this.dispatchEvent(new CustomEvent('app-cookie-not-found'));
+        }
+      }
+      /**
+       * Delete a cookie fires a app-cookie-not-found event
+       * @param {String} cname cookie name
+       * @returns {void}
+       */
+      deleteCookie (cname) {
+        if ("" !== this.getCookie(cname)) {
+          this.addCookie(cname, "", -1);
+        } else {
+          this.dispatchEvent(new CustomEvent('app-cookie-not-found'));
+        }
+      }
+      /**
+       * Get a cookie value
+       * @param {String} cname cookie name
+       * @returns {String}
+       */
+      getCookie (cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+          var c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+    }
+  }
+</script>

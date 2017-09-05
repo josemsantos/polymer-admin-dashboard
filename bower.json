@@ -27,7 +27,8 @@
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "iron-form": "^2.0.0",
-    "paper-input": "^2.0.2"
+    "paper-input": "^2.0.2",
+    "localforage": "^1.5.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",

@@ -1,0 +1,75 @@
+<link rel="import" href="dash-cookie-behavior.html">
+
+<script>
+  'use strict';
+
+  /** 
+   * Behavior that manages the language and localize settings
+   *
+   * @polymerBehavior DashStorageBehavior
+   */
+  function DashStorageBehavior(superClass) {
+    return class extends DashCookieBehavior(superClass) {
+      static get properties() {
+        return {
+          /** Default value for cookies. */
+          dval: {
+            type: String,
+            value: 'dash-app'
+          },
+          /** Default ttl value case is not explicitly defined by the user. */
+          ttl: {
+            type: Number,
+            value: 4
+          }
+        }
+      }
+
+      /**
+      * Given a key, it reads from the storage to retrieve the value if the cookie is still valid
+      *
+      * @param {String} key The content key to search.
+      * @return {Promise} Instance of a promise with resolve or error.
+      */
+      read (key) {
+        return new Promise(function(resolve, reject) {
+          if ("" !== this.getCookie(key)) {
+            resolve(localforage.getItem(key))
+          } else {
+            resolve(localforage.removeItem(key));
+          }
+        }.bind(this));
+      }
+      /**
+      * Saves a value to the storage by key reference. If given a ttl can be set and will be managed by a cookie
+      *
+      * @param {String} key The content key to reference.
+      * @param {Object} value The content value to be saved.
+      * @param {Number} ttl A time to live.
+      * @return {Promise} Instance of a promise with resolve or error.
+      */
+      store (key, value, ttl) {
+        ttl = ttl || this.ttl;
+        return new Promise(function(resolve, reject) {
+          this.addCookie(key, this.dval, ttl);
+          localforage.setItem(key, value).then(function() {
+            resolve(value);
+          }.bind(this));
+        }.bind(this));
+      }
+      /**
+      * Deletes a value from the storage and remove any cookie associate with it.
+      *
+      * @param {String} key The content key to delete.
+      * @return {Promise} Instance of a promise with resolve or error.
+      */
+      delete (key) {
+        return new Promise(function(resolve, reject) {
+          resolve(localforage.removeItem(key).then(function() {
+            this.deleteCookie(key);
+          }.bind(this)));
+        }.bind(this));
+      }
+    }
+  }
+</script>
