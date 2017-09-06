@@ -63,7 +63,7 @@
           My Profile
         </paper-icon-item>
         <hr noshade>
-        <paper-icon-item>
+        <paper-icon-item on-tap="notifySignOut">
           <iron-icon icon="power-settings-new" slot="item-icon"></iron-icon>
           Log Out
         </paper-item>
@@ -117,6 +117,10 @@
         Polymer.RenderStatus.afterNextRender(this, function () {
 
         });
+      }
+
+      notifySignOut () {
+        this.dispatchEvent(new CustomEvent('dash-sign-out', {bubbles: true, composed: true}));
       }
 
     }

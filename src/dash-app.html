@@ -48,29 +48,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       app-header {
-        color: #fff;
-        background-color: var(--paper-blue-grey-800);
+        background-color: #fff;
+        color: var(--paper-blue-grey-800);
+      }
+
+      app-drawer {
+        --app-drawer-content-container: {
+          color: #fff;
+          background-color: var(--paper-blue-grey-900);
+        }
       }
 
       app-header paper-icon-button {
         --paper-icon-button-ink-color: white;
-      }
-
-      .drawer-list {
-        margin: 0 20px;
-      }
-
-      .drawer-list a {
-        display: block;
-        padding: 0 16px;
-        text-decoration: none;
-        color: var(--app-secondary-color);
-        line-height: 40px;
-      }
-
-      .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
       }
       .drawer-content {
         margin-top: 80px;
@@ -127,7 +117,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="my-icons:menu" on-tap="_drawerToggle"></paper-icon-button>
           <paper-icon-button icon="dashboard" on-tap="goToDashBoard"></paper-icon-button>
           <div main-title>[[appName]]</div>
-          <dash-user-actions user="[[user]]"></dash-user-actions>
+          <dash-user-actions 
+            user="[[user]]"
+            on-dash-sign-out="_signOut"></dash-user-actions>
         </app-toolbar>
       </app-header>
 
@@ -210,6 +202,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.permissions = e.detail.permissions;
         this.rememberMe = e.detail.rememberMe;
         this.goToHomePage();
+      }
+
+      _signOut (e) {
+        this.user = undefined;
+        this.permissions = undefined;
+        this.rememberMe = undefined;
+        this.isUserLogged = false;
+        this.shadowRoot.querySelector('dash-logged-user').clearUser();
+        this.goToLoginPage();
       }
 
       _drawerToggle(e) {

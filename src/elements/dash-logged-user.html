@@ -103,7 +103,13 @@
               this.isLoggedIn = false;
             }
           });
-        })
+        });
+      }
+
+      clearUser () {
+        this.delete('auth-headers').then(authHeaders => {
+          this.delete('user');
+        });
       }
 
     }

@@ -1,4 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <dom-module id="dash-navigation-menu">
@@ -13,21 +16,30 @@
 
       .drawer-list a {
         display: block;
-        padding: 0 16px;
+        padding: 4px 16px;
         text-decoration: none;
-        color: var(--app-secondary-color);
+        color: #FFF;
         line-height: 40px;
+        font-weight: 300;
+        background-color: var(--paper-blue-grey-600);
       }
 
       .drawer-list a.iron-selected {
-        color: black;
-        font-weight: bold;
+        color: #FFF;
+        background-color: var(--paper-blue-500);
+      }
+
+      .drawer-list a iron-icon {
+        padding-right: 8px;
+        padding-bottom: 4px;
       }
     </style>
 
     <iron-selector selected$="[[module]]" attr-for-selected="name" class="drawer-list" role="navigation">
       <template is="dom-repeat" items="[[menu]]" as="menuItem">
-        <a name$="[[menuItem.item.name]]" href$="[[rootPath]][[menuItem.module]]/[[menuItem.item.action]]">Groups</a>
+        <a name$="[[menuItem.item.name]]" href$="[[rootPath]][[menuItem.module]]/[[menuItem.item.action]]">
+          <iron-icon icon="[[menuItem.item.icon]]"></iron-icon>
+          [[menuItem.item.label]]</a>
       </template>
     </iron-selector>
 
