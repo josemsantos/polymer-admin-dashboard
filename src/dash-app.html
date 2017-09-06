@@ -21,6 +21,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
+<link rel="import" href="/src/configs/connections.html">
 <link rel="import" href="/src/elements/dash-user-actions.html">
 <link rel="import" href="/src/elements/dash-logged-user.html">
 
@@ -209,7 +210,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _isUserLoggedChanged (userLogged) {
-        this.redirectIf();
+        this.redirectAndPreventLoad();
       }
 
       _routePageChanged(page) {
@@ -226,7 +227,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // Load page import on demand. Show 404 page if fails
         page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.page + this.subroute.path;
 
-        this.redirectIf();
+        if (this.redirectAndPreventLoad()) {
+          return;
+        }
         
         var resolvedPageUrl = this.resolveUrl(page + '.html');
         Polymer.importHref(
@@ -240,8 +243,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this.page = 'view404';
       }
 
-      _authHeadersChanged (e) {
-        this._addAuthHeadersToConnection(e.detail.conn, e.detail.headers);
+      _authHeadersChanged (headers) {
+        if (headers) {
+          this._addAuthHeadersToConnection(headers.conn, headers.headers);
+        }
       }
 
       _addAuthHeadersToConnection(conn, headers) {
@@ -253,7 +258,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       ready () {
         super.ready();
         this.addEventListener('dash-add-auth-headers', function (e) {
-          this._authHeadersChanged(e);
+          this._authHeadersChanged(e.detail);
           this.authHeaders = {
             conn: e.detail.conn,
             headers: e.detail.headers
@@ -261,10 +266,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }.bind(this));
       }
 
-      redirectIf () {
+      redirectAndPreventLoad () {
+        let preventLoad = false;
         if (this.isUserLogged && this.currentPage(this.loginPage)) {
-            this.goToDashBoard();
+          this.goToDashBoard();
+        } else if (!this.isUserLogged && !this.currentPage(this.loginPage)) {
+          this.goToLoginPage();
+          preventLoad = true;
         }
+        return preventLoad;
       }
 
       currentPage (page) {

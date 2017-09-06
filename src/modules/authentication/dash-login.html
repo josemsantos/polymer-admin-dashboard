@@ -127,7 +127,11 @@
           headers: e.detail,
           conn: this.namespace
         };
-        this.dispatchEvent(new CustomEvent('dash-add-auth-headers', {detail: headers}));
+        this.dispatchEvent(new CustomEvent('dash-add-auth-headers', {
+          detail: headers,
+          composed: true,
+          bubbles: true
+        }));
       }
 
       /**
