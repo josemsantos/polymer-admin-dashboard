@@ -50,7 +50,7 @@
             </template>
             <template is="dom-if" if="[[_isCheckbox(field.type)]]">
               <div class="checkbox-container">
-                <paper-checkbox name$="[[field.name]]">[[field.label]]</paper-checkbox>
+                <paper-checkbox checked$="[[field.checked]]" name$="[[field.name]]">[[field.label]]</paper-checkbox>
               </div>
             </template>
           </template>
