@@ -6,7 +6,7 @@
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../models/user-model.html">
 
-<dom-module id="dash-login">
+<dom-module id="authentication-login">
   <template>
     <style>
        :host {
@@ -66,19 +66,19 @@
 
   <script>
     /**
-     * `dash-login` Description
+     * `authentication-login` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DashLogin extends ModuleElementBehavior(Polymer.Element) {
+    class AuthenticationLogin extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'dash-login';
+        return 'authentication-login';
       }
 
       /**
@@ -158,6 +158,6 @@
 
     }
 
-    window.customElements.define(DashLogin.is, DashLogin);
+    window.customElements.define(AuthenticationLogin.is, AuthenticationLogin);
   </script>
 </dom-module>

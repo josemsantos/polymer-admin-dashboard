@@ -3,7 +3,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
 
-<dom-module id="group-list">
+<dom-module id="groups-list">
   <template>
     <style>
        :host {
@@ -23,19 +23,19 @@
 
   <script>
     /**
-         * `group-list` Description
+         * `groups-list` Description
          *
          * @summary ShortDescription.
          * @customElement
          * @polymer
          * @extends {Polymer.Element}
          */
-    class GroupList extends ModuleElementBehavior(Polymer.Element) {
+    class GroupsList extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'group-list';
+        return 'groups-list';
       }
 
       /**
@@ -100,6 +100,6 @@
 
     }
 
-    window.customElements.define(GroupList.is, GroupList);
+    window.customElements.define(GroupsList.is, GroupsList);
   </script>
 </dom-module>

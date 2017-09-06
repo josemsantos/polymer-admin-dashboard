@@ -1,0 +1,31 @@
+<link rel="import" href="groups/groups-module-registration.html">
+<script>
+    'use strict';
+  
+    function ModuleRegistration(superClass) {
+      return class extends GroupsModuleRegistration(superClass) {
+        static get properties() {
+          return {
+            modules: {
+              type: Array,
+              value: []
+            }
+          };
+        }
+        _addModules (module) {
+          module.forEach(item => {
+            this.modules.push(item);
+          })
+        }
+        register () {
+          this.modules.push({
+            'authentication': {
+              'inMenu': false
+            }
+          });
+          this._addModules(this.group_module);
+        }
+      }
+    }
+  
+  </script>

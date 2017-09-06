@@ -1,0 +1,85 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../modules/module-registration.html">
+
+<dom-module id="dash-access">
+
+  <script>
+    /**
+     * `dash-access` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashAccess extends ModuleRegistration(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-access';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          permissions: {
+            type: Array,
+            observer: '_permissionsChanged'
+          },
+          menu: {
+            type: Array,
+            notify: true
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.register();
+      }
+
+      _hasAccess (roles, expectedRoles) {
+        for (let i in roles) {
+          if (expectedRoles.indexOf(roles[i])) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      _createMenu () {
+        var menu = [];
+        this.modules.forEach((module) => {
+          for (let name in module) {
+            if (module[name].inMenu) {
+              module[name].menuItems.forEach (item => {
+                if (this._hasAccess(this.permissions, item.restrictions)) {
+                  menu.push({module: name, item: item});
+                }
+              });
+            }
+          }
+        });
+        this.menu = menu;
+      }
+
+      _permissionsChanged (permissions) {
+        if (permissions) {
+          this._createMenu();
+        }
+      }
+
+
+    }
+
+    window.customElements.define(DashAccess.is, DashAccess);
+  </script>
+</dom-module>

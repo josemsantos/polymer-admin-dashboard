@@ -22,7 +22,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="/src/configs/connections.html">
+<link rel="import" href="/src/elements/dash-access.html">
 <link rel="import" href="/src/elements/dash-user-actions.html">
+<link rel="import" href="/src/elements/dash-navigation-menu.html">
 <link rel="import" href="/src/elements/dash-logged-user.html">
 
 
@@ -102,16 +104,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
     <app-route
         route="{{route}}"
-        pattern="[[rootPath]]:page"
+        pattern="[[rootPath]]:module/:page"
         data="{{routeData}}"
         tail="{{subroute}}"></app-route>
 
     <dash-logged-user
       user="{{user}}"
-      permissions="[[permissions]]"
+      permissions="{{permissions}}"
       is-logged-in="{{isUserLogged}}"
       remember-me="[[rememberMe]]"
       auth-headers="{{authHeaders}}"></dash-logged-user>
+
+    <dash-access 
+      permissions="[[permissions]]"
+      menu="{{menu}}"></dash-access>
 
     <!-- Main content -->
     <app-header-layout fullbleed>
@@ -129,20 +135,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- Drawer content -->
           <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
             <div class="drawer-content">
-              <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-                <a name="group" href="[[rootPath]]group/group-list">Groups</a>
-                <a name="authentication" href="[[rootPath]]authentication/dash-login">Login</a>
-              </iron-selector>
+              <dash-navigation-menu 
+                page="[[page]]"
+                module="[[module]]" 
+                root-path="[[rootPath]]"
+                menu="[[menu]]"></dash-navigation-menu>
             </div>
           </app-drawer>
           <iron-pages
-              selected="[[page]]"
+              selected="[[fragment]]"
               attr-for-selected="name"
               fallback-selection="view404"
               role="main">
-            <dash-home name="dashboard"></dash-home>
-            <group-list name="group"></group-list>
-            <dash-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></dash-login>
+            <dashboard-home name="dashboard-home"></dashboard-home>
+            <groups-list name="groups-list"></groups-list>
+            <authentication-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></authentication-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
         </app-drawer-layout>
@@ -162,7 +169,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           },
           loginPage: {
             type: String,
-            value: 'authentication'
+            value: 'authentication-login'
           },
           authHeaders: {
             type: Object,
@@ -172,14 +179,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           permissions: Array,
           rememberMe: Boolean,
           isUserLogged: {
-            type: Boolean,
-            observer: '_isUserLoggedChanged'
+            type: Boolean
           },
+          menu: {
+            type: Array,
+          },
+          module: String,
           page: {
             type: String,
             reflectToAttribute: true,
             observer: '_pageChanged',
           },
+          fragment: String,
           routeData: Object,
           subroute: String,
           // This shouldn't be neccessary, but the Analyzer isn't picking up
@@ -190,14 +201,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get observers() {
         return [
-          '_routePageChanged(routeData.page)',
+          '_routePageChanged(routeData.module, routeData.page, isUserLogged)',
         ];
       }
 
       _setUser (e) {
         this.user = e.detail.user;
-        this.permissions = e.detail.permission;
+        this.permissions = e.detail.permissions;
         this.rememberMe = e.detail.rememberMe;
+        this.goToHomePage();
       }
 
       _drawerToggle(e) {
@@ -209,11 +221,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
 
-      _isUserLoggedChanged (userLogged) {
-        this.redirectAndPreventLoad();
-      }
-
-      _routePageChanged(page) {
+      _routePageChanged(module, page, isUserLogged) {
+        if (!module || !page || isUserLogged === undefined) {
+          return;
+        }
+        this.module = module;
+        this.fragment = module + '-' + page; 
         // If no page was found in the route data, page will be an empty string.
         // Deault to 'view1' in that case.
         this.page = page || 'view1';
@@ -225,7 +238,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _pageChanged(page) {
         // Load page import on demand. Show 404 page if fails
-        page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.page + this.subroute.path;
+        page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.module + '/' + this.fragment;
 
         if (this.redirectAndPreventLoad()) {
           return;
@@ -268,17 +281,17 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       redirectAndPreventLoad () {
         let preventLoad = false;
-        if (this.isUserLogged && this.currentPage(this.loginPage)) {
+        if (this.isUserLogged === true && this.currentFragment(this.loginPage)) {
           this.goToDashBoard();
-        } else if (!this.isUserLogged && !this.currentPage(this.loginPage)) {
+        } else if (this.isUserLogged === false && !this.currentFragment(this.loginPage)) {
           this.goToLoginPage();
           preventLoad = true;
         }
         return preventLoad;
       }
 
-      currentPage (page) {
-        return this.page === page;
+      currentFragment (fragment) {
+        return this.fragment === fragment;
       }
 
       redirectTo (page, data) {
@@ -289,11 +302,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       goToLoginPage () {
-        this.redirectTo(this.rootPath + 'authentication/dash-login');
+        this.redirectTo(this.rootPath + 'authentication/login');
       }
 
       goToDashBoard () {
-        this.redirectTo(this.rootPath + 'dashboard/dash-home');
+        this.redirectTo(this.rootPath + 'dashboard/home');
       }
 
       goToHomePage() {

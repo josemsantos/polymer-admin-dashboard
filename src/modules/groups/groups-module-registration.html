@@ -1,0 +1,61 @@
+<script>
+  'use strict';
+
+  function GroupsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          group_module: {
+            type: Object,
+            value: [
+              {
+                'groups': {
+                  'inMenu': true,
+                  'menuGroup': 'User Management',
+                  'menuItems': [
+                    {
+                      'label': 'Access Groups',
+                      'action': 'list',
+                      'name': 'groups',
+                      'restrictions': [
+                        'ROLE_GROUPS_GUEST'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

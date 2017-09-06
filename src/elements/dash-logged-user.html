@@ -36,7 +36,7 @@
           },
           permissions: {
             type: Array,
-            value: []
+            notify: true
           },
           rememberMe: {
             type: Boolean,
@@ -44,7 +44,6 @@
           },
           isLoggedIn: {
             type: Boolean,
-            value: false,
             notify: true
           }
         };
@@ -100,6 +99,8 @@
               this.permissions = user.roles;
               this.rememberMe = true;
               this.isLoggedIn = true;
+            } else {
+              this.isLoggedIn = false;
             }
           });
         })
