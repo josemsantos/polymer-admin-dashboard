@@ -29,7 +29,11 @@
     </style>
     <slot></slot>
     <template is="dom-repeat" items="[[actions]]">
-      <paper-icon-button class$="[[item.type]]" icon$="[[getIcon(item.type)]]"></paper-icon-button>
+      <paper-icon-button 
+        data-action-type$="[[item.type]]"
+        class$="[[item.type]]" 
+        icon$="[[getIcon(item.type)]]"
+        on-tap="_callToAction"></paper-icon-button>
     </template>
   </template>
 
@@ -63,6 +67,18 @@
             type: Array,
           }
         };
+      }
+
+      _callToAction (e) {
+        let cta = e.currentTarget;
+
+        this.dispatchEvent(new CustomEvent('dash-list-cta', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            type: cta.dataset.actionType
+          }
+        }));
       }
 
       /**

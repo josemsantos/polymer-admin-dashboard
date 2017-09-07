@@ -315,6 +315,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             headers: e.detail.headers
           };
         }.bind(this));
+
+        this.addEventListener('dash-go-to', function (e) {
+          this.redirectTo(e.detail.route)
+        }.bind(this));
       }
 
       redirectAndPreventLoad () {

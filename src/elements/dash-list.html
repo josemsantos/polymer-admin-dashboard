@@ -71,7 +71,7 @@
         <div class$="header [[headingStyle]]">
           <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
           <template is="dom-if" if="[[actions.create]]">
-            <paper-fab class="blue" icon="my-icons:playlist-add"></paper-fab>
+            <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
           </template>
         </div>
         <paper-datatable-api 
@@ -137,6 +137,7 @@
             type: Array,
             value: []
           },
+          module: String,
           heading: String,
           icon: String,
           headingStyle: String,
@@ -177,7 +178,6 @@
       }
 
       _actionsChanged (actions) {
-        console.log("weeiird")
         if (actions) {
           let _cActions = [];
           for (let action in actions) {
@@ -189,6 +189,20 @@
           }
           this.set('_columnActions', _cActions);
         }
+      }
+
+      _notifyGoToAction (action) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            route: '/' + this.module + '/' + action
+          }
+        }));
+      }
+
+      _notifyGoToCreate (e) {
+          this._notifyGoToAction('create');
       }
 
       /**
@@ -205,6 +219,9 @@
        */
       ready() {
         super.ready();
+        this.addEventListener('dash-list-cta', function (e) {
+          this._notifyGoToAction(e.detail.type);
+        }.bind(this));
       }
 
     }
