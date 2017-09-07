@@ -25,16 +25,15 @@
           --paper-datatable-api-tr-odd-background-color: var(--paper-grey-100);
         }
         .header {
-          padding: 32px 16px 16px;
+          padding: 35px 16px 16px;
+          border-bottom: solid 1px var(--paper-blue-grey-200);
         }
         .yellow {
-          background-color: var(--paper-yellow-600);
-          color: #FFF;
+          color: var(--paper-yellow-600);
         }
 
         .blue-grey {
-          background-color: var(--paper-blue-grey-400);
-          color: #FFF;
+          color: var(--paper-blue-grey-400);
         }
 
         .card-content {
@@ -45,12 +44,6 @@
         paper-material {
           display: block;
           margin: 16px;
-        }
-        hr {
-          border: none;
-          height: 1px;
-          background-color: var(--paper-blue-grey-200);
-          margin: 0;
         }
         h2 {
           margin: 0;
@@ -67,7 +60,6 @@
         <div class$="header [[headingStyle]]">
           <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
         </div>
-        <hr/>
         <paper-datatable-api 
           data="[[items]]" 
           page="{{page}}"

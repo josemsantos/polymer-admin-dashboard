@@ -80,6 +80,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         flex: 1;
         flex-basis: 0.000000001px;
         width: 100%;
+        position: relative;
       }
       iron-pages > * {
         @apply --layout-flex;
@@ -88,6 +89,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       app-header[hidden] {
         visibility: hidden;
+      }
+
+      .baground-fx {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-image: url('/images/bg.png');
+        background-size: cover;
+        background-color: var(--paper-blue-500);
+        height: 200px;
       }
     </style>
 
@@ -134,6 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 menu="[[menu]]"></dash-navigation-menu>
             </div>
           </app-drawer>
+          <div class="baground-fx"></div>
           <iron-pages
               selected="[[fragment]]"
               attr-for-selected="name"
