@@ -17,8 +17,12 @@
        :host {
           display: block;
           --paper-datatable-api-custom-td: {
-            width: 100px;
-            text-align:center;
+            text-align:right;
+            width: 150px;
+          }
+          --paper-datatable-api-header: {
+            font-weight: 400;
+            font-size: 14px;
           }
         }
         paper-datatable-api {
@@ -174,7 +178,7 @@
       }
 
       _isDraggable(column) {
-        return this._isData(column.type) && column.index != this.key;
+        return this._isData(column.type) ;
       }
 
       _actionsChanged (actions) {
@@ -202,7 +206,7 @@
       }
 
       _notifyGoToCreate (e) {
-          this._notifyGoToAction('create');
+        this._notifyGoToAction('create');
       }
 
       /**
