@@ -1,0 +1,38 @@
+<script>
+  'use strict';
+
+  function DashAccessControlBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+
+      _hasAccess(roles, expectedRoles) {
+        for (let i in roles) {
+          if (expectedRoles.indexOf(roles[i]) > -1) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      /**
+       * From the user permissions, the access rules and possible actions, this will return the available actions for the user
+       * @param {Array} userRoles The roles from the login user
+       * @param {Array} accessControl The list of rules to have a specific action
+       * @param {Array} actions The list of possible actions
+       */
+      _getAvailableActions(userRoles, accessControl, actions) {
+        let _userActions = {};
+
+        for (let action in actions) {
+          if (this._hasAccess(userRoles, accessControl[action].restrictions)) {
+            _userActions[action] = actions[action];
+          }
+        };
+        return _userActions;
+      }
+    }
+  }
+</script>

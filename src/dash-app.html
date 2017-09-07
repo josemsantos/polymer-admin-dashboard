@@ -120,7 +120,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     <dash-access 
       permissions="[[permissions]]"
-      menu="{{menu}}"></dash-access>
+      menu="{{menu}}"
+      on-dash-modules-registered="_setAccessControl"></dash-access>
 
     <!-- Main content -->
     <app-header-layout fullbleed>
@@ -154,7 +155,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               fallback-selection="view404"
               role="main">
             <dashboard-home name="dashboard-home"></dashboard-home>
-            <groups-list name="groups-list"></groups-list>
+            <groups-list permissions="[[permissions]]" name="groups-list"></groups-list>
             <authentication-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></authentication-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
@@ -281,6 +282,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         for (var header in headers) {
           Dash.connections[conn].headers[header] = headers[header];
         }
+      }
+
+      _getModuleFromName (name) {
+        if (name) {
+          return (name.indexOf('-') > -1) ? name.split('-')[0] : '';
+        }
+        return '';
+      }
+
+      _setAccessControl (e) {
+        let modules = e.detail;
+        let fragments = this.shadowRoot.querySelectorAll('iron-pages > *');
+        fragments.forEach(fragment => {
+          let module = this._getModuleFromName(fragment.getAttribute('name'));
+          if (module) {
+            for (let j in modules) {
+              if (modules[j][module]) {
+                fragment.setAttribute('access-control', JSON.stringify(modules[j][module].actions));
+              }
+            }
+          }
+        });
       }
 
       ready () {

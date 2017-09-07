@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../lib/cell-element-behavior.html">
+<link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-list-cell-content">
   <template>
@@ -9,36 +9,39 @@
        :host {
         display: block
       }
-      .create {
+      .create,
+      .show {
+        background-color:  var(--paper-blue-grey-500);
+      }
+      .edit {
         background-color:  var(--paper-green-500);
       }
       .delete {
         background-color:  var(--paper-red-800);
       }
-      .create, .delete {
+      .create,
+      .show,
+      .edit,
+      .delete {
         color: #FFF;
-        border-radius: 16px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 2px 5px 0 rgba(0, 0, 0, 0.19);
+        border-radius: 2px;
       }
     </style>
     <slot></slot>
-
-    <template is="dom-if" if="[[_isActions(column.type)]]">
-      <paper-icon-button class="create" icon="create"></paper-icon-button>
-      <paper-icon-button class="delete" icon="delete"></paper-icon-button>
+    <template is="dom-repeat" items="[[actions]]">
+      <paper-icon-button class$="[[item.type]]" icon$="[[getIcon(item.type)]]"></paper-icon-button>
     </template>
-
   </template>
 
   <script>
     /**
-         * `dash-list-cell-content` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
+      * `dash-list-cell-content` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
     class DashListCellContent extends CellElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
@@ -55,6 +58,9 @@
           column: {
             type: Object,
             value: {}
+          },
+          actions: {
+            type: Array,
           }
         };
       }
@@ -73,6 +79,18 @@
        */
       ready() {
         super.ready();
+      }
+
+      getIcon (type) {
+        let defaultIcon = 'my-icons:edit';
+        let icons = {
+          show: 'my-icons:pageview',
+          create: 'my-icons:create',
+          edit: 'my-icons:edit',
+          delete: 'my-icons:delete'
+        };
+
+        return icons[type] || defaultIcon;
       }
 
     }

@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api-column.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
@@ -7,6 +8,7 @@
 <link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="dash-list-cell-content.html">
 
+<link rel="import" href="../my-icons.html">
 <link rel="import" href="../shared-styles.html">
 
 <dom-module id="dash-list">
@@ -27,6 +29,7 @@
         .header {
           padding: 35px 16px 16px;
           border-bottom: solid 1px var(--paper-blue-grey-200);
+          position: relative;
         }
         .yellow {
           color: var(--paper-yellow-600);
@@ -47,18 +50,29 @@
         }
         h2 {
           margin: 0;
+          font-weight: 400;
         }
         h2 iron-icon {
           --iron-icon-width: 48px;
           --iron-icon-height: 48px;
           padding-right: 16px;
         }
+        paper-fab.blue {
+        --paper-fab-background: var(--paper-light-blue-300);
+        --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
+        position: absolute;
+        top: -32px;
+        right: 32px;
+      }
     </style>
 
     <paper-material elevation="2">
       <div class="card-content">
         <div class$="header [[headingStyle]]">
           <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
+          <template is="dom-if" if="[[actions.create]]">
+            <paper-fab class="blue" icon="my-icons:playlist-add"></paper-fab>
+          </template>
         </div>
         <paper-datatable-api 
           data="[[items]]" 
@@ -79,7 +93,14 @@
               td-custom-style="[[!_isDraggable(column)]]"
               property="[[column.index]]">
               <template>
-                <dash-list-cell-content column="[[column]]">[[value]]</dash-list-cell-content>
+                <template is="dom-if" if="[[!_isActions(column.type)]]">
+                  <dash-list-cell-content 
+                    column="[[column]]">[[value]]</dash-list-cell-content>
+                </template>
+                <template is="dom-if" if="[[_isActions(column.type)]]">
+                  <dash-list-cell-content 
+                    actions="[[_columnActions]]"></dash-list-cell-content>
+                </template>
               </template>
             </paper-datatable-api-column>
           </template>
@@ -112,6 +133,10 @@
        */
       static get properties() {
         return {
+          _columnActions: {
+            type: Array,
+            value: []
+          },
           heading: String,
           icon: String,
           headingStyle: String,
@@ -119,6 +144,10 @@
           columns: {
             type: Array,
             value: []
+          },
+          actions: {
+            type: Array,
+            observer: '_actionsChanged'
           },
           items: {
             type: Array,
@@ -145,6 +174,21 @@
 
       _isDraggable(column) {
         return this._isData(column.type) && column.index != this.key;
+      }
+
+      _actionsChanged (actions) {
+        console.log("weeiird")
+        if (actions) {
+          let _cActions = [];
+          for (let action in actions) {
+            if (action !== 'create') {
+              _cActions.push({
+                type: action,
+              });
+            }
+          }
+          this.set('_columnActions', _cActions);
+        }
       }
 
       /**

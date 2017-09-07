@@ -24,6 +24,11 @@
             }
           });
           this._addModules(this.group_module);
+          this.dispatchEvent(new CustomEvent('dash-modules-registered', {
+            detail: this.modules,
+            bubbles: true, 
+            composed: true
+          }));
         }
       }
     }

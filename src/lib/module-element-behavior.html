@@ -1,12 +1,14 @@
 <link rel="import" href="../lib/request-connection.html">
+<link rel="import" href="../lib/dash-access-control-behavior.html">
 
 <script>
   'use strict';
 
   function ModuleElementBehavior(superClass) {
-    return class extends superClass {
+    return class extends DashAccessControlBehavior(superClass) {
       static get properties() {
         return {
+          module: String,
           pageType: {
             type: String,
             value: 'list'
@@ -17,7 +19,27 @@
             type: Object,
             value: {}
           },
+          accessControl: {
+            type: Object,
+          },
+          actions: Array,
+          permissions: {
+            type: Array
+          },
+          userActions: {
+            type: Array
+          }
         }
+      }
+
+      static get observers() {
+        return [
+          '_getUserActions(permissions, accessControl, actions)',
+        ];
+      }
+
+      _getUserActions(permissions, accessControl, actions) {
+        this.userActions = super._getAvailableActions(permissions, accessControl, actions);
       }
 
       _setConnections () {

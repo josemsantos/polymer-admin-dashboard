@@ -19,7 +19,8 @@
       heading-style="blue-grey"
       icon="social:group"
       key="id" 
-      columns="[[columns]]"></dash-list>
+      columns="[[columns]]"
+      actions="[[userActions]]"></dash-list>
 
     <group-model></group-model>
   </template>
@@ -72,13 +73,16 @@
             ]
           },
           actions: {
-            'create': {
-            },
-            'show': {
-            },
-            'edit': {
-            },
-            'delete': {
+            type: Object,
+            value: {
+              'create': {
+              },
+              'show': {
+              },
+              'edit': {
+              },
+              'delete': {
+              }
             }
           }
         };
