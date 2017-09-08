@@ -156,6 +156,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               role="main">
             <dashboard-home name="dashboard-home"></dashboard-home>
             <groups-list permissions="[[permissions]]" name="groups-list"></groups-list>
+            <groups-edit 
+              permissions="[[permissions]]" 
+              name="groups-edit"
+              route="[[subroute]]"></groups-edit>
             <authentication-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></authentication-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>

@@ -2,15 +2,13 @@
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../shared-styles.html">
 
 <dom-module id="groups-list">
   <template>
-    <style>
+    <style include="shared-styles">
        :host {
         display: block
-      }
-      dash-list {
-        margin-top: 100px;
       }
     </style>
     
@@ -28,13 +26,13 @@
 
   <script>
     /**
-         * `groups-list` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
+     * `groups-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
     class GroupsList extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
@@ -57,7 +55,7 @@
             value: 'groups'
           },
           model: String,
-          namespace: {
+          connection: {
             type: String,
             value: 'seraph'
           },

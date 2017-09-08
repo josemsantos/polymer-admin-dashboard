@@ -86,7 +86,7 @@
        */
       static get properties() {
         return {
-          namespace: {
+          connection: {
             type: String,
             value: 'seraph'
           },
@@ -125,7 +125,7 @@
       _notifyAuthHeaders (e) {
         let headers = {
           headers: e.detail,
-          conn: this.namespace
+          conn: this.connection
         };
         this.dispatchEvent(new CustomEvent('dash-add-auth-headers', {
           detail: headers,

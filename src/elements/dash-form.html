@@ -8,13 +8,17 @@
   <template>
     <style>
        :host {
-        display: block
+        display: block;
+        @apply --form-layout;
       }
       .title {
         @apply --form-title;
       }
       .body {
         @apply --form-body;
+      }
+      .form-wrapper {
+        @apply --form-wrapper;
       }
       .action-box {
         text-align: center;
@@ -40,32 +44,34 @@
 
       }
     </style>
-    <iron-form>
-      <form>
-        <div class="title"><slot></slot></div>
-        <div class="body">
-          <template is="dom-repeat" items="[[fields]]" as="field">
-            <template is="dom-if" if="[[_isInput(field.type)]]">
-              <paper-input name$="[[field.name]]" label="[[field.label]]" type="[[field.type]]"></paper-input>
+    <div class="form-wrapper">
+      <iron-form>
+        <form>
+          <div class="title"><slot></slot></div>
+          <div class="body">
+            <template is="dom-repeat" items="[[fields]]" as="field">
+              <template is="dom-if" if="[[_isInput(field.type)]]">
+                <paper-input name$="[[field.name]]" label="[[field.label]]" type="[[field.type]]"></paper-input>
+              </template>
+              <template is="dom-if" if="[[_isCheckbox(field.type)]]">
+                <div class="checkbox-container">
+                  <paper-checkbox checked$="[[field.checked]]" name$="[[field.name]]">[[field.label]]</paper-checkbox>
+                </div>
+              </template>
             </template>
-            <template is="dom-if" if="[[_isCheckbox(field.type)]]">
-              <div class="checkbox-container">
-                <paper-checkbox checked$="[[field.checked]]" name$="[[field.name]]">[[field.label]]</paper-checkbox>
-              </div>
-            </template>
-          </template>
-        </div>
+          </div>
 
-        <div class="action-box">
-          <template is="dom-repeat" items="[[actions]]" as="action">
-            <paper-button 
-              data-action$="[[action.type]]" 
-              on-tap="executeMe"
-              class$="[[action.type]]">[[action.label]]</paper-button>
-          </template>
-        </div>
-      </form>
-    </iron-form>
+          <div class="action-box">
+            <template is="dom-repeat" items="[[actions]]" as="action">
+              <paper-button 
+                data-action$="[[action.type]]" 
+                on-tap="executeMe"
+                class$="[[action.type]]">[[action.label]]</paper-button>
+            </template>
+          </div>
+        </form>
+      </iron-form>
+    </div>
   </template>
 
   <script>
@@ -94,6 +100,10 @@
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
+          },
+          modelData: {
+            type: Object,
+            observer: '_modelDataChanged'
           },
           fields: {
             type: Array,
@@ -124,6 +134,17 @@
             el.checked = false;
           }
         });
+      }
+
+      _modelDataChanged (data) {
+        if (data) {
+          for (let field in data) {
+            let formField = this.shadowRoot.querySelector('[name=' + field + ']');
+            if (formField) {
+              formField.value = data[field];
+            }
+          }
+        }
       }
 
       validate (fields, request) {

@@ -9,18 +9,58 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="my-icons.html">
+<link rel="import" href="shared-styles.html">
 
 <dom-module id="my-view404">
   <template>
-    <style>
+    <style include="shared-styles">
       :host {
         display: block;
-
+        margin-top: 100px;
         padding: 10px 20px;
+        --paper-material: {
+          display: block;
+        }
+      }
+      .header {
+        padding: 35px 16px 16px;
+        border-bottom: solid 1px var(--paper-blue-grey-200);
+        position: relative;
+      }
+      .yellow {
+        color: var(--paper-blue-900);
+      }
+      .card-content {
+        background-color: #FFF;
+        color: #000;
+        border-left: solid 4px var(--paper-blue-grey-800);
+      }
+      .card-body {
+        padding: 16px;
+      }
+      h2 {
+        font-weight: 300;
+      }
+      h2 iron-icon {
+        --iron-icon-width: 96px;
+        --iron-icon-height: 96px;
+        padding-right: 16px;
       }
     </style>
 
-    Oops you hit a 404. <a href="[[rootPath]]">Head back to home.</a>
+    <paper-material elevation="2">
+      <div class="card-content">
+        <div class="header yellow">
+          <h2><iron-icon icon="my-icons:face"></iron-icon>Oops you hit a 404.</h2>
+        </div>
+        <div class="card-body">
+          <a href="[[rootPath]]">Head back to home.</a>
+        </div>
+      </div>
+    </paper-material>
   </template>
 
   <script>

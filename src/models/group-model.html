@@ -8,9 +8,6 @@
         display: block
       }
     </style>
-
-
-
   </template>
 
   <script>
@@ -67,6 +64,52 @@
         Polymer.RenderStatus.afterNextRender(this, function () {
 
         });
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: '',
+              name: 'id',
+              type: 'hidden',
+              validators: []
+            },
+            {
+              label: 'Name',
+              name: 'name',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Group name',
+                  stop: true
+                }
+              ]
+            },
+            {
+              label: 'Roles',
+              name: 'roles',
+              type: 'text',
+              validators: []
+            }
+          ],
+          actions: [
+            {
+              label: 'back',
+              type: 'submit'
+            },
+            {
+              label: 'edit',
+              type: 'submit'
+            },
+            {
+              label: 'delete',
+              type: 'submit'
+            },
+          ]
+        };
       }
 
     }

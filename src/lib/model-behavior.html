@@ -8,12 +8,28 @@
           connection: Object,
           endpoint: String,
           failure: Boolean,
+          fetch: {
+            type: Object,
+          },
           response: {
             type: Object,
             observer: '_responseChanged'
           }
         };
       }
+
+      static get observers() {
+        return [
+          '_onFetchRequired(fetch, connection)',
+        ];
+      }
+
+      _onFetchRequired(fetch, connection) {
+        if (fetch && connection) {
+          this.load(fetch)
+        }
+      }
+
       _setFailure (bool) {
         this.failure = bool;
       }
@@ -37,8 +53,19 @@
         });
       }
 
-      fetch(method) {
+      load(key, method) {
         method = method || 'GET';
+        var _self = this;
+        this.connection.fetch({
+          url: this.endpoint + '/' + key,
+          verb: method,
+          onLoad(e) {
+            _self.set('response', JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
 
       create(method) {

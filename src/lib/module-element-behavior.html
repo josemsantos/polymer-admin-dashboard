@@ -9,6 +9,9 @@
     return class extends DashAccessControlBehavior(superClass) {
       static get properties() {
         return {
+          route: {
+            type: Object,
+          },
           key: Object,
           dialog: HTMLElement,
           module: String,
@@ -16,7 +19,7 @@
             type: String,
             value: 'list'
           },
-          namespace: String,
+          connection: String,
           modelElement: HTMLElement,
           requestConnections: {
             type: Object,
@@ -63,7 +66,6 @@
       
       _procedureFactory (actionName, action, identifier) {
         if (action.path) {
-          console.log("edit")
           return { 
             action: '_goToPath',
             data: this._parsePath(action.path, identifier)
@@ -144,7 +146,7 @@
         super.ready();
         Polymer.RenderStatus.afterNextRender(this, function () {
           this.modelElement = this.shadowRoot.querySelector(this.model);
-          this.modelElement.connection = this.requestConnections[this.namespace];
+          this.modelElement.connection = this.requestConnections[this.connection];
           this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
           if (this.pageType === 'list') {
             this.getList();
