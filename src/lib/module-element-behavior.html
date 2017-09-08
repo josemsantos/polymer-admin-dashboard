@@ -1,3 +1,4 @@
+<link rel="import" href="../elements/dash-remove-alert.html">
 <link rel="import" href="../lib/request-connection.html">
 <link rel="import" href="../lib/dash-access-control-behavior.html">
 
@@ -8,6 +9,8 @@
     return class extends DashAccessControlBehavior(superClass) {
       static get properties() {
         return {
+          key: Object,
+          dialog: HTMLElement,
           module: String,
           pageType: {
             type: String,
@@ -51,6 +54,87 @@
         }
       }
 
+      _setActionsKey (data) {
+        data.forEach(item => {
+          item['key'] = item[this.key];
+        });
+        return data;
+      }
+      
+      _procedureFactory (actionName, action, identifier) {
+        if (action.path) {
+          console.log("edit")
+          return { 
+            action: '_goToPath',
+            data: this._parsePath(action.path, identifier)
+          };
+        } else if (action.event) {
+          return { 
+            action: '_firEvent',
+            data: this._parseEvent(action.event, identifier)
+          };
+        } else {
+          return { 
+            action: '_goToPath',
+            data: '/' + this.module + '/' + actionName
+          };
+        }
+      }
+
+      _parseEvent (event, identifier) {
+        return {
+          name: event,
+          data: {
+            key: identifier
+          }
+        };
+      }
+
+      _parsePath (path, identifier) {
+        path = path.replace(':module', this.module);
+        path = path.replace(':key', identifier);
+        return path;
+      }
+
+      _firEvent (event) {
+        this.dispatchEvent(new CustomEvent(event.name, {
+          bubbles: true,
+          composed: true,
+          detail: event.data
+        }));
+      }
+
+      _goToPath (path) {
+        this._firEvent({
+          name: 'dash-go-to', 
+          data: {route: path}
+        });
+      }
+
+      _alert (item) {
+        if (!this.dialog) {
+          this.dialog = document.createElement('dash-remove-alert');
+
+          let message = document.createAttribute("message");
+          message.value = item.message;
+          this.dialog.setAttributeNode(message);
+
+          let key = document.createAttribute("key");
+          key.value = item.key;
+          this.dialog.setAttributeNode(key);
+
+          document.body.appendChild(this.dialog);
+
+          this.dialog.addEventListener('delete-group-confirmed', function (e) {
+            this._deleteConfirmed(e.detail.key);
+          }.bind(this));
+        } else {
+          this.dialog.setAttribute('key', item.key);
+          this.dialog.setAttribute('message', item.message);
+        }
+        this.dialog.open();
+      }
+
       constructor () {
         super();
         this._setConnections();
@@ -68,6 +152,27 @@
             this.getForm();
           }
         });
+      }
+      
+      _execAction (e) {
+        let action = e.detail.type;
+        let identifier = e.detail.key;
+        let procedure = this._procedureFactory(action, this.actions[action], identifier);
+        
+        this[procedure.action](procedure.data);
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      getItem (list, idx) {
+        for (let i in list) {
+          if (list[i][this.key] == idx) {
+            return list[i];
+          }
+        }
+        return false;
       }
 
       onResponseChanged (e) {

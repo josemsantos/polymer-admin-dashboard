@@ -30,6 +30,7 @@
     <slot></slot>
     <template is="dom-repeat" items="[[actions]]">
       <paper-icon-button 
+        data-key$="[[key]]"
         data-action-type$="[[item.type]]"
         class$="[[item.type]]" 
         icon$="[[getIcon(item.type)]]"
@@ -59,6 +60,7 @@
        */
       static get properties() {
         return {
+          key: Object,
           column: {
             type: Object,
             value: {}
@@ -76,7 +78,8 @@
           bubbles: true,
           composed: true,
           detail: {
-            type: cta.dataset.actionType
+            type: cta.dataset.actionType,
+            key: cta.dataset.key
           }
         }));
       }

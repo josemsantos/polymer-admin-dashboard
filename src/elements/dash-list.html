@@ -103,6 +103,7 @@
                 </template>
                 <template is="dom-if" if="[[_isActions(column.type)]]">
                   <dash-list-cell-content 
+                    key="[[value]]"
                     actions="[[_columnActions]]"></dash-list-cell-content>
                 </template>
               </template>
@@ -141,7 +142,6 @@
             type: Array,
             value: []
           },
-          module: String,
           heading: String,
           icon: String,
           headingStyle: String,
@@ -195,18 +195,19 @@
         }
       }
 
-      _notifyGoToAction (action) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
+      _notifyCTA (action) {
+        this.dispatchEvent(new CustomEvent('dash-list-exec', {
           bubbles: true,
           composed: true,
-          detail: {
-            route: '/' + this.module + '/' + action
-          }
+          detail: action
         }));
       }
 
       _notifyGoToCreate (e) {
-        this._notifyGoToAction('create');
+        this._notifyCTA({
+            type: 'create',
+            key: null
+        });
       }
 
       /**
@@ -224,7 +225,7 @@
       ready() {
         super.ready();
         this.addEventListener('dash-list-cta', function (e) {
-          this._notifyGoToAction(e.detail.type);
+          this._notifyCTA(e.detail);
         }.bind(this));
       }
 

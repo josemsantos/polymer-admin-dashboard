@@ -49,8 +49,9 @@
         method = method || 'PUT';
       }
 
-      delete(method) {
+      delete(key, method) {
         method = method || 'DELETE';
+        console.log('Delete me ' + key);
       }
     }
   }

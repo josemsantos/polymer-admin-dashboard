@@ -1,0 +1,97 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../my-icons.html">
+
+<dom-module id="dash-remove-alert">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+      h2 {
+        color : var(--paper-blue-grey-900)
+      }
+      iron-icon {
+        padding-right: 8px;
+        padding-bottom: 4px;
+        color: var(--paper-yellow-800);
+      }
+    </style>
+    <paper-dialog modal>
+      <h2><iron-icon icon="my-icons:report-problem"></iron-icon> Are you sure you want to delete</h2>
+      <p>[[message]]</p>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button on-tap="delete" dialog-confirm autofocus>OK</paper-button>
+      </div>
+    </paper-dialog>
+
+  </template>
+
+  <script>
+    /**
+     * `dash-remove-alert` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashRemoveAlert extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-remove-alert';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          _dialog: HTMLElement,
+          key: Object,
+          message: String
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      delete () {
+        this.dispatchEvent(new CustomEvent('delete-group-confirmed', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            key: this.key
+          }
+        }));
+      }
+
+      open () {
+        this.dialog.open();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        this.dialog = this.shadowRoot.querySelector('paper-dialog');
+      }
+
+    }
+
+    window.customElements.define(DashRemoveAlert.is, DashRemoveAlert);
+  </script>
+</dom-module>
