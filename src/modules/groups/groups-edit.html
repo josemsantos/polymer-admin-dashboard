@@ -20,13 +20,19 @@
       data="{{routeData}}"></app-route>
     <group-model
       fetch="[[key]]"
+      fetch-roles
+      on-groups-roles-changed="_setExternalData"
       on-model-response-changed="_setData"></group-model>
     <paper-material elevation="2">
       <dash-form
+        key="[[key]]"
+        model="[[groupModel.model]]"
         fields="[[form.fields]]"
-        actions="[[form.actions]]"
+        actions="[[_formActions]]"
         model-data="[[data]]"
-        on-submit="_updateGroup">
+        external-sources="[[externalData]]"
+        on-cancel="_goToList"
+        on-submit="_execAction">
           <div class="title blue-grey"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[groupModel.name]]</h2></div>
           <div class="error">[[errorMessage]]</div>
       </dash-form>
@@ -68,6 +74,9 @@
             value: 'form'
           },
           data: Object,
+          externalData: {
+            type: Object,
+          },
           form: Object,
           errorMessage: String
         };
@@ -83,12 +92,35 @@
         this.data = e.detail.response;
       }
 
+      _setExternalData (e) {
+        let roles = [];
+        if (e.detail.length) {
+          e.detail.forEach(item => {
+            roles.push({
+              text: item.name,
+              value: item.id
+            });
+          });
+        }
+        this.externalData = {
+          'roles': roles
+        };
+      }
+
       _routeIdChanged (id) {
         this.key = id;
       }
 
       _updateGroup (e) {
-        console.log(e);
+        console.log(e.detail);
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: '/groups/list'},
+          bubbles: true,
+          composed: true
+        }));
       }
 
       /**
@@ -108,7 +140,20 @@
         super.ready();
         this.groupModel = this.shadowRoot.querySelector(this.model);
         this.form = this.groupModel.getForm();
+        this.actions = this.form.actions; 
+        this._setFormActions();
         this.isReady = true;
+
+        this.addEventListener('delete-group', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-group', function (e) {
+          this._updateGroup(e);
+        });
       }
 
     }

@@ -9,6 +9,10 @@
     return class extends DashAccessControlBehavior(superClass) {
       static get properties() {
         return {
+          _formActions: {
+            type: Array,
+            value: []
+          },
           route: {
             type: Object,
           },
@@ -45,7 +49,9 @@
       }
 
       _getUserActions(permissions, accessControl, actions) {
-        this.userActions = super._getAvailableActions(permissions, accessControl, actions);
+        if (permissions && accessControl && actions) {
+          this.userActions = super._getAvailableActions(permissions, accessControl, actions);
+        }
       }
 
       _setConnections () {
@@ -142,6 +148,21 @@
         this._setConnections();
       }
 
+      _setFormActions () {
+        if (this.actions) {
+          let _actions = [];
+          for (let action in this.actions) {
+            _actions.push({
+              type: action,
+              label: this.actions[action].label
+            })
+          };
+          this._formActions = _actions;
+        } else {
+          this._formActions = [];
+        }
+      }
+
       ready () {
         super.ready();
         Polymer.RenderStatus.afterNextRender(this, function () {
@@ -160,7 +181,10 @@
         let action = e.detail.type;
         let identifier = e.detail.key;
         let procedure = this._procedureFactory(action, this.actions[action], identifier);
-        
+
+        if (e.detail.payload) {
+          procedure.data.data['payload'] = e.detail.payload;
+        }
         this[procedure.action](procedure.data);
       }
 

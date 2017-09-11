@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
 
 <dom-module id="dash-form">
   <template>
@@ -23,6 +24,16 @@
       .action-box {
         text-align: center;
         padding: 32px;
+        display: flex;
+      }
+      .action-box > div {
+        flex: 1;
+      }
+      .action-box > div.left {
+        text-align: left;
+      }
+      .action-box > div.right {
+        text-align: right;
       }
       paper-button {
         width: 100px;
@@ -30,12 +41,20 @@
       .checkbox-container {
         padding: 16px 0;
       }
-      .submit {
+      .cancel {
+        color: var(--paper-blue-500);
+        font-weight: 500;
+      }
+      .edit {
         background-color:  var(--paper-green-500);
         color: #FFF;
       }
       .reset {
         background-color:  var(--paper-grey-100);
+      }
+      .delete {
+        background-color:  var(--paper-red-500);
+        color: #FFF;
       }
       .link {
 
@@ -58,16 +77,32 @@
                   <paper-checkbox checked$="[[field.checked]]" name$="[[field.name]]">[[field.label]]</paper-checkbox>
                 </div>
               </template>
+              <template is="dom-if" if="[[_isCollection(field.type)]]">
+                <paper-chip-input-autocomplete 
+                  id="[[field.name]]"
+                  label="+Add (Enter) -Delete (Backspace)"
+                  name$="[[field.name]]"
+                  closable>
+                </paper-chip-input-autcomplete>
+              </template>
             </template>
           </div>
 
           <div class="action-box">
-            <template is="dom-repeat" items="[[actions]]" as="action">
+            <div class="left">
               <paper-button 
-                data-action$="[[action.type]]" 
+                data-action="cancel" 
                 on-tap="executeMe"
-                class$="[[action.type]]">[[action.label]]</paper-button>
-            </template>
+                class="cancel">Cancel</paper-button>
+            </div>
+            <div class="right">
+              <template is="dom-repeat" items="[[actions]]" as="action">
+                <paper-button 
+                  data-action$="[[action.type]]" 
+                  on-tap="executeMe"
+                  class$="[[action.type]]">[[action.label]]</paper-button>
+              </template>
+            </div>
           </div>
         </form>
       </iron-form>
@@ -96,11 +131,13 @@
        */
       static get properties() {
         return {
+          key: Object,
           _inputTypes: {
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
           },
+          model: Object,
           modelData: {
             type: Object,
             observer: '_modelDataChanged'
@@ -111,9 +148,21 @@
           },
           actions: {
             type: Array,
-            value: []
+          },
+          externalSources: {
+            type: Object,
+            observer: '_externalSourcesChanged'
           }
         };
+      }
+
+      _externalSourcesChanged (externalSources) {
+        if (externalSources) {
+          for (let name in externalSources) {
+            let el = this.shadowRoot.querySelector('#' + name);
+            el.setAttribute('source', JSON.stringify(externalSources[name]));
+          }
+        }
       }
 
       _isInput (type) {
@@ -122,6 +171,10 @@
 
       _isCheckbox (type) {
         return type === 'checkbox';
+      }
+
+      _isCollection (type) {
+        return type === 'collection';
       }
 
       _formReset () {
@@ -141,10 +194,30 @@
           for (let field in data) {
             let formField = this.shadowRoot.querySelector('[name=' + field + ']');
             if (formField) {
-              formField.value = data[field];
+              if (Array.isArray(data[field])) {
+                /** This is for collections **/
+                formField._items = data[field];
+              } else {
+                formField.value = data[field];
+              }
             }
           }
         }
+      }
+
+      _generateModelPayLoad (model) {
+        for (let prop in model) {
+          let formField = this.shadowRoot.querySelector('[name=' + prop + ']');
+          if (formField) {
+            if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
+              /** This is for collections **/
+              model[prop] = formField._items;
+            } else {
+              model[prop] = formField.value;
+            }
+          }
+        }
+        return model;
       }
 
       validate (fields, request) {
@@ -173,8 +246,18 @@
       executeMe (e) {
         let form = this.shadowRoot.querySelector('iron-form');
         switch(e.currentTarget.dataset['action']) {
-          case 'submit':
-            this.dispatchEvent(new CustomEvent('submit', {detail: form.serializeForm()}));
+          case 'cancel':
+            this.dispatchEvent(new CustomEvent('cancel', {bubbles: true, composed: true}));
+            break;
+          case 'delete':
+          case 'edit':
+            this.dispatchEvent(new CustomEvent('submit', {
+              detail: {
+                key: this.key,
+                type: e.currentTarget.dataset['action'],
+                payload: this._generateModelPayLoad(this.model)
+              }
+            }));
             break;
           case 'reset' :
             this._formReset();
