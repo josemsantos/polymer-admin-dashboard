@@ -42,31 +42,23 @@
           model: {
             type: Object,
             value: {
-              id: Number,
-              username: String,
-              email: String,
-              inactive: Boolean,
-              password: String,
+              id: null,
+              username: null,
+              email: null,
+              inactive: null,
+              password: null,
               last_login: {
-                type: Object,
-                value: {
-                  date: null,
-                  timezone_type: null,
-                  timezone: null
-                }
+                date: null,
+                timezone_type: null,
+                timezone: null
               },
-              locked: Boolean,
-              expired: Boolean,
-              expires_at: String,
-              groups: {
-                type: Array,
-                value: []
-              },
-              roles: {
-                type: Array,
-                value: []
-              },
-              credentials_expired: Boolean
+              locked: null,
+              expired: null,
+              expires_at: null,
+              groups: [],
+              roles: [],
+              credentials_expired: null,
+              rememberme: null
             }
           }
         };
@@ -166,16 +158,12 @@
               validators: []
             }
           ],
-          actions: [
-            {
+          actions: {
+            'edit' :{
               label: 'login',
-              type: 'submit'
+              event: 'update-group'
             },
-            {
-              label: 'Cancel',
-              type: 'reset'
-            },
-          ]
+          }
         };
       }
 

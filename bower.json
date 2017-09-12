@@ -30,7 +30,7 @@
     "localforage": "^1.5.0",
     "paper-fab": "^2.0.0",
     "paper-dialog": "^2.0.0",
-    "paper-chip": "ThomasCybulski/paper-chip#^2.0.14",
+    "paper-chip": "josemsantos/paper-chip#master",
     "iron-icon": "^2.0.1"
   },
   "resolutions": {
