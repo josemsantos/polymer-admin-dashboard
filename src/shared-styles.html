@@ -27,7 +27,25 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         margin: 16px;
       }
 
-      dash-form {
+      .filter > dash-form {
+        margin-top: 0px;
+        --form-layout: {
+          background-color: #FFF;
+        }
+        --form-body: {
+          padding: 0 32px;
+        }
+        --form-title: {
+          padding: 0;
+          border-bottom: none;
+          position: relative;
+        }
+        --form-wrapper: {
+          border-left: none;
+        }
+      }
+
+      dash-form.default {
         margin-top: 100px;
         --form-layout: {
           background-color: #FFF;

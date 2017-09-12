@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api-column.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api.html">
@@ -53,20 +54,13 @@
           padding-right: 16px;
         }
         paper-fab.blue {
-        --paper-fab-background: var(--paper-light-blue-300);
-        --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
-        position: absolute;
-        top: -32px;
-        right: 32px;
-      }
+          --paper-fab-background: var(--paper-light-blue-300);
+          --paper-fab-keyboard-focus-background: var(--paper-light-blue-900);
+          position: absolute;
+          top: -32px;
+          right: 32px;
+        }
     </style>
-
-    <paper-material elevation="2">
-        <dash-form 
-          fields="[[filters]]"
-          actions="[[_filterActions]]"
-          on-submit="_filterRequest"></dash-form>
-    </paper-material>
 
     <paper-material elevation="2">
       <div class="card-content">
@@ -75,6 +69,15 @@
           <template is="dom-if" if="[[actions.create]]">
             <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
           </template>
+        </div>
+        <div class="filter">
+          <h2 on-tap="_toggleFilters">Filters</h2>
+          <iron-collapse>
+            <dash-form 
+              fields="[[filters]]"
+              actions="[[_filterActions]]"
+              on-submit="_filterRequest"></dash-form>
+          </iron-collapse>
         </div>
         <paper-datatable-api 
           data="[[items]]" 
@@ -183,6 +186,10 @@
           },
           _totalFetched: Number
         };
+      }
+
+      _toggleFilters (e) {
+        this.shadowRoot.querySelector('iron-collapse').toggle();
       }
 
       _filterRequest (e) {

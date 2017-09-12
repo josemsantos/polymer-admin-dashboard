@@ -31,7 +31,8 @@
     "paper-fab": "^2.0.0",
     "paper-dialog": "^2.0.0",
     "paper-chip": "josemsantos/paper-chip#master",
-    "iron-icon": "^2.0.1"
+    "iron-icon": "^2.0.1",
+    "iron-collapse": "^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",
