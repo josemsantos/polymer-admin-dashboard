@@ -16,6 +16,7 @@
       heading="User Groups"
       items="[[groups]]"
       heading-style="blue-grey"
+      filters="[[filters]]"
       icon="social:group"
       key="[[key]]" 
       columns="[[columns]]"
@@ -78,6 +79,17 @@
                 index: 'key',
                 type: 'actions'
               },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Name',
+                name: 'name',
+                type: 'text',
+                validators: []
+              }
             ]
           },
           actions: {

@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/iron-icons/social-icons.html">
 
 <link rel="import" href="../lib/cell-element-behavior.html">
+<link rel="import" href="../elements/dash-form.html">
 <link rel="import" href="dash-list-cell-content.html">
 
 <link rel="import" href="../my-icons.html">
@@ -59,6 +60,13 @@
         right: 32px;
       }
     </style>
+
+    <paper-material elevation="2">
+        <dash-form 
+          fields="[[filters]]"
+          actions="[[_filterActions]]"
+          on-submit="_filterRequest"></dash-form>
+    </paper-material>
 
     <paper-material elevation="2">
       <div class="card-content">
@@ -132,6 +140,15 @@
             type: Array,
             value: []
           },
+          _filterActions: {
+            type: Array,
+            value: [
+              {
+                'type': 'filter',
+                'label': 'Filter'
+              }
+            ]
+          },
           heading: String,
           icon: String,
           headingStyle: String,
@@ -144,6 +161,7 @@
             type: Array,
             observer: '_actionsChanged'
           },
+          filters: Array,
           items: {
             type: Array,
             value: []
@@ -165,6 +183,14 @@
           },
           _totalFetched: Number
         };
+      }
+
+      _filterRequest (e) {
+        this.dispatchEvent(new CustomEvent('dash-filter-request', {
+          detail: e.detail,
+          bubbles: true,
+          composed: true
+        }));
       }
 
       _isDraggable(column) {
