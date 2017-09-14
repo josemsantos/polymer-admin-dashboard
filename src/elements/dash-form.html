@@ -23,8 +23,8 @@
       }
       .action-box {
         text-align: center;
-        padding: 32px;
         display: flex;
+        @apply --form-action-box;
       }
       .action-box > div {
         flex: 1;
@@ -89,12 +89,14 @@
           </div>
 
           <div class="action-box">
-            <div class="left">
-              <paper-button 
-                data-action="cancel" 
-                on-tap="executeMe"
-                class="cancel">Cancel</paper-button>
-            </div>
+            <template is="dom-if" if="[[hasCancel]]">
+              <div class="left">
+                <paper-button 
+                  data-action="cancel" 
+                  on-tap="executeMe"
+                  class="cancel">Cancel</paper-button>
+              </div>
+            </template>
             <div class="right">
               <template is="dom-repeat" items="[[actions]]" as="action">
                 <paper-button 
@@ -136,6 +138,9 @@
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
+          },
+          hasCancel: {
+            type: Boolean,
           },
           model: Object,
           modelData: {
@@ -257,6 +262,11 @@
                 type: e.currentTarget.dataset['action'],
                 payload: this._generateModelPayLoad(this.model)
               }
+            }));
+            break;
+          case 'filter':
+            this.dispatchEvent(new CustomEvent('filter', {
+              detail: form.serializeForm()
             }));
             break;
           case 'reset' :

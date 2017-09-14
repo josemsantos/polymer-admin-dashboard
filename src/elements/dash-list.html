@@ -1,10 +1,11 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api-column.html">
 <link rel="import" href="../../bower_components/paper-datatable-api/paper-datatable-api.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../bower_components/iron-icons/social-icons.html">
 
 <link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../elements/dash-form.html">
@@ -48,7 +49,7 @@
           margin: 0;
           font-weight: 400;
         }
-        h2 iron-icon {
+        .header > h2 iron-icon {
           --iron-icon-width: 48px;
           --iron-icon-height: 48px;
           padding-right: 16px;
@@ -59,6 +60,27 @@
           position: absolute;
           top: -32px;
           right: 32px;
+        }
+        .filter {
+          padding: 16px;
+          @apply --dash-list-filters-container;
+        }
+        .filter > h2 {
+          text-align: right;
+        }
+        .filter > h2 > paper-button {
+          font-size: 16px;
+          font-weight: 300;    
+          background-color: var(--paper-blue-400);
+          padding: 8px 16px;
+          color: #FFF;
+          display: inline-block;
+          border-radius: 4px;
+        }
+        .filter > h2 iron-icon {
+          --iron-icon-width: 24px;
+          --iron-icon-height: 24px;
+          padding-right: 16px;
         }
     </style>
 
@@ -71,12 +93,14 @@
           </template>
         </div>
         <div class="filter">
-          <h2 on-tap="_toggleFilters">Filters</h2>
+          <h2>
+            <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
+          </h2>
           <iron-collapse>
             <dash-form 
               fields="[[filters]]"
               actions="[[_filterActions]]"
-              on-submit="_filterRequest"></dash-form>
+              on-filter="_filterRequest"></dash-form>
           </iron-collapse>
         </div>
         <paper-datatable-api 
@@ -146,6 +170,10 @@
           _filterActions: {
             type: Array,
             value: [
+              {
+                'type': 'cancel',
+                'label': 'Reset'
+              },
               {
                 'type': 'filter',
                 'label': 'Filter'

@@ -21,7 +21,8 @@
       key="[[key]]" 
       columns="[[columns]]"
       actions="[[userActions]]"
-      on-dash-list-exec="_execAction"></dash-list>
+      on-dash-list-exec="_execAction"
+      on-dash-filter-request="_filter"></dash-list>
     <group-model></group-model>
   </template>
 
@@ -113,6 +114,10 @@
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _filter (e) {
+        console.log(e.detail);
       }
 
       /**
