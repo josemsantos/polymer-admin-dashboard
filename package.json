@@ -14,5 +14,8 @@
     "test:integration": "polymer build # test that psk builds without error with the CLI",
     "dev": "polymer serve --port 8088 & npm run watch",
     "watch": "browser-sync start --proxy localhost:8088 --files 'src/**/*.html, src/**/*.js, images/*' "
+  },
+  "dependencies": {
+    "web-animations-js": "^2.3.1"
   }
 }
