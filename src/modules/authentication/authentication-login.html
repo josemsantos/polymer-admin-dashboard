@@ -1,10 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../my-icons.html">
 
 <dom-module id="authentication-login">
   <template>
@@ -63,7 +63,7 @@
         fields="[[loginForm.fields]]"
         actions="[[_formActions]]"
         on-submit="_signIn">
-          <iron-icon icon="social:person"></iron-icon>
+          <iron-icon icon="my-icons:person"></iron-icon>
           <div class="title">LOGIN TO YOUR ACCOUNT</div>
           <div class="error">[[errorMessage]]</div>
       </dash-form>
