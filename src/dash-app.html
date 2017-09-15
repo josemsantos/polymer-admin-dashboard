@@ -162,6 +162,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="groups-edit"
               route="[[subroute]]"></groups-edit>
+            <users-list 
+              permissions="[[permissions]]" 
+              name="users-list"></users-list>
             <authentication-login
               name$="[[loginPage]]" 
               on-dash-user-logged="_setUser"></authentication-login>
@@ -203,7 +206,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           page: {
             type: String,
             reflectToAttribute: true,
-            observer: '_pageChanged',
           },
           fragment: String,
           routeData: Object,
@@ -254,6 +256,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // If no page was found in the route data, page will be an empty string.
         // Deault to 'view1' in that case.
         this.page = page || 'view1';
+        this._pageChanged(page)
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();

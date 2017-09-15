@@ -1,0 +1,161 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="users-list">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+
+    <dash-list
+      heading="Backoffice Users"
+      items="[[users]]"
+      heading-style="blue-grey"
+      filters="[[filters]]"
+      icon="my-icons:group"
+      key="[[key]]" 
+      columns="[[columns]]"
+      actions="[[userActions]]"
+      total-items="[[totalItems]]"
+      total-pages="[[totalPages]]"></dash-list>
+    <user-model></user-model>
+
+  </template>
+
+  <script>
+    /**
+     * `users-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class UsersList extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'users-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          key: {
+            type: String,
+            value: 'id'
+          },
+          module: {
+            type: String,
+            value: 'users'
+          },
+          model: String,
+          connection: {
+            type: String,
+            value: 'seraph'
+          },
+          users: Array,
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Username',
+                index: 'username',
+                type: 'data'
+              },
+              {
+                header: 'Email',
+                index: 'email',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'key',
+                type: 'actions'
+              },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Name',
+                name: 'name',
+                type: 'text',
+                validators: []
+              },
+              {
+                label: 'Email',
+                name: 'email',
+                type: 'text',
+                validators: []
+              }
+            ]
+          },
+          actions: {
+            type: Object,
+            value: {
+              'create': {
+              },
+              'show': {
+                'path': ':module/show/:key',
+              },
+              'edit': {
+                'path': ':module/edit/:key',
+              },
+              'delete': {
+                'event': 'delete-user',
+              }
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'user-model';
+      }
+
+      onResponseChanged (e) {
+        let list = this.shadowRoot.querySelector('dash-list');
+        this.totalItems = 10; //e.detail.response.total;
+        //list._totalFetched = this.groups.length;
+        this.totalPages = 3; //Math.ceil(list.totalItems/list.perPage);
+        this.users = this._setActionsKey(e.detail.response.users);
+
+        list.page=0;
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        this.addEventListener('delete-user', function (e) {
+          let item = this.getItem(this.users, e.detail.key);
+          this._alert({
+            'key': item.id,
+            'message': item.username
+          });
+        }.bind(this));
+      }
+
+    }
+
+    window.customElements.define(UsersList.is, UsersList);
+  </script>
+</dom-module>

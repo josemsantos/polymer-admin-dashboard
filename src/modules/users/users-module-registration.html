@@ -1,0 +1,66 @@
+<script>
+  'use strict';
+
+  function UsersModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          users_module: {
+            type: Object,
+            value: [
+              {
+                'users': {
+                  'inMenu': true,
+                  'menuGroup': 'User Management',
+                  'menuItems': [
+                    {
+                      'label': 'Backoffice Users',
+                      'action': 'list',
+                      'icon': 'my-icons:group',
+                      'name': 'users',
+                      'restrictions': [
+                        'ROLE_USERS_GUEST',
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_USERS_GUEST',
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+
+</script>

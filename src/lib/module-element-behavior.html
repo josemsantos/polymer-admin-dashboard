@@ -61,7 +61,6 @@
       }
 
       _getUserActions(permissions, accessControl, actions) {
-        console.log(permissions, accessControl, actions)
         if (permissions && accessControl && actions) {
           this.userActions = super._getAvailableActions(permissions, accessControl, actions);
         }
@@ -172,7 +171,6 @@
         } else {
           this._formActions = [];
         }
-        console.log(this.userActions)
       }
       
       _execAction (e) {

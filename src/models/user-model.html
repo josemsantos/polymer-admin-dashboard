@@ -71,6 +71,7 @@
        */
       constructor() {
         super();
+        this.endpoint = '/users';
       }
 
       /**
@@ -95,6 +96,7 @@
           }
           this.dispatchEvent(new CustomEvent('update-request-credentials', {detail: credentials}));
         }
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 
       mapUser (data, rememberMe) {
