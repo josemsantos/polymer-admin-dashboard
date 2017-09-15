@@ -142,8 +142,8 @@
         super.ready();
         this.groupModel = this.shadowRoot.querySelector(this.model);
         this.form = this.groupModel.getForm();
-        this.actions = this.form.actions; 
-        this._setFormActions();
+
+        this.actions = this.form.actions;
         this.isReady = true;
 
         this.addEventListener('delete-group', function (e) {

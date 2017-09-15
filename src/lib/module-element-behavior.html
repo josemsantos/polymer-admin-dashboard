@@ -45,10 +45,23 @@
       static get observers() {
         return [
           '_getUserActions(permissions, accessControl, actions)',
+          '_setFormActions(userActions, pageType)',
         ];
       }
 
+      _setAllActionsForAnonymous (actions) {
+        this.permissions = ['ROLE_USER'];
+        let _accessControl = {};
+        for (let i in actions) {
+          _accessControl[actions[i]] = {
+            'restrictions': ['ROLE_USER']
+          };
+        }
+        this.accessControl = _accessControl;
+      }
+
       _getUserActions(permissions, accessControl, actions) {
+        console.log(permissions, accessControl, actions)
         if (permissions && accessControl && actions) {
           this.userActions = super._getAvailableActions(permissions, accessControl, actions);
         }
@@ -143,10 +156,13 @@
         this.dialog.open();
       }
 
-      _setFormActions () {
-        if (this.actions) {
+      _setFormActions (userActions, pageType) {
+        if (!userActions || pageType !== 'form') {
+          return;
+        }
+        if (this.userActions) {
           let _actions = [];
-          for (let action in this.actions) {
+          for (let action in this.userActions) {
             _actions.push({
               type: action,
               label: this.actions[action].label
@@ -156,6 +172,7 @@
         } else {
           this._formActions = [];
         }
+        console.log(this.userActions)
       }
       
       _execAction (e) {

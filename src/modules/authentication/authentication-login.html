@@ -165,8 +165,9 @@
         Polymer.RenderStatus.afterNextRender(this, function () {
           this.userModel = this.shadowRoot.querySelector(this.model);
           this.loginForm = this.userModel.getLoginForm();
+          this._setAllActionsForAnonymous(['edit']);
           this.actions = this.loginForm.actions;
-          this._setFormActions();
+          this.isReady = true;
         });
       }
 

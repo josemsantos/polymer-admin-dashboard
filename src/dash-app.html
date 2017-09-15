@@ -162,7 +162,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="groups-edit"
               route="[[subroute]]"></groups-edit>
-            <authentication-login name$="[[loginPage]]" on-dash-user-logged="_setUser"></authentication-login>
+            <authentication-login
+              name$="[[loginPage]]" 
+              on-dash-user-logged="_setUser"></authentication-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
         </app-drawer-layout>
