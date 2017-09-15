@@ -21,8 +21,8 @@
       key="[[key]]" 
       columns="[[columns]]"
       actions="[[userActions]]"
-      on-dash-list-exec="_execAction"
-      on-dash-filter-request="_filter"></dash-list>
+      total-items="[[totalItems]]"
+      total-pages="[[totalPages]]"></dash-list>
     <group-model></group-model>
   </template>
 
@@ -116,10 +116,6 @@
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
-      _filter (e) {
-        console.log(e.detail);
-      }
-
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -131,11 +127,11 @@
       }
 
       onResponseChanged (e) {
-        this.groups = this._setActionsKey(e.detail.response.groups);
         let list = this.shadowRoot.querySelector('dash-list');
-        list.totalItems = e.detail.response.total;
-        list._totalFetched = this.groups.length;
-        list.totalPages = Math.ceil(list.totalItems/list.perPage);
+        this.totalItems = 10; //e.detail.response.total;
+        //list._totalFetched = this.groups.length;
+        this.totalPages = 3; //Math.ceil(list.totalItems/list.perPage);
+        this.groups = this._setActionsKey(e.detail.response.groups);
 
         list.page=0;
       }

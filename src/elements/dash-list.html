@@ -112,8 +112,9 @@
           total-elements="[[totalItems]]"
           total-pages="[[totalPages]]"
           selectable-data-key="[[key]]"
-          paginate 
-          selectable>
+          on-sort="_handleSort"
+          on-selection-changed="_handleSelectionChanged"
+          paginate>
           <template is="dom-repeat" items="[[columns]]" as="column">
             <paper-datatable-api-column 
               header="[[column.header]]" 
@@ -171,7 +172,7 @@
             type: Array,
             value: [
               {
-                'type': 'cancel',
+                'type': 'reset',
                 'label': 'Reset'
               },
               {
@@ -203,7 +204,10 @@
             type: Number,
             value: 10
           },
-          page: Number,
+          page: {
+            type: Number,
+            observer: '_onPageChanged'
+          },
           size: {
             type: Number,
             value: 4
@@ -214,6 +218,33 @@
           },
           _totalFetched: Number
         };
+      }
+
+      _onPageChanged (page, oPage) {
+        this.dispatchEvent(new CustomEvent('dash-list-page-changed', {
+          detail: {
+            page: page,
+            oPage: oPage
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _handleSort (e) {
+        this.dispatchEvent(new CustomEvent('dash-list-sort', {
+          detail: e.detail,
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _handleSelectionChanged (e) {
+        this.dispatchEvent(new CustomEvent('dash-list-selection-changed', {
+          detail: e.detail,
+          bubbles: true,
+          composed: true
+        }));
       }
 
       _toggleFilters (e) {

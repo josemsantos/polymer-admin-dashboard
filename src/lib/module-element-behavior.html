@@ -143,11 +143,6 @@
         this.dialog.open();
       }
 
-      constructor () {
-        super();
-        this._setConnections();
-      }
-
       _setFormActions () {
         if (this.actions) {
           let _actions = [];
@@ -162,20 +157,6 @@
           this._formActions = [];
         }
       }
-
-      ready () {
-        super.ready();
-        Polymer.RenderStatus.afterNextRender(this, function () {
-          this.modelElement = this.shadowRoot.querySelector(this.model);
-          this.modelElement.connection = this.requestConnections[this.connection];
-          this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
-          if (this.pageType === 'list') {
-            this.getList();
-          } else if (this.pageType === 'form') {
-            this.getForm();
-          }
-        });
-      }
       
       _execAction (e) {
         let action = e.detail.type;
@@ -188,8 +169,53 @@
         this[procedure.action](procedure.data);
       }
 
+      _filter (e) {
+        console.log("filter-changed",e.detail);
+      }
+
+      _sort (e) {
+        console.log("sort-changed",e.detail);
+      }
+
+      _selectionChanged (e) {
+        console.log("selection-changed", e.detail);
+      }
+
+      _pageChanged (e) {
+        console.log("page-changed", e.detail);
+      }
+
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _addListEventListeners () {
+        this.addEventListener('dash-list-exec', this._execAction.bind(this));
+        this.addEventListener('dash-filter-request', this._filter.bind(this));
+        this.addEventListener('dash-list-sort', this._sort.bind(this));
+        this.addEventListener('dash-list-page-changed', this._pageChanged.bind(this));
+        this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this)); 
+      }
+
+      constructor () {
+        super();
+        this._setConnections();
+      }
+
+
+      ready () {
+        super.ready();
+        Polymer.RenderStatus.afterNextRender(this, function () {
+          this.modelElement = this.shadowRoot.querySelector(this.model);
+          this.modelElement.connection = this.requestConnections[this.connection];
+          this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
+          if (this.pageType === 'list') {
+            this.getList();
+            this._addListEventListeners();
+          } else if (this.pageType === 'form') {
+            this.getForm();
+          }
+        });
       }
 
       getItem (list, idx) {
