@@ -328,6 +328,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }.bind(this));
 
         this.addEventListener('dash-go-to', function (e) {
+          console.log(e.detail)
           this.redirectTo(e.detail.route)
         }.bind(this));
       }

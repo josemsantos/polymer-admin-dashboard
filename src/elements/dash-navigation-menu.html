@@ -1,6 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="dash-submenu.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-navigation-menu">
@@ -10,20 +13,22 @@
         display: block;
         margin-top: 48px;
       }
-      .drawer-list {
+      
+      paper-item {
+        cursor: pointer;
       }
 
-      .drawer-list a {
+      .drawer-list paper-item {
         display: block;
         padding: 4px 16px;
         text-decoration: none;
         color: #FFF;
         line-height: 40px;
         font-weight: 300;
-        background-color: var(--paper-blue-grey-600);
+        background-color: var(--paper-blue-grey-800);
       }
 
-      .drawer-list a.iron-selected {
+      .drawer-list paper-item.iron-selected {
         color: #FFF;
         background-color: var(--paper-blue-500);
       }
@@ -32,14 +37,37 @@
         padding-right: 8px;
         padding-bottom: 4px;
       }
+
+      .drawer-list paper-listbox {
+        padding: 0;
+        box-shadow: 0px 6px 8px 0px rgba(0,0,0,0.25);
+      }
+
+      .drawer-list > paper-listbox > dash-submenu > paper-item {
+        background-color: var(--paper-blue-grey-600);
+        box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
+        z-index: 1;
+      }
     </style>
-    <iron-selector selected$="[[module]]" attr-for-selected="name" class="drawer-list" role="navigation">
-      <template is="dom-repeat" items="[[menu]]" as="menuItem">
-        <a name$="[[menuItem.item.name]]" href$="[[rootPath]][[menuItem.module]]/[[menuItem.item.action]]">
-          <iron-icon icon="[[menuItem.item.icon]]"></iron-icon>
-          [[menuItem.item.label]]</a>
-      </template>
-    </iron-selector>
+
+    <div class="drawer-list">
+      <paper-listbox>
+        <template is="dom-repeat" items="[[menu]]" as="menuGroups">
+          <dash-submenu>
+            <paper-item slot="menu-trigger">[[menuGroups.group]]</paper-item>
+            <paper-listbox slot="menu-content">
+              <iron-selector on-iron-select="_openParent" selected$="[[module]]" attr-for-selected="name" role="navigation">
+                <template is="dom-repeat" items="[[menuGroups.subItems]]" as="menuItem">
+                  <paper-item name$="[[menuItem.item.name]]" on-tap="_goTo">
+                    <iron-icon icon="[[menuItem.item.icon]]"></iron-icon>
+                    [[menuItem.item.label]]</paper-item>
+                </template>
+              </iron-selector>
+            </paper-listbox>
+          </dash-submenu>
+        </template>
+      </paper-listbox>
+    </div>
 
   </template>
 
@@ -66,12 +94,30 @@
       static get properties() {
         return {
           page: String,
-          module: String,
+          module: {
+            type: String,
+          },
           rootPath: String,
           menu: {
             type: Array,
           }
         };
+      }
+
+      _openParent (e) {
+        //Opens the dash-submenu assuming that the iron-selector wich fired this event is always inside a paper-listbox
+        e.currentTarget.parentNode.parentNode.opened = true;
+      }
+
+      _goTo(e) {
+        let menuItem = e.model.menuItem;
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            route: this.rootPath + menuItem.module + '/' + menuItem.item.action
+          }
+        }));
       }
 
       /**

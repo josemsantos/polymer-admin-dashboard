@@ -1,0 +1,264 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-behaviors/iron-control-state.html">
+<link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../../bower_components/paper-styles/default-theme.html">
+
+<!--
+`<paper-submenu>` is a nested menu inside of a parent `<paper-menu>`. It
+consists of a trigger that expands or collapses another `<paper-menu>`:
+    <paper-menu>
+      <paper-submenu>
+        <paper-item class="menu-trigger">Topics</paper-item>
+        <paper-menu class="menu-content">
+          <paper-item>Topic 1</paper-item>
+          <paper-item>Topic 2</paper-item>
+          <paper-item>Topic 3</paper-item>
+        </paper-menu>
+      </paper-submenu>
+      <paper-submenu>
+        <paper-item class="menu-trigger">Faves</paper-item>
+        <paper-menu class="menu-content">
+          <paper-item>Fave 1</paper-item>
+          <paper-item>Fave 2</paper-item>
+        </paper-menu>
+      </paper-submenu>
+      <paper-submenu disabled>
+        <paper-item class="menu-trigger">Unavailable</paper-item>
+        <paper-menu class="menu-content">
+          <paper-item>Disabled 1</paper-item>
+          <paper-item>Disabled 2</paper-item>
+        </paper-menu>
+      </paper-submenu>
+    </paper-menu>
+Just like in `<paper-menu>`, the focused item is highlighted, and the selected
+item has bolded text. Please see the `<paper-menu>` docs for which attributes
+(such as `multi` and `selected`), and styling options are available for the
+`menu-content` menu.
+@group Paper Elements
+@element paper-submenu
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<dom-module id="dash-submenu">
+  <template>
+    <style>
+      /* need a wrapper element to make this higher specificity than the :host rule in paper-item */
+
+      .selectable-content> ::slotted()>.iron-selected {
+        font-weight: bold;
+        @apply --paper-menu-selected-item;
+      }
+
+      .selectable-content> ::slotted()>[disabled] {
+        color: var(--paper-menu-disabled-color, --disabled-text-color);
+      }
+
+      .selectable-content> ::slotted()>*:focus {
+        position: relative;
+        outline: 0;
+        @apply --paper-menu-focused-item;
+      }
+
+      .selectable-content> ::slotted()>*:focus:after {
+        @apply --layout-fit;
+        background: currentColor;
+        opacity: var(--dark-divider-opacity);
+        content: '';
+        pointer-events: none;
+        @apply --paper-menu-focused-item-after;
+      }
+
+      .selectable-content> ::slotted()>*[colored]:focus:after {
+        opacity: 0.26;
+      }
+    </style>
+
+    <div class="selectable-content" on-tap="_onTap">
+      <slot id="trigger" name="menu-trigger"></slot>
+    </div>
+    <iron-collapse id="collapse" opened="{{opened}}">
+      <slot id="content" name="menu-content"></slot>
+    </iron-collapse>
+  </template>
+
+  <script>
+      /**
+       * `dash-submenu` Description
+       *
+       * @summary ShortDescription.
+       * @customElement
+       * @polymer
+       * @extends {Polymer.Element}
+       */
+      class DashSubmenu extends Polymer.mixinBehaviors([Polymer.IronControlState], Polymer.Element) {
+        /**
+         * String providing the tag name to register the element under.
+         */
+        static get is() {
+          return 'dash-submenu';
+        }
+  
+        /**
+         * Object describing property-related metadata used by Polymer features
+         */
+        static get properties() {
+          return {
+            /**
+             * Fired when the submenu is opened.
+             *
+             * @event paper-submenu-open
+             */
+            /**
+             * Fired when the submenu is closed.
+             *
+             * @event paper-submenu-close
+             */
+            /**
+             * Set opened to true to show the collapse element and to false to hide it.
+             *
+             * @attribute opened
+             */
+            opened: {
+              type: Boolean,
+              value: false,
+              notify: true,
+              observer: '_openedChanged'
+            }
+          };
+        }
+
+        get __parent() {
+          return this.parentNode;
+        }
+        get __trigger() {
+          return this.shadowRoot.querySelector('#trigger');
+        }
+        get __content() {
+          return this.shadowRoot.querySelector('#content');
+        }
+  
+        /**
+         * Instance of the element is created/upgraded. Use: initializing state,
+         * set up event listeners, create shadow dom.
+         * @constructor
+         */
+        constructor() {
+          super();
+        }
+
+        disconnectedCallback() {
+          super.disconnectedCallback();
+          this.__parent.removeEventListener('iron-activate', this._onParentIronActivate.bind(this));
+        }
+
+        /**
+         * A handler that is called when the trigger is tapped.
+         */
+         _onTap(e) {
+          if (!this.disabled) {
+            this.toggle();
+          }
+        }
+        /**
+         * Toggles the submenu content when the trigger is tapped.
+         */
+        _openedChanged(opened, oldOpened) {
+          if (opened) {
+            this.__trigger && this.__trigger.classList.add('iron-selected');
+            this.__content && this.__content.focus();
+            this.dispatchEvent(new CustomEvent('paper-submenu-open', {bubbles: true, composed: true}));
+          } else if (oldOpened != null) {
+            this.__trigger && this.__trigger.classList.remove('iron-selected');
+            this.dispatchEvent(new CustomEvent('paper-submenu-close', {bubbles: true, composed: true}));
+          }
+        }
+
+        /**
+         * A handler that is called when `iron-activate` is fired.
+         *
+         * @param {CustomEvent} event An `iron-activate` event.
+         */
+         _onParentIronActivate(event) {
+          var parent = this.__parent;
+          if (event.target === parent) {
+            // The activated item can either be this submenu, in which case it
+            // should be expanded, or any of the other sibling submenus, in which
+            // case this submenu should be collapsed.
+            if (event.detail.item !== this && !parent.multi) {
+              this.close();
+            }
+          }
+        }
+
+        /**
+         * If the dropdown is open when disabled becomes true, close the
+         * dropdown.
+         *
+         * @param {boolean} disabled True if disabled, otherwise false.
+         */
+        _disabledChanged(disabled) {
+          Polymer.IronControlState._disabledChanged.apply(this, arguments);
+          if (disabled && this.opened) {
+            this.close();
+          }
+        }
+
+        /**
+         * Handler that is called when the menu receives focus.
+         *
+         * @param {FocusEvent} event A focus event.
+         */
+        _onFocus(event) {
+          this.__trigger && this.__trigger.focus();
+        }
+
+        /**
+         * Expand the submenu content.
+         */
+         open() {
+          if (!this.disabled) {
+            this.opened = true;
+          }
+        }
+        /**
+         * Collapse the submenu content.
+         */
+        close() {
+          this.opened = false;
+        }
+        /**
+         * Toggle the submenu.
+         */
+        toggle() {
+          if (this.opened) {
+            this.close();
+          } else {
+            this.open();
+          }
+        }
+  
+        /**
+         * Use for one-time configuration of your component after local DOM is initialized. 
+         */
+        ready() {
+          super.ready();
+
+          this.addEventListener('focus', this._onFocus.bind(this));
+          this.__parent.addEventListener('iron-activate', this._onParentIronActivate.bind(this));
+        }
+      }
+  
+      window.customElements.define(DashSubmenu.is, DashSubmenu);
+    </script>
+</dom-module>

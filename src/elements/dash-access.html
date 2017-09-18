@@ -51,19 +51,52 @@
         this.register();
       }
 
+      _hasGroup (group, menu) {
+        for (let i in menu) {
+          if (menu[i]['group'] == group) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      _addItemToMenuGroup (group, menu, moduleName, item) {
+        for (let i in menu) {
+          if (menu[i]['group'] == group) {
+            menu[i]['subItems'].push({
+              module: moduleName, 
+              item: item
+            });
+          }
+        }
+        return menu;
+      }
+
       _createMenu () {
         var menu = [];
+        var group;
+        console.log(this.modules)
         this.modules.forEach((module) => {
           for (let name in module) {
             if (module[name].inMenu) {
+
+              group = (!module[name].menuGroup) ? 'Administration' : module[name].menuGroup;
+              if (!this._hasGroup(group, menu)) {
+                menu.push({
+                  'group': group,
+                  'subItems': []
+                });
+              }
+
               module[name].menuItems.forEach (item => {
                 if (this._hasAccess(this.permissions, item.restrictions)) {
-                  menu.push({module: name, item: item});
+                  menu = this._addItemToMenuGroup(group, menu, name, item);
                 }
               });
             }
           }
         });
+        console.log(menu)
         this.menu = menu;
       }
 
