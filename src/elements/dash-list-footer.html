@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 
 <link rel="import" href="../my-icons.html">
 <link rel="import" href="../shared-styles.html">
@@ -8,6 +9,8 @@
     <style>
        :host {
         display: block;
+        margin: 16px 0;
+        @apply --dash-list-footer;
       }
 
       .center,
@@ -32,7 +35,7 @@
         color: var(--paper-blue-500);
         border-radius: 3px;
         background-color: transparent;
-        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.12);
       }
 
       li[active] {
@@ -68,7 +71,6 @@
           margin-right: 4px;
         }
       }
-
     </style>
 
     <div class="center">
@@ -124,7 +126,6 @@
   </template>
 
   <script>
-
     class DashListFooter extends Polymer.Element {
       static get is() { return 'dash-list-footer'; }
       static get properties() {
@@ -143,6 +144,9 @@
           isMoreEnabled: {
             type: Boolean,
             value: true
+          },
+          totalPages: {
+            type: Number
           },
           // Items to show per page
           itemsPerPage: {
@@ -196,7 +200,7 @@
       _pageChanged(page) {
         this.dispatchEvent(new CustomEvent('dash-list-page-changed', {
           detail: {
-              page: page
+            page: page
           },
           bubbles: true,
           composed: true
