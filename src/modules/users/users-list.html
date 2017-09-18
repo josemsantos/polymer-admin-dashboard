@@ -18,11 +18,10 @@
       heading-style="blue-grey"
       filters="[[filters]]"
       icon="my-icons:group"
-      key="[[key]]" 
+      key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"
-      total-items="[[totalItems]]"
-      total-pages="[[totalPages]]"></dash-list>
+      total-items="[[totalItems]]"></dash-list>
     <user-model></user-model>
 
   </template>
@@ -133,14 +132,13 @@
         let list = this.shadowRoot.querySelector('dash-list');
         this.totalItems = 10; //e.detail.response.total;
         //list._totalFetched = this.groups.length;
-        this.totalPages = 3; //Math.ceil(list.totalItems/list.perPage);
         this.users = this._setActionsKey(e.detail.response.users);
 
-        list.page=0;
+        list.page=1;
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
