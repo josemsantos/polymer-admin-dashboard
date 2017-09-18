@@ -10,6 +10,7 @@
 <link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../elements/dash-form.html">
 <link rel="import" href="dash-list-cell-content.html">
+<link rel="import" href="dash-list-footer.html">
 
 <link rel="import" href="../my-icons.html">
 <link rel="import" href="../shared-styles.html">
@@ -44,7 +45,7 @@
           color: #000;
           border-left: solid 4px var(--paper-blue-800);
         }
-        
+
         h2 {
           margin: 0;
           font-weight: 400;
@@ -70,7 +71,7 @@
         }
         .filter > h2 > paper-button {
           font-size: 16px;
-          font-weight: 300;    
+          font-weight: 300;
           background-color: var(--paper-blue-400);
           padding: 8px 16px;
           color: #FFF;
@@ -81,6 +82,9 @@
           --iron-icon-width: 24px;
           --iron-icon-height: 24px;
           padding-right: 16px;
+        }
+        .footer-pagination {
+          padding: 8px;
         }
     </style>
 
@@ -97,38 +101,34 @@
             <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
           </h2>
           <iron-collapse>
-            <dash-form 
+            <dash-form
               fields="[[filters]]"
               actions="[[_filterActions]]"
               on-filter="_filterRequest"></dash-form>
           </iron-collapse>
         </div>
-        <paper-datatable-api 
-          data="[[items]]" 
+        <paper-datatable-api
+          data="[[items]]"
           page="{{page}}"
           size="{{size}}"
           selected-rows="{{selectedRows}}"
-          available-size="[2, 4]"
-          total-elements="[[totalItems]]"
-          total-pages="[[totalPages]]"
           selectable-data-key="[[key]]"
           on-sort="_handleSort"
-          on-selection-changed="_handleSelectionChanged"
-          paginate>
+          on-selection-changed="_handleSelectionChanged">
           <template is="dom-repeat" items="[[columns]]" as="column">
-            <paper-datatable-api-column 
-              header="[[column.header]]" 
+            <paper-datatable-api-column
+              header="[[column.header]]"
               draggable-column="[[_isDraggable(column)]]"
               sortable="[[_isData(column.type)]]"
               td-custom-style="[[!_isDraggable(column)]]"
               property="[[column.index]]">
               <template>
                 <template is="dom-if" if="[[!_isActions(column.type)]]">
-                  <dash-list-cell-content 
+                  <dash-list-cell-content
                     column="[[column]]">[[value]]</dash-list-cell-content>
                 </template>
                 <template is="dom-if" if="[[_isActions(column.type)]]">
-                  <dash-list-cell-content 
+                  <dash-list-cell-content
                     key="[[value]]"
                     actions="[[_columnActions]]"></dash-list-cell-content>
                 </template>
@@ -136,7 +136,11 @@
             </paper-datatable-api-column>
           </template>
         </paper-datatable-api>
-
+        <template is="dom-if" if="customPagination">
+          <div class="footer-pagination">
+            <dash-list-footer page="{{page}}" items-per-page="10" total-items="[[totalItems]]"><dash-list-footer>
+          </div>
+        </template>
       </div>
     </paper-material>
 
@@ -200,13 +204,16 @@
           },
           totalItems: Number,
           totalPages: Number,
+          customPagination: {
+              type: Boolean,
+              value: false
+          },
           perPage: {
             type: Number,
             value: 10
           },
           page: {
-            type: Number,
-            observer: '_onPageChanged'
+            type: Number
           },
           size: {
             type: Number,
@@ -218,17 +225,6 @@
           },
           _totalFetched: Number
         };
-      }
-
-      _onPageChanged (page, oPage) {
-        this.dispatchEvent(new CustomEvent('dash-list-page-changed', {
-          detail: {
-            page: page,
-            oPage: oPage
-          },
-          bubbles: true,
-          composed: true
-        }));
       }
 
       _handleSort (e) {
@@ -302,7 +298,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

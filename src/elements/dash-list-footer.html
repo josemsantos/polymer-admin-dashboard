@@ -1,0 +1,379 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../my-icons.html">
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="dash-list-footer">
+  <template>
+    <style>
+       :host {
+        display: block;
+      }
+
+      .center,
+      ul {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn,
+      li {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+        text-align: center;
+        flex-shrink: 0;
+        position: relative;
+        cursor: pointer;
+        color: var(--paper-blue-500);
+        border-radius: 3px;
+        background-color: transparent;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.15), 0 0 2px 0 rgba(0, 0, 0, 0.12);
+      }
+
+      li[active] {
+        background-color: var(--paper-blue-500);
+        border-color: var(--paper-blue-500);
+        font-weight: bold;
+        color: #fff;
+      }
+
+      .more {
+        color: var(--paper-blue-grey-400);
+        margin-top: 18px;
+        font-size: 10px;
+      }
+
+      .btn,
+      li,
+      .more {
+        margin-right: 8px;
+      }
+
+      @media (max-width: 760px) {
+        .btn,
+        li {
+          width: 32px;
+          height: 32px;
+          line-height: 32px;
+        }
+
+        .btn,
+        li,
+        .more {
+          margin-right: 4px;
+        }
+      }
+
+    </style>
+
+    <div class="center">
+      <dom-if if="[[_hasPrev]]">
+        <template>
+          <div class="btn arrow-btn" on-click="_prev">
+            <iron-icon icon="my-icons:chevron-left"></iron-icon>
+          </div>
+        </template>
+      </dom-if>
+
+      <dom-if if="[[_hasFirstPageShortcut]]">
+        <template>
+          <div class="btn" on-click="_gotoFirstPage">1</div>
+        </template>
+      </dom-if>
+
+      <dom-if if="[[_hasPrevMore]]">
+        <template>
+          <div class="more">...</div>
+        </template>
+      </dom-if>
+
+      <ul on-click="_select">
+        <dom-repeat items="[[_pages]]">
+          <template>
+            <li active$="[[_isActive(item, page)]]" data-number$="[[item]]">[[item]]</li>
+          </template>
+        </dom-repeat>
+      </ul>
+
+      <dom-if if="[[_hasNextMore]]">
+        <template>
+          <div class="more">...</div>
+        </template>
+      </dom-if>
+
+      <dom-if if="[[_hasLastPageShortcut]]">
+        <template>
+          <div class="btn" on-click="_gotoLastPage">[[totalPages]]</div>
+        </template>
+      </dom-if>
+
+      <dom-if if="[[_hasNext]]">
+        <template>
+          <div class="btn arrow-btn" on-click="_next">
+            <iron-icon icon="my-icons:chevron-right"></iron-icon>
+          </div>
+        </template>
+      </dom-if>
+    </div>
+
+  </template>
+
+  <script>
+
+    class DashListFooter extends Polymer.Element {
+      static get is() { return 'dash-list-footer'; }
+      static get properties() {
+        return {
+          // Show direction buttons (next, prev)
+          isDirectionEnabled: {
+            type: Boolean,
+            value: true
+          },
+          // Show first and last page shortcut buttons
+          isLimitsEnabled: {
+            type: Boolean,
+            value: true
+          },
+          // Show etc (...)
+          isMoreEnabled: {
+            type: Boolean,
+            value: true
+          },
+          // Items to show per page
+          itemsPerPage: {
+            type: Number
+          },
+          // Totat number of results
+          totalItems: {
+            type: Number
+          },
+          // Current selected page
+          page: {
+            type: Number,
+            observer: '_pageChanged'
+          },
+          // Pages to populate the middle list
+          _pages: {
+            computed: '_computePages(page, itemsPerPage, totalItems)'
+          },
+          // Show previous button
+          _hasPrev: {
+            computed: '_computeHasPrev(page, totalPages, isDirectionEnabled)'
+          },
+          // Show next button
+          _hasNext: {
+            computed: '_computeHasNext(page, totalPages, isDirectionEnabled)'
+          },
+          // Show '...' on previous
+          _hasPrevMore: {
+            computed: '_computeHasPrevMore(page, totalPages, isLimitsEnabled, isMoreEnabled)'
+          },
+          // Show '...' on next
+          _hasNextMore: {
+            computed: '_computeHasNextMore(page, totalPages, isLimitsEnabled, isMoreEnabled)'
+          },
+          // Show first page shortcut
+          _hasFirstPageShortcut: {
+            computed: '_computeHasFirstPageShortcut(page, totalPages, isLimitsEnabled)'
+          },
+          // Show last page shortcut
+          _hasLastPageShortcut: {
+            computed: '_computeHasLastPageShortcut(page, totalPages, isLimitsEnabled)'
+          }
+        }
+      }
+
+      /**
+       * Fired when new page is selected
+       * @event dash-list-footer-changed { 'page': page }
+       * @param {String} page
+       */
+      _pageChanged(page) {
+        this.dispatchEvent(new CustomEvent('dash-list-page-changed', {
+          detail: {
+              page: page
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Show previous button
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isDirectionEnabled Direction buttons enabled
+       * @return {Boolean}
+       */
+      _computeHasPrev(page, totalPages, isDirectionEnabled) {
+        return (isDirectionEnabled && page > 1);
+      }
+
+      /**
+       * Show next button
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isDirectionEnabled Direction buttons enabled
+       * @return {Boolean}
+       */
+      _computeHasNext(page, totalPages, isDirectionEnabled) {
+        return (isDirectionEnabled && page < totalPages);
+      }
+
+      /**
+       * Show more pages indicator between list and previous buttons
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isLimitsEnabled Limit buttons enabled
+       * @param  {Boolean} isMoreEnabled More indicator enabled
+       * @return {Boolean}
+       */
+      _computeHasPrevMore(page, totalPages, isLimitsEnabled, isMoreEnabled) {
+        if (!isMoreEnabled) return false;
+
+        if (isLimitsEnabled) {
+          return (page > 3 && totalPages > 4);
+        } else {
+          return (page > 2);
+        }
+      }
+
+      /**
+       * Show more pages indicator between list and next buttons
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isLimitsEnabled Limit buttons enabled
+       * @param  {Boolean} isMoreEnabled More indicator enabled
+       * @return {Boolean}
+       */
+      _computeHasNextMore(page, totalPages, isLimitsEnabled, isMoreEnabled) {
+        if (!isMoreEnabled) return false;
+
+        if (isLimitsEnabled) {
+          return (page <= (totalPages - 3) && totalPages > 4);
+        } else {
+          return (page <= (totalPages - 2));
+        }
+      }
+
+      /**
+       * Show go to first page shortcut
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isLimitsEnabled Limit buttons enabled
+       * @return {Boolean}
+       */
+      _computeHasFirstPageShortcut(page, totalPages, isLimitsEnabled) {
+        return (isLimitsEnabled && page > 2 && totalPages > 3);
+      }
+
+      /**
+       * Show go to last page shortcut
+       * @param  {Number} page       Current selected page
+       * @param  {Number} totalPages Total pages for pagination
+       * @param  {Boolean} isLimitsEnabled Limit buttons enabled
+       * @return {Boolean}
+       */
+      _computeHasLastPageShortcut(page, totalPages, isLimitsEnabled) {
+        return (isLimitsEnabled && page <= (totalPages - 2) && totalPages > 3);
+      }
+
+      /**
+       * Go to previous page
+       */
+      _prev() {
+        if (this.page > 1) this.page--;
+      }
+
+      /**
+       * Go to next page
+       */
+      _next() {
+        if (this.page < this.totalPages) this.page++;
+      }
+
+      /**
+       * Go to first page
+       */
+      _gotoFirstPage() {
+        this.page = 1;
+      }
+
+      /**
+       * Go to last page
+       */
+      _gotoLastPage() {
+        this.page = this.totalPages;
+      }
+
+      /**
+       * Check if item number is the currently active page
+       * @param  {Number}  pageNumber Item page
+       * @param  {Number}  page       Current page
+       * @return {Boolean}
+       */
+      _isActive(pageNumber, page) {
+        return (pageNumber === page);
+      }
+
+      /**
+       * Callback for item selection
+       * @param {Event} e On click event
+       */
+      _select(e) {
+        var id = e.target.getAttribute('data-number');
+        if (id) this.page = parseInt(id);
+      }
+
+      /**
+       * Compute pages array to fill the pagination buttons repeat
+       * @param  {Number} page         Current page
+       * @param  {Number} itemsPerPage Items to show per page
+       * @param  {Number} totalItems   Total items
+       * @return {Array} Pages to fill the pagination buttons repeat
+       */
+      _computePages(page, itemsPerPage, totalItems) {
+        var pages = [];
+
+        if (!page || !itemsPerPage || !totalItems) return pages;
+
+        var totalPages = Math.ceil(totalItems / itemsPerPage),
+          from, to;
+
+        // If invalid reset page to total pages
+        if (page > totalPages) {
+          this.page = page = totalPages;
+        }
+
+        if (totalPages <= 3) {
+          from = 1;
+          to = totalPages;
+        } else if (page <= 2) {
+          from = 1;
+          to = 3;
+        } else if (page >= (totalPages - 1)) {
+          from = totalPages - 2;
+          to = totalPages;
+        } else {
+          from = page - 1;
+          to = page + 1;
+        }
+
+        for (var i = (from - 1); i < to; i++) {
+          pages.push((i + 1));
+        }
+
+        this.totalPages = totalPages;
+
+        return pages;
+      }
+    };
+
+    window.customElements.define(DashListFooter.is, DashListFooter);
+  </script>
+</dom-module>
