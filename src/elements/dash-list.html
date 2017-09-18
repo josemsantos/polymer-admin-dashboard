@@ -136,7 +136,7 @@
             </paper-datatable-api-column>
           </template>
         </paper-datatable-api>
-        <template is="dom-if" if="customPagination">
+        <template is="dom-if" if="[[customPagination]]">
           <div class="footer-pagination">
             <dash-list-footer page="{{page}}" items-per-page="10" total-items="[[totalItems]]"><dash-list-footer>
           </div>
