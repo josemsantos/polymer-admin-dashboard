@@ -1,56 +1,56 @@
 <script>
   'use strict';
 
-  function GroupsModuleRegistration(superClass) {
+  function UsersModuleRegistration(superClass) {
     return class extends superClass {
       static get properties() {
         return {
-          group_module: {
+          users_module: {
             type: Object,
             value: [
               {
-                'groups': {
+                'users': {
                   'inMenu': true,
                   'menuGroup': 'User Management',
                   'menuItems': [
                     {
-                      'label': 'Access Groups',
+                      'label': 'Backoffice Users',
                       'action': 'list',
                       'icon': 'my-icons:group',
-                      'name': 'groups',
+                      'name': 'users',
                       'restrictions': [
-                        'ROLE_GROUPS_GUEST',
-                        'ROLE_GROUPS_STAFF',
-                        'ROLE_GROUPS_EDITOR',
-                        'ROLE_GROUPS_ADMIN'
+                        'ROLE_USERS_GUEST',
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
                       ]
                     }
                   ],
                   'actions': {
                     'show': {
                       'restrictions': [
-                        'ROLE_GROUPS_GUEST',
-                        'ROLE_GROUPS_STAFF',
-                        'ROLE_GROUPS_EDITOR',
-                        'ROLE_GROUPS_ADMIN'
+                        'ROLE_USERS_GUEST',
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
                       ]
                     },
                     'create': {
                       'restrictions': [
-                        'ROLE_GROUPS_STAFF',
-                        'ROLE_GROUPS_EDITOR',
-                        'ROLE_GROUPS_ADMIN'
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
                       ]
                     },
                     'edit': {
                       'restrictions': [
-                        'ROLE_GROUPS_EDITOR',
-                        'ROLE_GROUPS_ADMIN'
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
                       ]
                     },
                     'delete': {
                       'restrictions': [
-                        'ROLE_GROUPS_ADMIN'
+                        'ROLE_USERS_ADMIN'
                       ]
                     },
                   }
@@ -62,4 +62,5 @@
       }
     }
   }
+
 </script>
