@@ -32,7 +32,11 @@
     "paper-dialog": "^2.0.0",
     "paper-chip": "josemsantos/paper-chip#master",
     "iron-icon": "^2.0.1",
-    "iron-collapse": "^2.0.0"
+    "iron-collapse": "^2.0.0",
+    "app-media": "PolymerElements/app-media#^0.7.2",
+    "webrtc-adapter": "^5.0.4",
+    "paper-dialog-scrollable": "^2.1.0",
+    "polymerfire": "^2.2.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",

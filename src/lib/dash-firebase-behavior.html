@@ -1,0 +1,14 @@
+<script>
+  'use strict';
+
+  function DashFirebaseBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          realDb: Object,
+          storage: Object
+        }
+      }
+    }
+  }
+</script>

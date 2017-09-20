@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-media/app-media-video.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-menu-button/paper-menu-button.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
@@ -14,6 +15,7 @@
        :host {
         display: block
       }
+      app-media-video,
       iron-image.user {
         width: 48px;
         height: 48px;
@@ -56,10 +58,15 @@
     <paper-menu-button horizontal-align="right" no-overlap>
       <paper-button slot="dropdown-trigger">
         <span class="user-name">[[user.username]]</span>
-        <iron-image class="user" src="/images/jsantos.jpeg" sizing="contain"></iron-image>
+        <app-media-video
+          source="[[_funfie]]"
+          loop
+          autoplay
+          muted>
+        </app-media-video>
       </paper-button>
       <paper-listbox slot="dropdown-content">
-        <paper-icon-item>
+        <paper-icon-item on-tap="goToProfile">
           <iron-icon icon="my-icons:account-box" slot="item-icon"></iron-icon>
           My Profile
         </paper-icon-item>
@@ -96,8 +103,16 @@
        */
       static get properties() {
         return {
-          user: Object
+          _funfie: String,
+          user: Object,
+          storage: Object
         };
+      }
+
+      static get observers() {
+        return [
+          '_storageReady(user, storage, realDb)'
+        ];
       }
 
       /**
@@ -107,6 +122,30 @@
        */
       constructor() {
         super();
+      }
+
+      _storageReady(user, storage, realDb) {
+        if (!user || !storage || !realDb) {
+          return;
+        }
+
+        this.realDb.ref("funfies/funfie-" + user.id).on("value", (snapshot) => {
+          this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
+            this._funfie = file;
+          }).catch(function(e) {
+            console.log(e)
+          });
+        });
+      }
+
+      goToProfile() {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            route: this.rootPath + 'user/profile'
+          }
+        }));
       }
 
       /**
