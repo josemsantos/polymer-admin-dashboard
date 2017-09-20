@@ -35,7 +35,7 @@
       }
 
       _responseChanged (e) {
-        
+
       }
 
       search(method) {
@@ -77,8 +77,18 @@
       }
 
       delete(key, method) {
+        var _self = this;
         method = method || 'DELETE';
-        console.log('Delete me ' + key);
+        this.connection.fetch({
+          url: this.endpoint + '/' +  key,
+          verb: 'DELETE',
+          onLoad(e) {
+            this.dispatchEvent(new CustomEvent('model-item-deleted', {detail: {id: key}}));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
     }
   }

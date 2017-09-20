@@ -121,16 +121,23 @@
               draggable-column="[[_isDraggable(column)]]"
               sortable="[[_isData(column.type)]]"
               td-custom-style="[[!_isDraggable(column)]]"
-              property="[[column.index]]">
+              property="[[column.index]]"
+              other-properties='["disabled"]'>
               <template>
                 <template is="dom-if" if="[[!_isActions(column.type)]]">
                   <dash-list-cell-content
                     column="[[column]]">[[value]]</dash-list-cell-content>
                 </template>
                 <template is="dom-if" if="[[_isActions(column.type)]]">
-                  <dash-list-cell-content
-                    key="[[value]]"
-                    actions="[[_columnActions]]"></dash-list-cell-content>
+                  <template is="dom-if" if="[[!otherValues.disabled]]">
+                    <dash-list-cell-content
+                      key="[[value]]"
+                      actions="[[_columnActions]]"></dash-list-cell-content>
+                  </template>
+                  <template is="dom-if" if="[[otherValues.disabled]]">
+                    <dash-list-cell-content
+                      column="[[column]]">Disabled</dash-list-cell-content>
+                  </template>
                 </template>
               </template>
             </paper-datatable-api-column>
