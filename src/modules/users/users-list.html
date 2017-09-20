@@ -22,6 +22,7 @@
       columns="[[columns]]"
       actions="[[userActions]]"
       total-items="[[totalItems]]"
+      items-per-page="[[itemsPerPage]]"
       custom-pagination></dash-list>
     <user-model
       on-model-item-deleted="_itemDisabled"></user-model>
@@ -144,7 +145,6 @@
         this.totalItems = e.detail.response.total;
         //list._totalFetched = this.groups.length;
         let data = this._setActionsKey(e.detail.response.users);
-        let cenas = [];
         for (let i=0; i<data.length; i++) {
           data[i].disabled = false;
           if (data[i].locked || data[i].inactive || data[i].credentials_expired) {
@@ -152,8 +152,6 @@
           }
         }
         this.users = data;
-
-        list.page=1;
       }
 
       /**

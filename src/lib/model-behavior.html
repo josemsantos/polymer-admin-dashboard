@@ -38,12 +38,15 @@
 
       }
 
-      search(method) {
+      search(method, itemsPerPage, page) {
+        page = page || 1;
+        var data = "per_page=" +  itemsPerPage + "&page=" + page;
         method = method || 'GET';
         var _self = this;
         this.connection.fetch({
           url: this.endpoint,
           verb: method,
+          data: data,
           onLoad(e) {
             _self.set('response', JSON.parse(e.target.responseText));
           },

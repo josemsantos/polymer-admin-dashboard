@@ -38,6 +38,10 @@
           },
           userActions: {
             type: Array
+          },
+          itemsPerPage: {
+            type: Number,
+            value: 10
           }
         }
       }
@@ -84,17 +88,17 @@
       
       _procedureFactory (actionName, action, identifier) {
         if (action.path) {
-          return { 
+          return {
             action: '_goToPath',
             data: this._parsePath(action.path, identifier)
           };
         } else if (action.event) {
-          return { 
+          return {
             action: '_firEvent',
             data: this._parseEvent(action.event, identifier)
           };
         } else {
-          return { 
+          return {
             action: '_goToPath',
             data: '/' + this.module + '/' + actionName
           };
@@ -126,7 +130,7 @@
 
       _goToPath (path) {
         this._firEvent({
-          name: 'dash-go-to', 
+          name: 'dash-go-to',
           data: {route: path}
         });
       }
@@ -172,7 +176,7 @@
           this._formActions = [];
         }
       }
-      
+
       _execAction (e) {
         let action = e.detail.type;
         let identifier = e.detail.key;
@@ -197,7 +201,7 @@
       }
 
       _pageChanged (e) {
-        console.log("page-changed", e.detail);
+        this.modelElement.search('', this.itemsPerPage, e.detail.page);
       }
 
       _deleteConfirmed (key) {
@@ -209,7 +213,7 @@
         this.addEventListener('dash-filter-request', this._filter.bind(this));
         this.addEventListener('dash-list-sort', this._sort.bind(this));
         this.addEventListener('dash-list-page-changed', this._pageChanged.bind(this));
-        this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this)); 
+        this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this));
       }
 
       constructor () {
@@ -247,7 +251,7 @@
       }
 
       getList () {
-        this.modelElement.search();
+        this.modelElement.search('', this.itemsPerPage);
       }
 
       getForm () {
