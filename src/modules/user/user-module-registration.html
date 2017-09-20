@@ -1,0 +1,41 @@
+<script>
+  'use strict';
+
+  function UserModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          user_module: {
+            type: Object,
+            value: [
+              {
+                'user': {
+                  'inMenu': false,
+                  'menuGroup': 'User Management',
+                  'menuItems': [],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_USERS_GUEST',
+                        'ROLE_USERS_STAFF',
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_USERS_EDITOR',
+                        'ROLE_USERS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+
+</script>

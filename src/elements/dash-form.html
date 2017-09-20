@@ -65,6 +65,7 @@
         <form>
           <div class="title"><slot></slot></div>
           <div class="body">
+            <slot name="body"></slot>
             <template is="dom-repeat" items="[[fields]]" as="field">
               <template is="dom-if" if="[[_isInput(field.type)]]">
                 <paper-input name$="[[field.name]]" label="[[field.label]]" type="[[field.type]]"></paper-input>
@@ -86,6 +87,7 @@
           </div>
 
           <div class="action-box">
+            <slot name="action-box"></slot>
             <template is="dom-if" if="[[hasCancel]]">
               <div class="left">
                 <paper-button 
@@ -230,14 +232,16 @@
             switch (validators[v].type) {
               case 'regex':
                 if (null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name]) {
+                  console.log('empty', validators[v].message)
                   errors.push(validators[v].message);
                 } else  if (null === request[fields[i].name].match(validators[v].regex)) {
                   errors.push(validators[v].message);
+                  console.log('invalid', request[fields[i].name], validators[v].regex)
                 }
                 break;
             }
             
-            if (validators[v].stop) {
+            if (validators[v].stop && errors.length > 0) {
               return errors;
             }
           }

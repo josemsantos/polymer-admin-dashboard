@@ -1,0 +1,146 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../../../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../../bower_components/app-media/app-media-devices.html">
+<link rel="import" href="../../../bower_components/app-media/app-media-stream.html">
+<link rel="import" href="../../../bower_components/app-media/app-media-video.html">
+<link rel="import" href="../../../bower_components/app-media/app-media-recorder.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../lib/dash-firebase-behavior.html">
+<link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../elements/dash-funfie.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="user-profile">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <user-model
+      fetch="[[user.id]]"
+      on-model-response-changed="_setData"></user-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        key="[[key]]"
+        model="[[userModel.model]]"
+        fields="[[form.fields]]"
+        actions="[[_formActions]]"
+        model-data="[[data]]"
+        on-submit="_execAction">
+          <div class="title blue-grey"><h2><iron-icon icon="my-icons:person"></iron-icon>My profile [[user.username]]</h2></div>
+          <div class="error">[[errorMessage]]</div>
+          <div slot="body">
+            <dash-funfie 
+              user="[[user]]"
+              storage="[[storage]]"
+              real-db="[[realDb]]"></dash-funfie>
+          </div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `user-profile` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class UserProfile extends DashFirebaseBehavior(ModuleElementBehavior(Polymer.Element)) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'user-profile';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          user: {
+            type: Object,
+            observer: '_userChanged'
+          },
+          connection: {
+            type: String,
+            value: 'seraph'
+          },
+          userModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          errorMessage: String
+        };
+      }
+
+      _userChanged (user) {
+        this.key = user.id;
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _goToList (e) {
+        console.log(e.detail)
+      }
+
+      _updateUser (e) {
+        console.log(this.form.fields, e.detail)
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        this.errorMessage = "";
+        console.log(e.detail);
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'user-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.userModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.userModel.getProfileForm();
+
+        this.actions = this.form.actions;
+
+        this.addEventListener('update-user', function (e) {
+          this._updateUser(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(UserProfile.is, UserProfile);
+  </script>
+</dom-module>

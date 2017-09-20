@@ -1,0 +1,299 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/app-media/app-media-devices.html">
+<link rel="import" href="../../bower_components/app-media/app-media-stream.html">
+<link rel="import" href="../../bower_components/app-media/app-media-video.html">
+<link rel="import" href="../../bower_components/app-media/app-media-recorder.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../lib/dash-firebase-behavior.html">
+<link rel="import" href="../my-icons.html">
+<link rel="import" href="../shared-styles.html">
+
+
+<dom-module id="dash-funfie">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block;
+        --paper-dialog-scrollable: {
+          padding: 5px;
+          margin: 0px;
+        }
+      }
+      :host(.recording) #progress {
+        opacity: 1;
+        transition-delay: 0s;
+      }
+      #progress {
+        position: absolute;
+        pointer-events: none;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 10px;
+        transform: translateX(-100%);
+        transition: transform 0.3s linear, opacity 0.3s 0.3s;
+        will-change: transform;
+        background-color: var(--paper-blue-500);
+        opacity: 0;
+      }
+      paper-dialog-scrollable {
+        margin: 0;
+      }
+      app-media-video {
+        width: 240px;
+        height: 240px;
+      }
+      .funfie-container {
+        justify-content: center;
+        display: flex;
+        flex-direction: column;
+        padding: 8px;
+        background-color: #FFF;
+      }
+      .funfie {    
+        display: flex;
+        width: 100%;
+        height: 240px;
+        justify-content: center;
+      }
+      .funfie-btn {
+        background-color: var(--paper-blue-500);
+        color: #FFF;
+        margin: 8px;
+        font-weight: 300;
+      }
+      .btn-container {
+        display: flex;
+        flex:1;
+        justify-content: center;
+      }
+    </style>
+    <div class="funfie-container">
+      <app-media-devices 
+        kind="videoinput" 
+        selected-device="{{videoDevice}}">
+      </app-media-devices>
+
+      <app-media-stream
+        video-device="[[videoDevice]]"
+        stream="{{stream}}">
+      </app-media-stream>
+
+      <div class="funfie">
+        <app-media-video
+          source="[[profileFunfie]]"
+          loop
+          autoplay
+          muted>
+        </app-media-video>
+      </div>
+
+      <app-media-recorder
+        id="recorder"
+        stream="[[stream]]"
+        duration="[[duration]]"
+        elapsed="{{elapsed}}"
+        data="{{recording}}">
+      </app-media-recorder>
+
+      <paper-dialog>
+        <paper-dialog-scrollable>
+          <div style="position:relative;">
+            <app-media-video
+              id="video"
+              source="[[stream]]"
+              on-click="record"
+              autoplay
+              muted
+              mirror>
+            </app-media-video>
+            <div id="progress"></div>
+          </div>
+        </paper-dialog-scrollable>
+      </paper-dialog>
+
+      <template is="dom-if" if="[[user.id]]">
+        <div class="btn-container">
+          <paper-button class="funfie-btn" on-tap="openDialog">
+            <iron-icon icon="my-icons:camera"></iron-icon>
+            Take Funfie</paper-button>
+        </div>
+      </template>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * `dash-funfie` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashFunfie extends DashFirebaseBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-funfie';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          videoDevice: {
+            type: Object,
+          },
+          funfie: {
+            type: String,
+            observer: '_funfieChanged'
+          },
+          profileFunfie: {
+            type: Blob,
+          },
+          recording: {
+            type: Blob,
+            observer: '_recordingChanged'
+          },
+          duration: {
+            type: Number,
+            value: 2000
+          },
+          elapsed: {
+            type: Number,
+            observer: '_elapsedChanged'
+          },
+          user: {
+            type: Object,
+          },
+        };
+      }
+
+      static get observers() {
+        return [
+          '_userChanged(storage, realDb, user)'
+        ];
+      }
+
+      _randomString() {
+        return Math.random().toString(36).substring(7);
+      }
+
+      _funfieChanged(funfie) {
+        console.log(funfie)
+      }
+
+      _addRecordingFromUrl(url) {
+        this.profileFunfie = url;
+      }
+
+      _recordingChanged(recording) {
+        if (recording != null) {
+            this._uploadRecording(recording);
+        }
+        this.classList.remove('recording');
+        setTimeout(() => {
+            this.$.progress.style.transform = '';
+        }, 600);
+      }
+
+      _uploadRecording(recording) {
+        let _uid = this.user.id;
+        let videoName = "funfie-" + _uid + '_' + this._randomString();
+        this.storage.ref("/funfies/" + videoName + '.webm').put(recording)
+        .then((snapshot) => {
+            let _funfie = {};
+            _funfie['funfie-' + _uid] = videoName  + ".webm";
+            this.realDb.ref("funfies").update(_funfie).then(item => {
+              this.dispatchEvent(new CustomEvent('dash-funfie-updated', {
+                detail: {
+                  funfie: videoName  + ".webm"
+                },
+                bubbles: true,
+                composed: true
+              }));
+            });
+        })
+        .catch((e) => {
+            console.log("Error while uploading", e);
+        });
+      }
+
+      _elapsedChanged(elapsed) {
+        let progress = Math.min(100 * elapsed / this.duration, 100);
+        this.$.progress.style.transform = 'translateX(' + (-100 + progress) + '%)';
+      }
+
+      _userChanged (storage, realDb, user) {
+        if (!storage || !realDb || !user) {
+          return;
+        }
+
+        this.realDb.ref("funfies/funfie-" + user.id).on("value", (snapshot) => {
+          this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
+            this._addRecordingFromUrl(file);
+          }).catch(function(e) {
+            console.log(e)
+          });
+        });
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        let mediaStream = this.shadowRoot.querySelector('app-media-stream');
+        mediaStream.videoConstraints = {
+                                            width: {min: 320, ideal: 320, max: 320},
+                                            height: {min: 240, ideal: 240, max: 240},
+                                            frameRate: 10,     // Shorthand for ideal.
+                                            facingMode: {"facingMode": "environment"}
+                                        };
+        this.shadowRoot.querySelector('paper-dialog').addEventListener("opened-changed", (e) => {
+          if (!e.detail.value) {
+            this.shadowRoot.querySelector('app-media-recorder').mimeType = null;
+            mediaStream.active = false;
+          }
+        });
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+
+        });
+      }
+
+      openDialog() {
+        this.shadowRoot.querySelector('paper-dialog').open();
+        this.shadowRoot.querySelector('app-media-stream').active = true;
+      }
+
+      record() {
+        this.classList.add('recording');
+        this.$.recorder.start();
+      }
+
+    }
+
+    window.customElements.define(DashFunfie.is, DashFunfie);
+  </script>
+</dom-module>

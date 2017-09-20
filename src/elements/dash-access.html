@@ -75,7 +75,6 @@
       _createMenu () {
         var menu = [];
         var group;
-        console.log(this.modules)
         this.modules.forEach((module) => {
           for (let name in module) {
             if (module[name].inMenu) {
@@ -96,7 +95,6 @@
             }
           }
         });
-        console.log(menu)
         this.menu = menu;
       }
 

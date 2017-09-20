@@ -1,10 +1,13 @@
 <link rel="import" href="groups/groups-module-registration.html">
 <link rel="import" href="users/users-module-registration.html">
+<link rel="import" href="user/user-module-registration.html">
 <script>
     'use strict';
   
     function ModuleRegistration(superClass) {
-      return class extends UsersModuleRegistration(GroupsModuleRegistration(superClass)) {
+      return class extends UserModuleRegistration(
+                            UsersModuleRegistration(
+                            GroupsModuleRegistration(superClass))) {
         static get properties() {
           return {
             modules: {
@@ -26,6 +29,7 @@
           });
           this._addModules(this.group_module);
           this._addModules(this.users_module);
+          this._addModules(this.user_module);
           this.dispatchEvent(new CustomEvent('dash-modules-registered', {
             detail: this.modules,
             bubbles: true, 
