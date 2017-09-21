@@ -27,7 +27,8 @@
 
     <user-model
       fetch="[[user.id]]"
-      on-model-response-changed="_setData"></user-model>
+      on-model-response-changed="_setData"
+      on-model-update-success="_nofiyUser"></user-model>
 
     <paper-material elevation="2">
       <dash-form
@@ -37,9 +38,12 @@
         fields="[[form.fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
         on-submit="_execAction">
           <div class="title blue-grey"><h2><iron-icon icon="my-icons:person"></iron-icon>My profile [[user.username]]</h2></div>
-          <div class="error">[[errorMessage]]</div>
+          <div slot="success">User Account [[successMessage]] updated successfuly</div>
+          <div slot="error">An error occured: <pre>[[errorMessage]]</pre></div>
           <div slot="body">
             <dash-funfie 
               user="[[user]]"
@@ -87,7 +91,13 @@
           },
           data: Object,
           form: Object,
-          errorMessage: String
+          payload: {
+            type: Array,
+            value: [
+              'password',
+              'email'
+            ]
+          }
         };
       }
 
@@ -104,14 +114,15 @@
       }
 
       _updateUser (e) {
-        console.log(this.form.fields, e.detail)
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;
         }
         this.errorMessage = "";
-        console.log(e.detail);
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.userModel.update(null, this.user.id, JSON.stringify(payload));
       }
 
       /**

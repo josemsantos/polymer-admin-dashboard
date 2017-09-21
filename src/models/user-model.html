@@ -101,6 +101,10 @@
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 
+      _posUpdateCallBack (response) {
+        super._posUpdateCallBack(response.response.username);
+      }
+
       mapUser (data, rememberMe) {
         this.model = data;
         this.dispatchEvent(new CustomEvent('user-logged', {detail: {user: this.model, rememberMe: rememberMe}}));
@@ -109,7 +113,7 @@
       requestSignIn (payload) {
         var _self = this;
 
-        this.connection.fetch({
+        this.connection.request({
           url: this.authEndpoint,
           verb: 'POST',
           data: JSON.stringify(payload),
@@ -178,13 +182,10 @@
               label: 'Username',
               name: 'username',
               type: 'text',
+              attributes: {
+                readonly: true
+              },
               validators: [
-                {
-                  type: 'regex',
-                  regex: '^(.){5,}$',
-                  message: 'Invalid Username',
-                  stop: false
-                }
               ]
             },
             {
@@ -194,6 +195,7 @@
               validators: [
                 {
                   type: 'regex',
+                  required: false,
                   regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
                   message: 'Invalid Password. password should contains at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
                   stop: false

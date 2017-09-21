@@ -76,7 +76,7 @@
 
       _getRoles () {
         var _self = this;
-        this.connection.fetch({
+        this.connection.request({
           url: '/authorization/permissions/roles',
           verb: 'GET',
           onLoad(e) {

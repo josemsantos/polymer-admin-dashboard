@@ -9,6 +9,10 @@
           storage: Object
         }
       }
+
+      removeInvalidChars(value) {
+        return value.replace(/[\.#$\[\]]/g, '');
+      }
     }
   }
 </script>
