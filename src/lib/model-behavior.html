@@ -38,10 +38,11 @@
 
       }
 
-      search(method, itemsPerPage, page, data) {
+      search(method, itemsPerPage, page, filterQuery, sortQuery) {
         var queryParams = "per_page=" +  itemsPerPage + '&';
         queryParams += page ? "page=" + page + '&': '';
-        queryParams += data ? data : '';
+        queryParams += filterQuery ? filterQuery : '';
+        queryParams += sortQuery ? sortQuery : '';
         method = method || 'GET';
         var _self = this;
         this.connection.fetch({
