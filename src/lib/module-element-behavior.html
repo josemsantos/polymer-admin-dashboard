@@ -13,6 +13,8 @@
             type: Array,
             value: []
           },
+          successMessage: String,
+          errorMessage: String,
           route: {
             type: Object,
           },
@@ -184,6 +186,16 @@
         this[procedure.action](procedure.data);
       }
 
+      _sanitizePayload (fields, payload) {
+        let _payload = {};
+        fields.forEach((field) => {
+          if (payload[field] !== undefined && payload[field] !== null) {
+            _payload[field] = payload[field];
+          }
+        });
+        return _payload;
+      }
+
       _filter (e) {
         console.log("filter-changed",e.detail);
       }
@@ -210,6 +222,11 @@
         this.addEventListener('dash-list-sort', this._sort.bind(this));
         this.addEventListener('dash-list-page-changed', this._pageChanged.bind(this));
         this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this)); 
+      }
+
+      _nofiyUser (e) {
+        this.successMessage = "";
+        this.successMessage = e.detail.message;
       }
 
       constructor () {

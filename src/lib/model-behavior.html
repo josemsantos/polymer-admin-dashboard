@@ -38,10 +38,20 @@
         
       }
 
+      _posUpdateCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-update-success', {
+          detail: {
+            message: response
+          },
+          bubbles: true, 
+          composed: true
+        }));
+      }
+
       search(method) {
         method = method || 'GET';
         var _self = this;
-        this.connection.fetch({
+        this.connection.request({
           url: this.endpoint,
           verb: method,
           onLoad(e) {
@@ -56,7 +66,7 @@
       load(key, method) {
         method = method || 'GET';
         var _self = this;
-        this.connection.fetch({
+        this.connection.request({
           url: this.endpoint + '/' + key,
           verb: method,
           onLoad(e) {
@@ -72,8 +82,20 @@
         method = method || 'POST';
       }
 
-      update(method) {
+      update(method, key, payload) {
         method = method || 'PUT';
+        var _self = this;
+        this.connection.request({
+          url: this.endpoint + '/' + key,
+          verb: method,
+          data: payload,
+          onLoad(e) {
+            _self._posUpdateCallBack.call(_self, JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
 
       delete(key, method) {

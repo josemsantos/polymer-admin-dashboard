@@ -1,9 +1,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
   <template>
@@ -19,6 +23,7 @@
         @apply --form-body;
       }
       .form-wrapper {
+        position: relative;
         @apply --form-wrapper;
       }
       .action-box {
@@ -37,6 +42,29 @@
       }
       paper-button {
         width: 100px;
+      }
+      paper-toast {
+        display: flex;
+        align-items: center;
+      }
+      .paper-toast-message-container {
+        flex: 1;
+      }
+      paper-toast.success {
+        --paper-toast-background-color: var(--paper-green-500);
+        --paper-toast-color: white;
+      }
+      paper-toast.error {
+        --paper-toast-background-color: var(--paper-red-500);
+        --paper-toast-color: white;
+      }
+      #container {
+        padding: 76px;
+        position:absolute;
+        top: -76px;
+        left: 0;
+        right: 0;
+        display: block;
       }
       .checkbox-container {
         padding: 16px 0;
@@ -61,18 +89,45 @@
       }
     </style>
     <div class="form-wrapper">
+      <div id="container">
+        <paper-toast duration="0" id="toastSuccess" class="fit-bottom success">
+          <div class="paper-toast-message-container">
+            <slot name="success"></slot>
+          </div>
+          <paper-button on-click="_closeSuccess">
+            <iron-icon icon="my-icons:close"></iron-icon>
+          </paper-button>
+        </paper-toast>
+        <paper-toast duration="0" id="toastError" class="fit-bottom error">
+          <div class="paper-toast-message-container">
+            <slot name="error"></slot>
+          </div>
+          <paper-button on-click="_closeError">
+            <iron-icon icon="my-icons:close"></iron-icon>
+          </paper-button>
+        </paper-toast>
+      </div>
       <iron-form>
         <form>
-          <div class="title"><slot></slot></div>
+          <div class="title">
+            <slot></slot>
+          </div>
           <div class="body">
             <slot name="body"></slot>
             <template is="dom-repeat" items="[[fields]]" as="field">
               <template is="dom-if" if="[[_isInput(field.type)]]">
-                <paper-input name$="[[field.name]]" label="[[field.label]]" type="[[field.type]]"></paper-input>
+                <paper-input 
+                  name$="[[field.name]]" 
+                  label="[[field.label]]" 
+                  type="[[field.type]]"
+                  readonly="[[_isReadonly(field.attributes)]]"></paper-input>
               </template>
               <template is="dom-if" if="[[_isCheckbox(field.type)]]">
                 <div class="checkbox-container">
-                  <paper-checkbox checked$="[[field.checked]]" name$="[[field.name]]">[[field.label]]</paper-checkbox>
+                  <paper-checkbox 
+                    checked$="[[field.checked]]" 
+                    name$="[[field.name]]"
+                    disabled="[[_isReadonly(field.attributes)]]">[[field.label]]</paper-checkbox>
                 </div>
               </template>
               <template is="dom-if" if="[[_isCollection(field.type)]]">
@@ -138,6 +193,14 @@
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
           },
+          notifyError: {
+            type:String,
+            observer: '_notifyErrorChanged'
+          },
+          notifySuccess:{
+            type: String,
+            observer: '_notifySuccessChanged'
+          },
           hasCancel: {
             type: Boolean,
           },
@@ -160,6 +223,38 @@
         };
       }
 
+      _setPaperToastContainer() {
+        this.$.toastSuccess.fitInto = this.$.container;
+        this.$.toastError.fitInto = this.$.container;
+      }
+
+      _notifyErrorChanged (notifyError) {
+        if (notifyError) {
+          this.$.toastError.open();
+        }
+      }
+
+      _notifySuccessChanged (notifySuccess) {
+        if (notifySuccess) {
+          this.$.toastSuccess.open();
+        }
+      }
+
+      _closeSuccess () {
+        this.$.toastSuccess.close();
+      }
+
+      _closeError () {
+        this.$.toastError.close();
+      }
+
+      _closeAnyNotification () {
+        this.notifySuccess = "";
+        this.notifyError = "";
+        this._closeSuccess();
+        this._closeError();
+      }
+
       _externalSourcesChanged (externalSources) {
         if (externalSources) {
           for (let name in externalSources) {
@@ -179,6 +274,10 @@
 
       _isCollection (type) {
         return type === 'collection';
+      }
+
+      _isReadonly (attributes) {
+        return (attributes && attributes.readonly);
       }
 
       _formReset () {
@@ -229,14 +328,14 @@
         for (let i in fields) {
           let validators = fields[i].validators;
           for (let v in validators) {
+            let required = (validators[v].required !== false) ? true : validators[v].required;
             switch (validators[v].type) {
               case 'regex':
-                if (null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name]) {
-                  console.log('empty', validators[v].message)
+                if ((null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name])
+                    && required) {
                   errors.push(validators[v].message);
-                } else  if (null === request[fields[i].name].match(validators[v].regex)) {
+                } else  if (request[fields[i].name] && null === request[fields[i].name].match(validators[v].regex)) {
                   errors.push(validators[v].message);
-                  console.log('invalid', request[fields[i].name], validators[v].regex)
                 }
                 break;
             }
@@ -250,6 +349,7 @@
       }
 
       executeMe (e) {
+        this._closeAnyNotification();
         let form = this.shadowRoot.querySelector('iron-form');
         switch(e.currentTarget.dataset['action']) {
           case 'cancel':
@@ -297,7 +397,7 @@
         form.attached();
 
         Polymer.RenderStatus.afterNextRender(this, function () {
-
+            this._setPaperToastContainer();
         });
       }
 

@@ -36,7 +36,8 @@
     "app-media": "PolymerElements/app-media#^0.7.2",
     "webrtc-adapter": "^5.0.4",
     "paper-dialog-scrollable": "^2.1.0",
-    "polymerfire": "^2.2.0"
+    "polymerfire": "^2.2.0",
+    "paper-toast": "PolymerElements/paper-toast#^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",
