@@ -107,9 +107,9 @@
       delete(key, method) {
         var _self = this;
         method = method || 'DELETE';
-        this.connection.fetch({
+        this.connection.request({
           url: this.endpoint + '/' +  key,
-          verb: 'DELETE',
+          verb: method,
           onLoad(e) {
             _self.dispatchEvent(new CustomEvent('model-item-deleted', {detail: {id: key}}));
           },
