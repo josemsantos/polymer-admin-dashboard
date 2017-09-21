@@ -159,7 +159,8 @@
           // Current selected page
           page: {
             type: Number,
-            observer: '_pageChanged'
+            observer: '_pageChanged',
+            notify: true
           },
           // Pages to populate the middle list
           _pages: {

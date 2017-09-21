@@ -35,9 +35,9 @@
       }
 
       _responseChanged (e) {
-        
-      }
 
+      }
+      
       _posUpdateCallBack (response) {
         this.dispatchEvent(new CustomEvent('model-update-success', {
           detail: {
@@ -48,12 +48,18 @@
         }));
       }
 
-      search(method) {
+      search(method, itemsPerPage, page, filterQuery, sortQuery) {
+        var queryParams = "per_page=" +  itemsPerPage + '&';
+        queryParams += page ? "page=" + page + '&': '';
+        queryParams += filterQuery ? filterQuery : '';
+        queryParams += sortQuery ? sortQuery : '';
         method = method || 'GET';
+        
         var _self = this;
         this.connection.request({
           url: this.endpoint,
           verb: method,
+          data: queryParams,
           onLoad(e) {
             _self.set('response', JSON.parse(e.target.responseText));
           },
@@ -99,8 +105,18 @@
       }
 
       delete(key, method) {
+        var _self = this;
         method = method || 'DELETE';
-        console.log('Delete me ' + key);
+        this.connection.request({
+          url: this.endpoint + '/' +  key,
+          verb: method,
+          onLoad(e) {
+            _self.dispatchEvent(new CustomEvent('model-item-deleted', {detail: {id: key}}));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
     }
   }

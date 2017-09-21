@@ -21,8 +21,12 @@
       key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"
-      total-items="[[totalItems]]"></dash-list>
-    <user-model></user-model>
+      total-items="[[totalItems]]"
+      items-per-page="[[itemsPerPage]]"
+      page="{{page}}"
+      custom-pagination></dash-list>
+    <user-model
+      on-model-item-deleted="_itemDisabled"></user-model>
 
   </template>
 
@@ -87,7 +91,7 @@
             value: [
               {
                 label: 'Name',
-                name: 'name',
+                name: 'username',
                 type: 'text',
                 validators: []
               },
@@ -118,6 +122,15 @@
         };
       }
 
+      _itemDisabled(e) {
+        for (let i=0; i<this.users.length;i++) {
+          if (this.users[i].id == e.detail.id) {
+            this.users[i].disabled = true;
+          }
+        }
+        this.users = JSON.parse(JSON.stringify(this.users));
+      }
+
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -130,11 +143,16 @@
 
       onResponseChanged (e) {
         let list = this.shadowRoot.querySelector('dash-list');
-        this.totalItems = 10; //e.detail.response.total;
+        this.totalItems = e.detail.response.total;
         //list._totalFetched = this.groups.length;
-        this.users = this._setActionsKey(e.detail.response.users);
-
-        list.page=1;
+        let data = this._setActionsKey(e.detail.response.users);
+        for (let i=0; i<data.length; i++) {
+          data[i].disabled = false;
+          if (data[i].locked || data[i].inactive || data[i].credentials_expired) {
+            data[i].disabled = true;
+          }
+        }
+        this.users = data;
       }
 
       /**

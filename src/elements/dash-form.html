@@ -131,7 +131,7 @@
                 </div>
               </template>
               <template is="dom-if" if="[[_isCollection(field.type)]]">
-                <paper-chip-input-autocomplete 
+                <paper-chip-input-autocomplete
                   id="[[field.name]]"
                   label="+Add (Enter) -Delete (Backspace)"
                   name$="[[field.name]]"
@@ -145,16 +145,16 @@
             <slot name="action-box"></slot>
             <template is="dom-if" if="[[hasCancel]]">
               <div class="left">
-                <paper-button 
-                  data-action="cancel" 
+                <paper-button
+                  data-action="cancel"
                   on-tap="executeMe"
                   class="cancel">Cancel</paper-button>
               </div>
             </template>
             <div class="right">
               <template is="dom-repeat" items="[[actions]]" as="action">
-                <paper-button 
-                  data-action$="[[action.type]]" 
+                <paper-button
+                  data-action$="[[action.type]]"
                   on-tap="executeMe"
                   class$="[[action.type]]">[[action.label]]</paper-button>
               </template>
@@ -290,6 +290,7 @@
             el.checked = false;
           }
         });
+
       }
 
       _modelDataChanged (data) {
@@ -339,7 +340,6 @@
                 }
                 break;
             }
-            
             if (validators[v].stop && errors.length > 0) {
               return errors;
             }
@@ -389,7 +389,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

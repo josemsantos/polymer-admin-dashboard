@@ -109,8 +109,6 @@
         </div>
         <paper-datatable-api
           data="[[items]]"
-          page="{{page}}"
-          size="{{size}}"
           selected-rows="{{selectedRows}}"
           selectable-data-key="[[key]]"
           on-sort="_handleSort"
@@ -121,16 +119,23 @@
               draggable-column="[[_isDraggable(column)]]"
               sortable="[[_isData(column.type)]]"
               td-custom-style="[[!_isDraggable(column)]]"
-              property="[[column.index]]">
+              property="[[column.index]]"
+              other-properties='["disabled"]'>
               <template>
                 <template is="dom-if" if="[[!_isActions(column.type)]]">
                   <dash-list-cell-content
                     column="[[column]]">[[value]]</dash-list-cell-content>
                 </template>
                 <template is="dom-if" if="[[_isActions(column.type)]]">
-                  <dash-list-cell-content
-                    key="[[value]]"
-                    actions="[[_columnActions]]"></dash-list-cell-content>
+                  <template is="dom-if" if="[[!otherValues.disabled]]">
+                    <dash-list-cell-content
+                      key="[[value]]"
+                      actions="[[_columnActions]]"></dash-list-cell-content>
+                  </template>
+                  <template is="dom-if" if="[[otherValues.disabled]]">
+                    <dash-list-cell-content
+                      column="[[column]]">Disabled</dash-list-cell-content>
+                  </template>
                 </template>
               </template>
             </paper-datatable-api-column>
@@ -138,7 +143,10 @@
         </paper-datatable-api>
         <template is="dom-if" if="[[customPagination]]">
           <div class="footer-pagination">
-            <dash-list-footer page="{{page}}" items-per-page="10" total-items="[[totalItems]]"><dash-list-footer>
+            <dash-list-footer
+              page="{{page}}"
+              items-per-page="[[itemsPerPage]]"
+              total-items="[[totalItems]]"><dash-list-footer>
           </div>
         </template>
       </div>
@@ -203,21 +211,10 @@
             value: []
           },
           totalItems: Number,
-          totalPages: Number,
-          customPagination: {
-              type: Boolean,
-              value: false
-          },
-          perPage: {
-            type: Number,
-            value: 10
-          },
+          customPagination: Boolean,
           page: {
-            type: Number
-          },
-          size: {
             type: Number,
-            value: 4
+            notify: true
           },
           selectedRows: {
             type: Array,

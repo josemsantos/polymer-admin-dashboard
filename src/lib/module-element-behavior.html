@@ -40,6 +40,21 @@
           },
           userActions: {
             type: Array
+          },
+          itemsPerPage: {
+            type: Number,
+            value: 10
+          },
+          page: {
+            type: Number,
+            value: 1,
+            notify: true
+          },
+          filterQuery: String,
+          sortQuery: String,
+          filterSortRequest: {
+            type: Boolean,
+            value: false
           }
         }
       }
@@ -83,20 +98,20 @@
         });
         return data;
       }
-      
+
       _procedureFactory (actionName, action, identifier) {
         if (action.path) {
-          return { 
+          return {
             action: '_goToPath',
             data: this._parsePath(action.path, identifier)
           };
         } else if (action.event) {
-          return { 
+          return {
             action: '_firEvent',
             data: this._parseEvent(action.event, identifier)
           };
         } else {
-          return { 
+          return {
             action: '_goToPath',
             data: '/' + this.module + '/' + actionName
           };
@@ -128,7 +143,7 @@
 
       _goToPath (path) {
         this._firEvent({
-          name: 'dash-go-to', 
+          name: 'dash-go-to',
           data: {route: path}
         });
       }
@@ -174,7 +189,7 @@
           this._formActions = [];
         }
       }
-      
+
       _execAction (e) {
         let action = e.detail.type;
         let identifier = e.detail.key;
@@ -197,11 +212,27 @@
       }
 
       _filter (e) {
-        console.log("filter-changed",e.detail);
+        this.filterSortRequest = true;
+        this.page = 1; //reset pagination element
+        let filterQuery = '';
+        let queryParam = '';
+        let propertyName = '';
+        for (let i=0; i<this.filters.length; i++) {
+          propertyName = this.filters[i].name;
+          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+          filterQuery += queryParam;
+        }
+        this.filterQuery = filterQuery;
+        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery);
+        this.filterSortRequest = false;
       }
 
       _sort (e) {
-        console.log("sort-changed",e.detail);
+        this.filterSortRequest = true;
+        this.page = 1; //reset pagination element
+        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + e.detail.sort.direction;
+        this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery);
+        this.filterSortRequest = false;
       }
 
       _selectionChanged (e) {
@@ -209,7 +240,9 @@
       }
 
       _pageChanged (e) {
-        console.log("page-changed", e.detail);
+        if (!this.filterSortRequest) {
+          this.modelElement.search('', this.itemsPerPage, e.detail.page, this.filterQuery, this.sortQuery);
+        }
       }
 
       _deleteConfirmed (key) {
@@ -221,7 +254,7 @@
         this.addEventListener('dash-filter-request', this._filter.bind(this));
         this.addEventListener('dash-list-sort', this._sort.bind(this));
         this.addEventListener('dash-list-page-changed', this._pageChanged.bind(this));
-        this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this)); 
+        this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this));
       }
 
       _nofiyUser (e) {
@@ -264,7 +297,7 @@
       }
 
       getList () {
-        this.modelElement.search();
+        this.modelElement.search('', this.itemsPerPage);
       }
 
       getForm () {
