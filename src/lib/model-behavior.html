@@ -88,7 +88,7 @@
           url: this.endpoint + '/' +  key,
           verb: 'DELETE',
           onLoad(e) {
-            this.dispatchEvent(new CustomEvent('model-item-deleted', {detail: {id: key}}));
+            _self.dispatchEvent(new CustomEvent('model-item-deleted', {detail: {id: key}}));
           },
           onError(e) {
             _self._setFailure(true);
