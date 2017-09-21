@@ -143,7 +143,10 @@
         </paper-datatable-api>
         <template is="dom-if" if="[[customPagination]]">
           <div class="footer-pagination">
-            <dash-list-footer page="{{page}}" items-per-page="[[itemsPerPage]]" total-items="[[totalItems]]"><dash-list-footer>
+            <dash-list-footer
+              page="{{page}}"
+              items-per-page="[[itemsPerPage]]"
+              total-items="[[totalItems]]"><dash-list-footer>
           </div>
         </template>
       </div>
@@ -211,7 +214,7 @@
           customPagination: Boolean,
           page: {
             type: Number,
-            value: 1
+            notify: true
           },
           selectedRows: {
             type: Array,

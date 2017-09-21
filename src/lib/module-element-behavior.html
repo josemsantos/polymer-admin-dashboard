@@ -42,6 +42,16 @@
           itemsPerPage: {
             type: Number,
             value: 10
+          },
+          page: {
+            type: Number,
+            value: 1,
+            notify: true
+          },
+          filterQuery: String,
+          filterRequest: {
+            type: Boolean,
+            value: false
           }
         }
       }
@@ -85,7 +95,7 @@
         });
         return data;
       }
-      
+
       _procedureFactory (actionName, action, identifier) {
         if (action.path) {
           return {
@@ -189,7 +199,18 @@
       }
 
       _filter (e) {
-        console.log("filter-changed",e.detail);
+        this.filterRequest = true;
+        let filterQuery = '';
+        let queryParam = '';
+        let propertyName = '';
+        for (let i=0; i<this.filters.length; i++) {
+          propertyName = this.filters[i].name;
+          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+          filterQuery += queryParam;
+        }
+        this.filterQuery = filterQuery;
+        this.page = 1; //reset pagination element
+        this.modelElement.search('', this.itemsPerPage, 1, filterQuery);
       }
 
       _sort (e) {
@@ -201,7 +222,10 @@
       }
 
       _pageChanged (e) {
-        this.modelElement.search('', this.itemsPerPage, e.detail.page);
+        if (!this.filterRequest) {
+          this.modelElement.search('', this.itemsPerPage, e.detail.page, this.filterQuery);
+        }
+        this.filterRequest = false;
       }
 
       _deleteConfirmed (key) {
