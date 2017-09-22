@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-image/iron-image.html">
+<link rel="import" href="../lib/dash-firebase-behavior.html">
 <link rel="import" href="../my-icons.html">
 
 
@@ -90,7 +91,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DashUserActions extends Polymer.Element {
+    class DashUserActions extends DashFirebaseBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -128,8 +129,8 @@
         if (!user || !storage || !realDb) {
           return;
         }
-
-        this.realDb.ref("funfies/funfie-" + user.id).on("value", (snapshot) => {
+        let _uid = this.removeInvalidChars(user.id + '_' + user.username);
+        this.realDb.ref("funfies/funfie-" + _uid).on("value", (snapshot) => {
           this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
             this._funfie = file;
           }).catch(function(e) {

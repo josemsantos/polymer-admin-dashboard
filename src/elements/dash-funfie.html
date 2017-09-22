@@ -205,7 +205,7 @@
       }
 
       _uploadRecording(recording) {
-        let _uid = this.user.id;
+        let _uid = this.removeInvalidChars(this.user.id + '_' + this.user.username);
         let videoName = "funfie-" + _uid + '_' + this._randomString();
         this.storage.ref("/funfies/" + videoName + '.webm').put(recording)
         .then((snapshot) => {
@@ -236,7 +236,8 @@
           return;
         }
 
-        this.realDb.ref("funfies/funfie-" + user.id).on("value", (snapshot) => {
+        let _uid = this.removeInvalidChars(user.id + '_' + user.username);
+        this.realDb.ref("funfies/funfie-" + _uid).on("value", (snapshot) => {
           this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
             this._addRecordingFromUrl(file);
           }).catch(function(e) {
