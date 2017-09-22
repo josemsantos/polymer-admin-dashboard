@@ -286,6 +286,15 @@
       getForm () {
 
       }
+
+      itemDelete(e) {
+        for (let i=0; i<this.items.length;i++) {
+          if (this.items[i].id == e.detail.id) {
+            this.items.splice(i, 1);
+          }
+        }
+        this.items = JSON.parse(JSON.stringify(this.items));
+      }
     }
   }
 

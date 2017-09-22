@@ -14,7 +14,7 @@
 
     <dash-list
       heading="Backoffice Users"
-      items="[[users]]"
+      items="[[items]]"
       heading-style="blue-grey"
       filters="[[filters]]"
       icon="my-icons:group"
@@ -26,7 +26,7 @@
       page="{{page}}"
       custom-pagination></dash-list>
     <user-model
-      on-model-item-deleted="_itemDisabled"></user-model>
+      on-model-item-deleted="itemDelete"></user-model>
 
   </template>
 
@@ -65,7 +65,7 @@
             type: String,
             value: 'seraph'
           },
-          users: Array,
+          items: Array,
           columns: {
             type: Array,
             value: [
@@ -122,13 +122,13 @@
         };
       }
 
-      _itemDisabled(e) {
-        for (let i=0; i<this.users.length;i++) {
-          if (this.users[i].id == e.detail.id) {
-            this.users[i].disabled = true;
+      itemDelete(e) {
+        for (let i=0; i<this.items.length;i++) {
+          if (this.items[i].id == e.detail.id) {
+            this.items[i].disabled = true;
           }
         }
-        this.users = JSON.parse(JSON.stringify(this.users));
+        this.items = JSON.parse(JSON.stringify(this.items));
       }
 
       /**
@@ -152,7 +152,7 @@
             data[i].disabled = true;
           }
         }
-        this.users = data;
+        this.items = data;
       }
 
       /**
@@ -162,7 +162,7 @@
         super.ready();
 
         this.addEventListener('delete-user', function (e) {
-          let item = this.getItem(this.users, e.detail.key);
+          let item = this.getItem(this.items, e.detail.key);
           this._alert({
             'key': item.id,
             'message': item.username
