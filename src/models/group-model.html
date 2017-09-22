@@ -64,6 +64,10 @@
         this.endpoint = '/authorization/groups';
       }
 
+      _posUpdateCallBack (response) {
+        super._posUpdateCallBack(response.response.name);
+      }
+
       _responseChanged (response) {
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
@@ -115,6 +119,7 @@
                   type: 'regex',
                   regex: '^(.){1,}$',
                   message: 'Invalid Group name',
+                  required: true,
                   stop: true
                 }
               ]

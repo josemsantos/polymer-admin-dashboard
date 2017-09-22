@@ -335,7 +335,8 @@
                 if ((null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name])
                     && required) {
                   errors.push(validators[v].message);
-                } else  if (request[fields[i].name] && null === request[fields[i].name].match(validators[v].regex)) {
+                } else  if (request.hasOwnProperty(fields[i].name) && request[fields[i].name] !== undefined
+                    && null === request[fields[i].name].match(validators[v].regex)) {
                   errors.push(validators[v].message);
                 }
                 break;

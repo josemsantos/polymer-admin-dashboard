@@ -28,7 +28,7 @@
     <user-model
       fetch="[[user.id]]"
       on-model-response-changed="_setData"
-      on-model-update-success="_nofiyUser"></user-model>
+      on-model-update-success="_notifyUser"></user-model>
 
     <paper-material elevation="2">
       <dash-form
@@ -42,8 +42,8 @@
         notify-success="[[successMessage]]"
         on-submit="_execAction">
           <div class="title blue-grey"><h2><iron-icon icon="my-icons:person"></iron-icon>My profile [[user.username]]</h2></div>
-          <div slot="success">User Account [[successMessage]] updated successfuly</div>
-          <div slot="error">An error occured: <pre>[[errorMessage]]</pre></div>
+          <div slot="success">User Account [[successMessage]] successfuly</div>
+          <div slot="error"><pre>[[errorMessage]]</pre></div>
           <div slot="body">
             <dash-funfie 
               user="[[user]]"

@@ -25,7 +25,8 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"></dash-list>
-    <group-model></group-model>
+    <group-model
+      on-model-delete-success="_updateList"></group-model>
   </template>
 
   <script>

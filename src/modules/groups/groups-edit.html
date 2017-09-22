@@ -22,7 +22,9 @@
       fetch="[[key]]"
       fetch-roles
       on-groups-roles-changed="_setExternalData"
-      on-model-response-changed="_setData"></group-model>
+      on-model-response-changed="_setData"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyUser"></group-model>
     <paper-material elevation="2">
       <dash-form
         class="default"
@@ -33,10 +35,13 @@
         actions="[[_formActions]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
+          <div slot="success">Group [[successMessage]] successfuly</div>
+          <div slot="error"><pre>[[errorMessage]]</pre></div>
           <div class="title blue-grey"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[groupModel.name]]</h2></div>
-          <div class="error">[[errorMessage]]</div>
       </dash-form>
     </paper-material>
 
@@ -80,7 +85,13 @@
             type: Object,
           },
           form: Object,
-          errorMessage: String
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'roles'
+            ]
+          }
         };
       }
 
@@ -114,7 +125,15 @@
       }
 
       _updateGroup (e) {
-        console.log(e.detail);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        this.errorMessage = "";
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.groupModel.update(null, this.key, JSON.stringify(payload));
       }
 
       _goToList (e) {
