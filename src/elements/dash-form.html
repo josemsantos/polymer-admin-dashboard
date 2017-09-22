@@ -59,12 +59,12 @@
         --paper-toast-color: white;
       }
       #container {
-        padding: 76px;
         position:absolute;
-        top: -76px;
+        top:0;
         left: 0;
         right: 0;
         display: block;
+        height:64px;
       }
       .checkbox-container {
         padding: 16px 0;
@@ -88,25 +88,25 @@
 
       }
     </style>
+    <div id="container">
+      <paper-toast duration="5000" id="toastSuccess" class="fit-bottom success">
+        <div class="paper-toast-message-container">
+          <slot name="success"></slot>
+        </div>
+        <paper-button on-click="_closeSuccess">
+          <iron-icon icon="my-icons:close"></iron-icon>
+        </paper-button>
+      </paper-toast>
+      <paper-toast duration="5000" id="toastError" class="fit-bottom error">
+        <div class="paper-toast-message-container">
+          <slot name="error"></slot>
+        </div>
+        <paper-button on-click="_closeError">
+          <iron-icon icon="my-icons:close"></iron-icon>
+        </paper-button>
+      </paper-toast>
+    </div>
     <div class="form-wrapper">
-      <div id="container">
-        <paper-toast duration="0" id="toastSuccess" class="fit-bottom success">
-          <div class="paper-toast-message-container">
-            <slot name="success"></slot>
-          </div>
-          <paper-button on-click="_closeSuccess">
-            <iron-icon icon="my-icons:close"></iron-icon>
-          </paper-button>
-        </paper-toast>
-        <paper-toast duration="0" id="toastError" class="fit-bottom error">
-          <div class="paper-toast-message-container">
-            <slot name="error"></slot>
-          </div>
-          <paper-button on-click="_closeError">
-            <iron-icon icon="my-icons:close"></iron-icon>
-          </paper-button>
-        </paper-toast>
-      </div>
       <iron-form>
         <form>
           <div class="title">
