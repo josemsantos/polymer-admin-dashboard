@@ -46,6 +46,14 @@
         width: 240px;
         height: 240px;
       }
+      .no-profile-container {
+        text-align: center;
+      }
+      .no-profile-container iron-icon {
+        height: 64px;
+        width: 64px;
+        color: var(--paper-blue-500);
+      }
       .funfie-container {
         justify-content: center;
         display: flex;
@@ -70,6 +78,107 @@
         flex:1;
         justify-content: center;
       }
+
+      .instructions {
+        display: block;
+        width: 240px;
+        text-align: center;
+      }
+
+      .instructions .text {
+        padding-top: 5px;
+      }
+
+      #pulse {
+        opacity: 0.75;
+        margin: 20px auto;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        position: absolute;
+        top: 100px;
+        left: 120px;
+        background: var(--paper-blue-grey-800);
+      }
+
+      .pulse {
+        width: 10px;
+        height: 10px;
+        border: 5px solid var(--paper-blue-grey-300);
+        -webkit-border-radius: 30px;
+        -moz-border-radius: 30px;
+        border-radius: 30px;
+        background-color: var(--paper-blue-grey-500);
+        z-index: 10;
+        position: absolute;
+      }
+
+      .dot {
+        border: 10px solid var(--paper-blue-grey-500);
+        background: transparent;
+        -webkit-border-radius: 60px;
+        -moz-border-radius: 60px;
+        border-radius: 60px;
+        height: 50px;
+        width: 50px;
+        -webkit-animation: pulse 3s ease-out;
+        -moz-animation: pulse 3s ease-out;
+        animation: pulse 3s ease-out;
+        -webkit-animation-iteration-count: infinite;
+        -moz-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+        position: absolute;
+        top: -25px;
+        left: -25px;
+        z-index: 1;
+        opacity: 0;
+      }
+
+      @-moz-keyframes pulse {
+        0% {
+          -moz-transform: scale(0);
+          opacity: 0.0;
+        }
+        25% {
+          -moz-transform: scale(0);
+          opacity: 0.1;
+        }
+        50% {
+          -moz-transform: scale(0.1);
+          opacity: 0.3;
+        }
+        75% {
+          -moz-transform: scale(0.5);
+          opacity: 0.5;
+        }
+        100% {
+          -moz-transform: scale(1);
+          opacity: 0.0;
+        }
+      }
+
+      @-webkit-keyframes "pulse" {
+        0% {
+          -webkit-transform: scale(0);
+          opacity: 0.0;
+        }
+        25% {
+          -webkit-transform: scale(0);
+          opacity: 0.1;
+        }
+        50% {
+          -webkit-transform: scale(0.1);
+          opacity: 0.3;
+        }
+        75% {
+          -webkit-transform: scale(0.5);
+          opacity: 0.5;
+        }
+        100% {
+          -webkit-transform: scale(1);
+          opacity: 0.0;
+        }
+      }
     </style>
     <div class="funfie-container">
       <app-media-devices 
@@ -82,14 +191,24 @@
         stream="{{stream}}">
       </app-media-stream>
 
-      <div class="funfie">
-        <app-media-video
-          source="[[profileFunfie]]"
-          loop
-          autoplay
-          muted>
-        </app-media-video>
-      </div>
+      <template is="dom-if" if="[[profileFunfie]]">
+        <div class="funfie">
+          <app-media-video
+            source="[[profileFunfie]]"
+            loop
+            autoplay
+            muted>
+          </app-media-video>
+        </div>
+      </template>
+
+      <template is="dom-if" if="[[!profileFunfie]]">
+        <div class="no-profile-container">
+          <iron-icon icon="my-icons:tag-faces"></iron-icon><br/>
+          Hello [[user.username]], grab this opportunity and personalize your profile.<br/>
+          Have fun with this funfie
+        </div>
+      </template>
 
       <app-media-recorder
         id="recorder"
@@ -111,6 +230,15 @@
               mirror>
             </app-media-video>
             <div id="progress"></div>
+          </div>
+          <div class="instructions">
+            <div id="pulse">
+              <div class="dot"></div>
+              <div class="pulse"></div>
+            </div>
+            <div class="text">
+              Click on the picture to start recording and have fun for a whole 2 seconds.
+            </div>
           </div>
         </paper-dialog-scrollable>
       </paper-dialog>
