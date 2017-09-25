@@ -245,6 +245,21 @@
         };
       }
 
+      getCreateForm () {
+        let form = this.getForm();
+        //Username becomes editable
+        form.fields[0].attributes.readonly = false;
+        //Password becomes required
+        form.fields[1].validators[0].required = true;
+        form.actions = {
+          'create' :{
+            label: 'Create',
+            event: 'create-user'
+          },
+        };
+        return form;
+      }
+
       getLoginForm () {
         return {
           fields: [

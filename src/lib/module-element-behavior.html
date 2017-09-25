@@ -197,6 +197,7 @@
       }
 
       _execAction (e) {
+        console.log(e.detail.type);
         let action = e.detail.type;
         let identifier = e.detail.key;
         let procedure = this._procedureFactory(action, this.actions[action], identifier);
@@ -278,7 +279,6 @@
         this._setConnections();
       }
 
-
       ready () {
         super.ready();
         Polymer.RenderStatus.afterNextRender(this, function () {
@@ -301,6 +301,11 @@
           }
         }
         return false;
+      }
+
+      getModuleName() {
+        let elName = this.getAttribute('name');
+        return elName.split('-')[0];
       }
 
       onResponseChanged (e) {

@@ -75,6 +75,7 @@
         color: var(--paper-blue-500);
         font-weight: 500;
       }
+      .create,
       .edit {
         background-color:  var(--paper-green-500);
         color: #FFF;
@@ -195,12 +196,12 @@
             type: Array,
             value: []
           },
-          _modelReady: Boolean,
           _inputTypes: {
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
           },
+          modelReady: Boolean,
           notifyError: {
             type:String,
             observer: '_notifyErrorChanged'
@@ -232,7 +233,7 @@
 
       static get observers() {
         return [
-          '_externalSourcesChanged(_modelReady, externalSources)'
+          '_externalSourcesChanged(modelReady, externalSources)'
         ];
       }
 
@@ -273,12 +274,12 @@
           for (let field in data) {
             this._applyDataToElement(field, data[field]);
           }
-          this._modelReady = true;
+          this.modelReady = true;
         }
       }
 
-      _externalSourcesChanged (_modelReady, externalSources) {
-        if (this._modelReady && externalSources) {
+      _externalSourcesChanged (modelReady, externalSources) {
+        if (this.modelReady && externalSources) {
           for (let name in externalSources) {
             let el = this.shadowRoot.querySelector('#' + name);
             el.setAttribute('source', JSON.stringify(externalSources[name]));
@@ -298,7 +299,7 @@
         return model;
       }
 
-      _formReset () {
+      formReset () {
         this.fields.forEach(fld => {
           if (this._isInput(fld.type)) {
             let el = this.shadowRoot.querySelector('paper-input[name=' + fld.name + ']');
@@ -306,6 +307,9 @@
           } else if (this._isCheckbox(fld.type)) {
             let el = this.shadowRoot.querySelector('paper-checkbox[name=' + fld.name + ']');
             el.checked = false;
+          } else if (this._isCollection(fld.type)) {
+            let el = this.shadowRoot.querySelector('paper-chip-input-autocomplete[name=' + fld.name + ']');
+            el._items = [];
           }
         });
       }
@@ -328,11 +332,11 @@
                 break;
             }
             if (validators[v].stop && errors.length > 0) {
-              return errors;
+              return errors.join(', ');
             }
           }
         }
-        return errors;
+        return errors.join(', ');
       }
 
       executeMe (e) {
@@ -342,6 +346,7 @@
           case 'cancel':
             this.dispatchEvent(new CustomEvent('cancel', {bubbles: true, composed: true}));
             break;
+          case 'create':
           case 'delete':
           case 'edit':
             this.dispatchEvent(new CustomEvent('submit', {
@@ -358,7 +363,7 @@
             }));
             break;
           case 'reset' :
-            this._formReset();
+            this.formReset();
             break;
           case 'link':
             break;

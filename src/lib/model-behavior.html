@@ -37,6 +37,16 @@
       _responseChanged (e) {
 
       }
+
+      _posCreateCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-create-success', {
+          detail: {
+            message: response
+          },
+          bubbles: true, 
+          composed: true
+        }));
+      }
       
       _posUpdateCallBack (response) {
         this.dispatchEvent(new CustomEvent('model-update-success', {
@@ -92,8 +102,20 @@
         });
       }
 
-      create(method) {
+      create(method, payload) {
         method = method || 'POST';
+        var _self = this;
+        this.connection.request({
+          url: this.endpoint,
+          verb: method,
+          data: payload,
+          onLoad(e) {
+            _self._posCreateCallBack.call(_self, JSON.parse(e.target.responseText));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
 
       update(method, key, payload) {

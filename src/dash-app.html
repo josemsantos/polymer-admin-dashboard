@@ -175,6 +175,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <users-list 
               permissions="[[permissions]]" 
               name="users-list"></users-list>
+            <users-create 
+              permissions="[[permissions]]" 
+              name="users-create"></users-create>
             <users-edit 
               permissions="[[permissions]]" 
               name="users-edit"
@@ -349,12 +352,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }.bind(this));
 
         this.addEventListener('dash-funfie-updated', function (e) {
-          console.log("asdasd")
           this.profilePic = e.detail.funfie;
         }.bind(this));
 
         this.addEventListener('dash-go-to', function (e) {
-          console.log(e.detail)
           this.redirectTo(e.detail.route)
         }.bind(this));
       }
