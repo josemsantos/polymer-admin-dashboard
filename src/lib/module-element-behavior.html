@@ -274,6 +274,14 @@
         this.successMessage = _msg;
       }
 
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: this.getModuleName() + '/list'},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
       constructor () {
         super();
         this._setConnections();
