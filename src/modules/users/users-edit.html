@@ -2,12 +2,12 @@
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/user-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="groups-edit">
+<dom-module id="users-edit">
   <template>
     <style include="shared-styles">
        :host {
@@ -19,20 +19,20 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
       
-    <group-model
+    <user-model
       fetch="[[key]]"
-      fetch-roles
-      on-groups-roles-changed="_setExternalData"
+      fetch-groups
+      on-users-groups-changed="_setExternalData"
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
-      on-model-delete-success="_notifyUser"></group-model>
+      on-model-delete-success="_notifyUser"></user-model>
 
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[groupModel.model]]"
+        model="[[userModel.model]]"
         fields="[[form.fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
@@ -43,26 +43,26 @@
         on-submit="_execAction">
           <div slot="success">Group [[successMessage]] successfuly</div>
           <div slot="error"><pre>[[errorMessage]]</pre></div>
-          <div class="title blue-grey"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[groupModel.name]]</h2></div>
+          <div class="title blue-grey"><h2><iron-icon icon="my-icons:group"></iron-icon>User account - [[data.username]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
 
   <script>
     /**
-     * `groups-edit` Description
+     * `users-edit` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsEdit extends ModuleElementBehavior(Polymer.Element) {
+    class UsersEdit extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'groups-edit';
+        return 'users-edit';
       }
 
       /**
@@ -75,7 +75,7 @@
             type: String,
             value: 'seraph'
           },
-          groupModel: HTMLElement,
+          userModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -88,8 +88,11 @@
           payload: {
             type: Array,
             value: [
-              'name',
-              'roles'
+              'username',
+              'password',
+              'email',
+              'inactive',
+              'access_groups'
             ]
           }
         };
@@ -101,30 +104,30 @@
         ];
       }
 
-      _setData (e) {
-        this.data = e.detail.response;
-      }
-
       _setExternalData (e) {
-        let roles = [];
+        let groups = [];
         if (e.detail.length) {
           e.detail.forEach(item => {
-            roles.push({
+            groups.push({
               text: item.name,
               value: item.id
             });
           });
         }
         this.externalData = {
-          'roles': roles
+          'access_groups': groups
         };
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
       }
 
       _routeIdChanged (id) {
         this.key = id;
       }
 
-      _updateGroup (e) {
+      _updateUser (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -133,12 +136,12 @@
         this.errorMessage = "";
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.groupModel.update(null, this.key, JSON.stringify(payload));
+        this.userModel.update(null, this.key, JSON.stringify(payload));
       }
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/groups/list'},
+          detail: {route: '/users/list'},
           bubbles: true,
           composed: true
         }));
@@ -151,7 +154,7 @@
        */
       constructor() {
         super();
-        this.model = 'group-model';
+        this.model = 'user-model';
       }
 
       /**
@@ -159,26 +162,26 @@
        */
       ready() {
         super.ready();
-        this.groupModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.groupModel.getForm();
+        this.userModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.userModel.getForm();
 
         this.actions = this.form.actions;
         this.isReady = true;
 
-        this.addEventListener('delete-group', function (e) {
+        this.addEventListener('delete-user', function (e) {
           this._alert({
             'key': this.key,
-            'message': this.data.name
+            'message': this.data.username
           });
         }.bind(this));
 
-        this.addEventListener('update-group', function (e) {
-          this._updateGroup(e);
+        this.addEventListener('update-user', function (e) {
+          this._updateUser(e);
         });
       }
 
     }
 
-    window.customElements.define(GroupsEdit.is, GroupsEdit);
+    window.customElements.define(UsersEdit.is, UsersEdit);
   </script>
 </dom-module>

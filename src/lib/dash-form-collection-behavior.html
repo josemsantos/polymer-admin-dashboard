@@ -1,0 +1,43 @@
+<script>
+  'use strict';
+
+  function DashFormCollectionBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+
+      _getValuesFromSelectedColletion (elId, items) {
+        let list = [];
+        let source = this.shadowRoot.querySelector('#' + elId).source;
+        if (source.length) {
+          for (let i in items) {
+            for (let j in source) {
+              if (items[i] == source[j].text) {
+                list.push(source[j].value);
+              }
+            }
+          }
+        }
+        return list;
+      }
+
+      _preSelectItemFromValues (elId, items) {
+        let list = [];
+        let source = this.shadowRoot.querySelector('#' + elId).source;
+        if (source.length) {
+          for (let i in items) {
+            for (let j in source) {
+              if (items[i] == source[j].value) {
+                list.push(source[j].text);
+              }
+            }
+          }
+        }
+        return list;
+      }
+      
+    }
+  }
+</script>

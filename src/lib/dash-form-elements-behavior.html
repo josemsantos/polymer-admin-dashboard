@@ -1,0 +1,73 @@
+<script>
+  'use strict';
+
+  function DashFormElementsBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+      
+      _isInput(type) {
+        return (this._inputTypes.indexOf(type) > -1);
+      }
+
+      _isCheckbox(type) {
+        return type === 'checkbox';
+      }
+
+      _isCollection(type) {
+        return type === 'collection';
+      }
+
+      _isReadonly(attributes) {
+        return (attributes && attributes.readonly);
+      }
+
+      _isTextonly(attributes) {
+        return (attributes && attributes.textOnly);
+      }
+
+      _applyDataToElement(field, data) {
+        let formField = this.shadowRoot.querySelector('[name=' + field + ']');
+        if (formField) {
+          if (Array.isArray(data)) {
+            /** This is for collections **/
+            if (formField.hasAttribute('text-only')) {
+              formField._items = data;
+            } else {
+              this._cacheSelectedItems.push({
+                el: formField.id,
+                data: data
+              });
+            }
+          } else if (formField.tagName === 'PAPER-CHECKBOX') {
+            formField.checked = data;
+          } else {
+            formField.value = data;
+          }
+        }
+      }
+
+      _getElementValue(prop) {
+        let formField = this.shadowRoot.querySelector('[name=' + prop + ']');
+        let value = "";
+        if (formField) {
+          if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
+            /** This is for collections **/
+            if (formField.hasAttribute('text-only')) {
+              value = formField._items;
+            } else {
+              value = this._getValuesFromSelectedColletion(formField.id, formField._items);
+            }
+          } else if (formField.tagName == "PAPER-CHECKBOX") {
+            value = formField.checked;
+          } else {
+            value = formField.value;
+          }
+        }
+        return value;
+      }
+    }
+  }
+</script>

@@ -35,6 +35,11 @@
        */
       static get properties() {
         return {
+          fetchGroups: Boolean,
+          groups: {
+            type: Array,
+            value: []
+          },
           authEndpoint: {
             type: String,
             value: '/authentication/login'
@@ -56,12 +61,21 @@
               expired: null,
               expires_at: null,
               groups: [],
+              /** Damn it !!! the request should have the same name as this property!! groups and access_groups are the freaking same **/
+              access_groups: [],
               roles: [],
               credentials_expired: null,
               rememberme: null
             }
           }
         };
+      }
+
+      static get observers() {
+        return [
+          '_onFetchGroupsRequired(fetchGroups, connection)',
+          '_modelChanged(model)',
+        ];
       }
 
       /**
@@ -85,6 +99,15 @@
         });
       }
 
+      /**
+       * Hack due to different name between request property and model
+       */
+      _modelChanged(model) {
+        if (model.groups && model.groups.length) {
+          this.model.access_groups = model.groups;
+        }
+      }
+
       _responseChanged (response) {
         let data = response.response;
         let rememberMe = response.rememberMe;
@@ -99,6 +122,31 @@
           this.model = data;
         }
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      _onFetchGroupsRequired (fetchGroups, connection) {
+        if (fetchGroups && connection) {
+          this._getGroups();
+        }
+      }
+
+      _getGroups () {
+        var _self = this;
+        this.connection.request({
+          url: '/authorization/groups',
+          verb: 'GET',
+          onLoad(e) {
+            _self.set('groups', JSON.parse(e.target.responseText).response.groups);
+            _self.dispatchEvent(new CustomEvent('users-groups-changed', {
+              detail: _self.groups,
+              bubbles: true,
+              composed: true
+            }));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
       }
 
       _posUpdateCallBack (response) {
@@ -127,6 +175,74 @@
             _self.dispatchEvent(new CustomEvent('sign-in-failed', {detail: {error: JSON.parse(e.target.responseText)}}));
           }
         });
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: 'Username',
+              name: 'username',
+              type: 'text',
+              attributes: {
+                readonly: true
+              },
+              validators: [
+              ]
+            },
+            {
+              label: 'Password',
+              name: 'password',
+              type: 'password',
+              validators: [
+                {
+                  type: 'regex',
+                  required: false,
+                  regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
+                  message: 'Invalid Password. password should contains at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
+                  stop: false
+                }
+              ]
+            },
+            {
+              label: 'E-mail',
+              name: 'email',
+              type: 'email',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+                  message: 'Invalid e-mail',
+                  stop: false
+                }
+              ]
+            },
+            {
+              label: 'Inactive',
+              name: 'inactive',
+              type: 'checkbox',
+              validators: [
+              ]
+            },
+            {
+              label: 'Groups',
+              name: 'access_groups',
+              type: 'collection',
+              validators: [
+              ]
+            },
+          ],
+          actions: {
+            'edit' :{
+              label: 'Update',
+              event: 'update-user'
+            },
+            'delete' :{
+              label: 'Lock',
+              event: 'delete-user'
+            },
+          }
+        };
       }
 
       getLoginForm () {

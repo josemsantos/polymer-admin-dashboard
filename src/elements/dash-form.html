@@ -7,6 +7,8 @@
 <link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
 <link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../lib/dash-form-elements-behavior.html">
+<link rel="import" href="../lib/dash-form-collection-behavior.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
@@ -135,6 +137,7 @@
                   id="[[field.name]]"
                   label="+Add (Enter) -Delete (Backspace)"
                   name$="[[field.name]]"
+                  text-only$="[[_isTextonly(field.attributes)]]"
                   closable>
                 </paper-chip-input-autcomplete>
               </template>
@@ -174,7 +177,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DashForm extends Polymer.Element {
+    class DashForm extends DashFormCollectionBehavior(DashFormElementsBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -188,6 +191,11 @@
       static get properties() {
         return {
           key: Object,
+          _cacheSelectedItems: {
+            type: Array,
+            value: []
+          },
+          _modelReady: Boolean,
           _inputTypes: {
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
@@ -218,9 +226,14 @@
           },
           externalSources: {
             type: Object,
-            observer: '_externalSourcesChanged'
           }
         };
+      }
+
+      static get observers() {
+        return [
+          '_externalSourcesChanged(_modelReady, externalSources)'
+        ];
       }
 
       _setPaperToastContainer() {
@@ -255,29 +268,34 @@
         this._closeError();
       }
 
-      _externalSourcesChanged (externalSources) {
-        if (externalSources) {
+      _modelDataChanged (data) {
+        if (data) {
+          for (let field in data) {
+            this._applyDataToElement(field, data[field]);
+          }
+          this._modelReady = true;
+        }
+      }
+
+      _externalSourcesChanged (_modelReady, externalSources) {
+        if (this._modelReady && externalSources) {
           for (let name in externalSources) {
             let el = this.shadowRoot.querySelector('#' + name);
             el.setAttribute('source', JSON.stringify(externalSources[name]));
           }
+          for (let i in this._cacheSelectedItems) {
+            let obj = this._cacheSelectedItems[i];
+            let el = this.shadowRoot.querySelector('#' + obj.el);
+            el._items = this._preSelectItemFromValues(obj.el, obj.data);
+          }
         }
       }
 
-      _isInput (type) {
-        return (this._inputTypes.indexOf(type) > -1 );
-      }
-
-      _isCheckbox (type) {
-        return type === 'checkbox';
-      }
-
-      _isCollection (type) {
-        return type === 'collection';
-      }
-
-      _isReadonly (attributes) {
-        return (attributes && attributes.readonly);
+      _generateModelPayLoad (model) {
+        for (let prop in model) {
+          model[prop] = this._getElementValue(prop);
+        }
+        return model;
       }
 
       _formReset () {
@@ -290,38 +308,6 @@
             el.checked = false;
           }
         });
-
-      }
-
-      _modelDataChanged (data) {
-        if (data) {
-          for (let field in data) {
-            let formField = this.shadowRoot.querySelector('[name=' + field + ']');
-            if (formField) {
-              if (Array.isArray(data[field])) {
-                /** This is for collections **/
-                formField._items = data[field];
-              } else {
-                formField.value = data[field];
-              }
-            }
-          }
-        }
-      }
-
-      _generateModelPayLoad (model) {
-        for (let prop in model) {
-          let formField = this.shadowRoot.querySelector('[name=' + prop + ']');
-          if (formField) {
-            if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
-              /** This is for collections **/
-              model[prop] = formField._items;
-            } else {
-              model[prop] = formField.value;
-            }
-          }
-        }
-        return model;
       }
 
       validate (fields, request) {
