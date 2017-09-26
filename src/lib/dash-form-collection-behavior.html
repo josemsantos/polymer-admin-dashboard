@@ -10,34 +10,41 @@
 
       _getValuesFromSelectedColletion (elId, items) {
         let list = [];
-        let source = this.shadowRoot.querySelector('#' + elId).source;
-        if (source.length) {
-          for (let i in items) {
-            for (let j in source) {
-              if (items[i] == source[j].text) {
-                list.push(source[j].value);
+        try {
+          let source = JSON.parse(this.shadowRoot.querySelector('#' + elId).getAttribute('source'));
+          if (source.length) {
+            for (let i in items) {
+              for (let j in source) {
+                if (items[i] == source[j].text) {
+                  list.push(source[j].value);
+                }
               }
             }
           }
-        }
+      } catch (e) {
+        console.warn('Json parse failed');
+      }
         return list;
       }
 
       _preSelectItemFromValues (elId, items) {
         let list = [];
-        let source = this.shadowRoot.querySelector('#' + elId).source;
-        if (source.length) {
-          for (let i in items) {
-            for (let j in source) {
-              if (items[i] == source[j].value) {
-                list.push(source[j].text);
+        try {
+          let source = JSON.parse(this.shadowRoot.querySelector('#' + elId).getAttribute('source'));
+          if (source.length) {
+            for (let i in items) {
+              for (let j in source) {
+                if (items[i] == source[j].value) {
+                  list.push(source[j].text);
+                }
               }
             }
           }
+        } catch (e) {
+          console.warn('Json parse failed');
         }
         return list;
       }
-      
     }
   }
 </script>
