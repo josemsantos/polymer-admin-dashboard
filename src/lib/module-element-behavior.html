@@ -237,7 +237,8 @@
       _sort (e) {
         this.filterSortRequest = true;
         this.page = 1; //reset pagination element
-        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + e.detail.sort.direction;
+        let direction = e.detail.sort.direction == 'desc' ? 'normal' : 'reverse';
+        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + direction;
         this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery);
         this.filterSortRequest = false;
       }
@@ -321,7 +322,7 @@
       }
 
       getList () {
-        this.modelElement.search('', this.itemsPerPage);
+        this.modelElement.search('', this.itemsPerPage, this.page, this.filterQuery, this.sortQuery);
       }
 
       getForm () {
