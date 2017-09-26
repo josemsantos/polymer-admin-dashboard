@@ -20,21 +20,21 @@
         return type === 'collection';
       }
 
-      _isReadonly(attributes) {
-        return (attributes && attributes.readonly);
+      _isReadonly(attributes, showOnly) {
+        return (attributes && attributes.readonly || showOnly);
       }
 
       _isTextonly(attributes) {
         return (attributes && attributes.textOnly);
       }
 
-      _applyDataToElement(field, data) {
+      _applyDataToElement(field, data, showOnly) {
         let formField = this.shadowRoot.querySelector('[name=' + field + ']');
         if (formField) {
           if (Array.isArray(data)) {
             /** This is for collections **/
             if (formField.hasAttribute('text-only')) {
-              formField._items = data;
+              showOnly ? formField.items = data : formField._items = data;
             } else {
               this._cacheSelectedItems.push({
                 el: formField.id,

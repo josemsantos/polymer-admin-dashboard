@@ -1,0 +1,123 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="groups-show">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+    <group-model
+      fetch="[[key]]"
+      on-model-response-changed="_setData"></group-model>
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[groupModel.model]]"
+        fields="[[form.fields]]"
+        model-data="[[data]]"
+        on-cancel="_goToList"
+        show-only>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[groupModel.name]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `groups-show` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class GroupsShow extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'groups-show';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'seraph'
+          },
+          groupModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: '/groups/list'},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'group-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.groupModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.groupModel.getForm();
+
+        this.isReady = true;
+      }
+
+    }
+
+    window.customElements.define(GroupsShow.is, GroupsShow);
+  </script>
+</dom-module>
