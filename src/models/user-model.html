@@ -118,6 +118,7 @@
             'X-AUTH-API-SECRET': data.secret
           }
           this.dispatchEvent(new CustomEvent('update-request-credentials', {detail: credentials}));
+          this.dispatchEvent(new CustomEvent('sign-in-success', {detail: {user: this.model, rememberMe: rememberMe}}));
         } else {
           this.model = data;
         }
@@ -155,7 +156,6 @@
 
       mapUser (data, rememberMe) {
         this.model = data;
-        this.dispatchEvent(new CustomEvent('user-logged', {detail: {user: this.model, rememberMe: rememberMe}}));
       }
 
       requestSignIn (payload) {
