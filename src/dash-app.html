@@ -172,16 +172,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="groups-edit"
               route="[[subroute]]"></groups-edit>
-            <users-list 
-              permissions="[[permissions]]" 
+              <groups-show
+                permissions="[[permissions]]"
+                name="groups-show"
+                route="[[subroute]]"></groups-show>
+            <users-list
+              permissions="[[permissions]]"
               name="users-list"></users-list>
-            <users-create 
-              permissions="[[permissions]]" 
+            <users-create
+              permissions="[[permissions]]"
               name="users-create"></users-create>
             <users-edit 
               permissions="[[permissions]]" 
               name="users-edit"
               route="[[subroute]]"></users-edit>
+            <users-show
+              permissions="[[permissions]]"
+              name="users-show"
+              route="[[subroute]]"></users-show>
             <user-profile 
               user="[[user]]"
               permissions="[[permissions]]" 

@@ -197,7 +197,6 @@
       }
 
       _execAction (e) {
-        console.log(e.detail.type);
         let action = e.detail.type;
         let identifier = e.detail.key;
         let procedure = this._procedureFactory(action, this.actions[action], identifier);
