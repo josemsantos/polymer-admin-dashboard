@@ -53,8 +53,7 @@
     </style>
     <user-model
       on-update-request-credentials="_notifyAuthHeaders"
-      on-user-logged="_notifyUserLogged"
-      on-reset-fields="_resetLoginForm"
+      on-sign-in-success="_notifyUserLogged"
       on-sign-in-failed="_showSignInError"></user-model>
     <paper-material elevation="2">
       <dash-form
@@ -133,6 +132,7 @@
           permissions: e.detail.user.roles,
           rememberMe: e.detail.rememberMe
         };
+        this._resetLoginForm();
         this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: appUser}));
       }
 
