@@ -144,6 +144,9 @@
       }
 
       _userProfileCharComputed (username) {
+        if (!username) {
+          return '';
+        }
         return username.charAt(0);
       }
 

@@ -1,31 +1,30 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../models/group-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-
-<dom-module id="users-create">
+<dom-module id="groups-create">
   <template>
-      <style include="shared-styles">
-        :host {
-          display: block
-        }
-      </style>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+    </style>
         
-      <user-model
-        fetch-groups
-        on-users-groups-changed="_setExternalData"
-        on-model-create-success="_notifyUser"></user-model>
+      <group-model
+        fetch-roles
+        on-groups-roles-changed="_setExternalData"
+        on-model-create-success="_notifyUser"></group-model>
   
       <paper-material elevation="2">
         <dash-form
           class="default"
           has-cancel
           key="[[key]]"
-          model="[[userModel.model]]"
+          model="[[groupModel.model]]"
           fields="[[form.fields]]"
           actions="[[_formActions]]"
           external-sources="[[externalData]]"
@@ -34,28 +33,28 @@
           on-cancel="_goToList"
           on-submit="_execAction"
           model-ready>
-            <div slot="success">User [[successMessage]] successfuly</div>
+            <div slot="success">Group [[successMessage]] successfuly</div>
             <div slot="error">[[errorMessage]]</div>
-            <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New User account</h2></div>
+            <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Group</h2></div>
         </dash-form>
       </paper-material>
   </template>
 
   <script>
     /**
-     * `users-create` Description
+     * `groups-create` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class UserCreate extends ModuleElementBehavior(Polymer.Element) {
+    class GroupsCreate extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'users-create';
+        return 'groups-create';
       }
 
       /**
@@ -68,7 +67,7 @@
             type: String,
             value: 'seraph'
           },
-          userModel: HTMLElement,
+          groupModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -81,11 +80,8 @@
           payload: {
             type: Array,
             value: [
-              'username',
-              'password',
-              'email',
-              'inactive',
-              'access_groups'
+              'name',
+              'roles',
             ]
           }
         };
@@ -104,21 +100,21 @@
       }
 
       _setExternalData (e) {
-        let groups = [];
+        let roles = [];
         if (e.detail.length) {
           e.detail.forEach(item => {
-            groups.push({
+            roles.push({
               text: item.name,
               value: item.id
             });
           });
         }
         this.externalData = {
-          'access_groups': groups
+          'roles': roles
         };
       }
 
-      _createUser (e) {
+      _createGroup (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -127,7 +123,7 @@
         this.errorMessage = "";
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.userModel.create(null, JSON.stringify(payload));
+        this.groupModel.create(null, JSON.stringify(payload));
       }
 
       /**
@@ -137,7 +133,7 @@
        */
       constructor() {
         super();
-        this.model = 'user-model';
+        this.model = 'group-model';
       }
 
       /**
@@ -145,19 +141,19 @@
        */
       ready() {
         super.ready();
-        this.userModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.userModel.getCreateForm();
+        this.groupModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.groupModel.getCreateForm();
 
         this.actions = this.form.actions;
         this.isReady = true;
 
-        this.addEventListener('create-user', function (e) {
-          this._createUser(e);
+        this.addEventListener('create-group', function (e) {
+          this._createGroup(e);
         });
       }
 
     }
 
-    window.customElements.define(UserCreate.is, UserCreate);
+    window.customElements.define(GroupsCreate.is, GroupsCreate);
   </script>
 </dom-module>
