@@ -1,0 +1,73 @@
+<script>
+  'use strict';
+
+  function DashNotificationsBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          notifyError: {
+            type:String,
+            observer: '_notifyErrorChanged'
+          },
+          notifySuccess:{
+            type: String,
+            observer: '_notifySuccessChanged'
+          },
+        }
+      }
+
+      _notifyErrorChanged (notifyError) {
+        if (notifyError) {
+          this.dispatchEvent(new CustomEvent('dash-notify', {
+            detail: {
+              type: 'error',
+              msg: notifyError,
+            },
+            bubbles: true,
+            composed: true
+          }));
+        }
+      }
+
+      _notifySuccessChanged (notifySuccess) {
+        if (notifySuccess) {
+          this.dispatchEvent(new CustomEvent('dash-notify', {
+            detail: {
+              type: 'success',
+              msg: notifySuccess,
+            },
+            bubbles: true,
+            composed: true
+          }));
+        }
+      }
+
+      _closeSuccess () {
+        this.dispatchEvent(new CustomEvent('dash-unnotify', {
+          detail: {
+            type: 'success',
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _closeError () {
+        this.dispatchEvent(new CustomEvent('dash-unnotify', {
+          detail: {
+            type: 'error',
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _closeAnyNotification () {
+        this.notifySuccess = "";
+        this.notifyError = "";
+        this._closeSuccess();
+        this._closeError();
+      }
+    }
+  }
+</script>

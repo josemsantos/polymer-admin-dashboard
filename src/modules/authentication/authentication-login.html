@@ -114,6 +114,7 @@
           rememberme: user.rememberme
         };
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.loginForm.fields, authData);
+        this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;

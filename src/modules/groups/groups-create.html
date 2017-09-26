@@ -96,6 +96,7 @@
           composed: true
         }));
         this.shadowRoot.querySelector('dash-form').formReset();
+        e.detail.message = e.detail.message.response.name + " created";
         super._notifyUser(e)
       }
 
@@ -116,11 +117,11 @@
 
       _createGroup (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;
         }
-        this.errorMessage = "";
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
         this.groupModel.create(null, JSON.stringify(payload));

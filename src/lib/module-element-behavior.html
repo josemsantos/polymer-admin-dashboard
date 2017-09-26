@@ -257,7 +257,8 @@
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
-      _updateList () {
+      _updateList (e) {
+        this._notifyUser(e);
         this.getList();
       }
 
@@ -270,7 +271,7 @@
       }
 
       _notifyUser (e) {
-        let _msg = (e.detail.message) ? e.detail.message + " updated" : e.detail.id + " deleted";
+        let _msg = (e.detail.message) ? e.detail.message : e.detail.id + " deleted";
         this.successMessage = "";
         this.successMessage = _msg;
       }

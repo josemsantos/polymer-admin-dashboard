@@ -49,6 +49,7 @@
       }
       
       _posUpdateCallBack (response) {
+        console.log(response)
         this.dispatchEvent(new CustomEvent('model-update-success', {
           detail: {
             message: response

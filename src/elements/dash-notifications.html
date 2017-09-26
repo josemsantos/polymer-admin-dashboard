@@ -1,0 +1,134 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../my-icons.html">
+
+<dom-module id="dash-notifications">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+      paper-toast {
+        display: flex;
+        align-items: center;
+      }
+      .paper-toast-message-container {
+        flex: 1;
+      }
+      paper-toast.success {
+        --paper-toast-background-color: var(--paper-green-500);
+        --paper-toast-color: white;
+      }
+      paper-toast.error {
+        --paper-toast-background-color: var(--paper-red-500);
+        --paper-toast-color: white;
+      }
+
+      #container {
+        position:absolute;
+        top:0;
+        left: 0;
+        right: 0;
+        display: block;
+        height:64px;
+      }
+    </style>
+    <div id="container">
+      <paper-toast duration="5000" id="toastSuccess" class="fit-bottom success">
+        <div class="paper-toast-message-container">
+          <slot name="success">[[notifySuccess]]</slot>
+        </div>
+        <paper-button on-click="closeSuccess">
+          <iron-icon icon="my-icons:close"></iron-icon>
+        </paper-button>
+      </paper-toast>
+      <paper-toast duration="5000" id="toastError" class="fit-bottom error">
+        <div class="paper-toast-message-container">
+          <slot name="error">[[notifyError]]</slot>
+        </div>
+        <paper-button on-click="closeError">
+          <iron-icon icon="my-icons:close"></iron-icon>
+        </paper-button>
+      </paper-toast>
+    </div>
+  </template>
+
+  <script>
+    /**
+     * `dash-notifications` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashNotifications extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-notifications';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          notifySuccess: String,
+          notifyError: String
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      _setPaperToastContainer() {
+        this.$.toastSuccess.fitInto = this.$.container;
+        this.$.toastError.fitInto = this.$.container;
+      }
+
+      openSuccess (message) {
+        this.notifySuccess = message;
+        this.$.toastSuccess.open();
+      }
+
+      openError (message) {
+        this.notifyError = message;
+        this.$.toastError.open();
+      }
+
+      closeSuccess () {
+        this.notifySuccess = "";
+        this.$.toastSuccess.close();
+      }
+
+      closeError () {
+        this.notifyError = "";
+        this.$.toastError.close();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+            this._setPaperToastContainer();
+        });
+      }
+
+    }
+
+    window.customElements.define(DashNotifications.is, DashNotifications);
+  </script>
+</dom-module>

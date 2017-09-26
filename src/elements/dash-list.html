@@ -8,6 +8,7 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 
 <link rel="import" href="../lib/cell-element-behavior.html">
+<link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../elements/dash-form.html">
 <link rel="import" href="dash-list-cell-content.html">
 <link rel="import" href="dash-list-footer.html">
@@ -163,7 +164,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DashList extends CellElementBehavior(Polymer.Element) {
+    class DashList extends DashNotificationsBehavior(CellElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */

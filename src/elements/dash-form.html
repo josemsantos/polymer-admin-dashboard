@@ -5,8 +5,8 @@
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
-<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
 <link rel="import" href="../my-icons.html">
@@ -14,7 +14,7 @@
 <dom-module id="dash-form">
   <template>
     <style>
-       :host {
+      :host {
         display: block;
         @apply --form-layout;
       }
@@ -45,29 +45,6 @@
       paper-button {
         width: 100px;
       }
-      paper-toast {
-        display: flex;
-        align-items: center;
-      }
-      .paper-toast-message-container {
-        flex: 1;
-      }
-      paper-toast.success {
-        --paper-toast-background-color: var(--paper-green-500);
-        --paper-toast-color: white;
-      }
-      paper-toast.error {
-        --paper-toast-background-color: var(--paper-red-500);
-        --paper-toast-color: white;
-      }
-      #container {
-        position:absolute;
-        top:0;
-        left: 0;
-        right: 0;
-        display: block;
-        height:64px;
-      }
       .checkbox-container {
         padding: 16px 0;
       }
@@ -84,31 +61,7 @@
         background-color:  var(--paper-red-500);
         color: #FFF;
       }
-      .link {
-
-      }
-      .button {
-
-      }
     </style>
-    <div id="container">
-      <paper-toast duration="5000" id="toastSuccess" class="fit-bottom success">
-        <div class="paper-toast-message-container">
-          <slot name="success"></slot>
-        </div>
-        <paper-button on-click="_closeSuccess">
-          <iron-icon icon="my-icons:close"></iron-icon>
-        </paper-button>
-      </paper-toast>
-      <paper-toast duration="5000" id="toastError" class="fit-bottom error">
-        <div class="paper-toast-message-container">
-          <slot name="error"></slot>
-        </div>
-        <paper-button on-click="_closeError">
-          <iron-icon icon="my-icons:close"></iron-icon>
-        </paper-button>
-      </paper-toast>
-    </div>
     <div class="form-wrapper">
       <iron-form>
         <form>
@@ -178,7 +131,11 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DashForm extends DashFormCollectionBehavior(DashFormElementsBehavior(Polymer.Element)) {
+    class DashForm extends DashFormCollectionBehavior(
+                            DashNotificationsBehavior(
+                              DashFormElementsBehavior(Polymer.Element)
+                            )
+                          ) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -202,14 +159,6 @@
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
           },
           modelReady: Boolean,
-          notifyError: {
-            type:String,
-            observer: '_notifyErrorChanged'
-          },
-          notifySuccess:{
-            type: String,
-            observer: '_notifySuccessChanged'
-          },
           hasCancel: {
             type: Boolean,
           },
@@ -235,38 +184,6 @@
         return [
           '_externalSourcesChanged(modelReady, externalSources)'
         ];
-      }
-
-      _setPaperToastContainer() {
-        this.$.toastSuccess.fitInto = this.$.container;
-        this.$.toastError.fitInto = this.$.container;
-      }
-
-      _notifyErrorChanged (notifyError) {
-        if (notifyError) {
-          this.$.toastError.open();
-        }
-      }
-
-      _notifySuccessChanged (notifySuccess) {
-        if (notifySuccess) {
-          this.$.toastSuccess.open();
-        }
-      }
-
-      _closeSuccess () {
-        this.$.toastSuccess.close();
-      }
-
-      _closeError () {
-        this.$.toastError.close();
-      }
-
-      _closeAnyNotification () {
-        this.notifySuccess = "";
-        this.notifyError = "";
-        this._closeSuccess();
-        this._closeError();
       }
 
       _modelDataChanged (data) {
@@ -387,10 +304,6 @@
         super.ready();
         let form = this.shadowRoot.querySelector('iron-form');
         form.attached();
-
-        Polymer.RenderStatus.afterNextRender(this, function () {
-            this._setPaperToastContainer();
-        });
       }
 
     }

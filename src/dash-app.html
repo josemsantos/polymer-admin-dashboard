@@ -26,6 +26,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="/src/elements/dash-firebase.html">
 <link rel="import" href="/src/elements/dash-user-actions.html">
 <link rel="import" href="/src/elements/dash-navigation-menu.html">
+<link rel="import" href="/src/elements/dash-notifications.html">
 <link rel="import" href="/src/elements/dash-logged-user.html">
 
 <link rel="import" href="shared-styles.html">
@@ -159,6 +160,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             </div>
           </app-drawer>
           <div class="baground-fx"></div>
+          <dash-notifications></dash-notifications>
           <iron-pages
               selected="[[fragment]]"
               attr-for-selected="name"
@@ -360,6 +362,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         this.addEventListener('dash-go-to', function (e) {
           this.redirectTo(e.detail.route)
+        }.bind(this));
+
+        this.addEventListener('dash-notify', function(e) {
+          if (e.detail.type === 'success') {
+            this.shadowRoot.querySelector('dash-notifications').openSuccess(e.detail.msg);
+          } else if (e.detail.type === 'error') {
+            this.shadowRoot.querySelector('dash-notifications').openError(e.detail.msg);
+          }
+        }.bind(this));
+
+        this.addEventListener('dash-unnotify', function(e) {
+          if (e.detail.type === 'success') {
+            this.shadowRoot.querySelector('dash-notifications').closeSuccess();
+          } else if (e.detail.type === 'error') {
+            this.shadowRoot.querySelector('dash-notifications').closeError();
+          }
         }.bind(this));
       }
 
