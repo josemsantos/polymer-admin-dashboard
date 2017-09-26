@@ -54,6 +54,7 @@
     <user-model
       on-update-request-credentials="_notifyAuthHeaders"
       on-user-logged="_notifyUserLogged"
+      on-reset-fields="_resetLoginForm"
       on-sign-in-failed="_showSignInError"></user-model>
     <paper-material elevation="2">
       <dash-form
@@ -146,7 +147,11 @@
           bubbles: true
         }));
       }
-
+      
+      _resetLoginForm() {
+        this.shadowRoot.querySelector('dash-form').formReset();
+      }
+      
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
