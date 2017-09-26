@@ -269,6 +269,11 @@
         this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this));
       }
 
+      _notifyAndNavigate (e) {
+        this._notifyUser(e);
+        this._goToList(e);
+      }
+
       _notifyUser (e) {
         let _msg = (e.detail.message) ? e.detail.message : e.detail.id + " deleted";
         this.successMessage = "";
