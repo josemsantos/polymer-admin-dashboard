@@ -167,7 +167,7 @@
           data: JSON.stringify(payload),
           onLoad(e) {
             let response = JSON.parse(e.target.responseText);
-            response['rememberMe'] = payload.rememberme === 'on';
+            response['rememberMe'] = payload.rememberme;
             _self.set('response', response);
           },
           onError(e) {
