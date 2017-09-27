@@ -244,7 +244,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             type: String,
             reflectToAttribute: true,
           },
-          fragment: String,
+          fragment: {
+            type: String,
+            observer: '_fragmentChanged'
+          },
           routeData: Object,
           subroute: String,
           // This shouldn't be neccessary, but the Analyzer isn't picking up
@@ -293,15 +296,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         // If no page was found in the route data, page will be an empty string.
         // Deault to 'view1' in that case.
         this.page = page || 'view1';
-        this._pageChanged(page)
+        this._loadPage(page)
         // Close a non-persistent drawer when the page & route are changed.
         if (!this.$.drawer.persistent) {
           this.$.drawer.close();
         }
       }
 
-      _pageChanged(page) {
+      _fragmentChanged(fragment, oFragment) {
+        this._oFragment = oFragment;
+      }
+
+      _loadPage(page) {
         // Load page import on demand. Show 404 page if fails
+        var el = page.charAt(0) === 'v' ? 'my-' + this.page : this.fragment;
         page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.module + '/' + this.fragment;
 
         if (this.redirectAndPreventLoad()) {
@@ -311,7 +319,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         var resolvedPageUrl = this.resolveUrl(page + '.html');
         Polymer.importHref(
             resolvedPageUrl,
-            null,
+            () => {
+              if (this._oFragment) {
+                this.shadowRoot.querySelector(this._oFragment).selected = false;  
+              }
+              this.shadowRoot.querySelector(el).selected = true;
+            },
             this._showPage404.bind(this),
             true);
       }
