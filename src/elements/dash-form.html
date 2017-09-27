@@ -94,23 +94,14 @@
                 </div>
               </template>
               <template is="dom-if" if="[[_isCollection(field.type)]]">
-                <template is="dom-if" if="[[!showOnly]]">
-                  <paper-chip-input-autocomplete
-                    id="[[field.name]]"
-                    label="+Add (Enter) -Delete (Backspace)"
-                    name$="[[field.name]]"
-                    text-only$="[[_isTextonly(field.attributes)]]"
-                    closable>
-                  </paper-chip-input-autcomplete>
-                </template>
-                <template is="dom-if" if="[[showOnly]]">
-                  <paper-chip-input
-                    id="[[field.name]]"
-                    name$="[[field.name]]"
-                    text-only$="[[_isTextonly(field.attributes)]]"
-                    disabled>
-                  </paper-chip-input>
-                </template>
+                <paper-chip-input-autocomplete
+                  id="[[field.name]]"
+                  label="[[_computedLabel(showOnly)]]"
+                  name$="[[field.name]]"
+                  text-only$="[[_isTextonly(field.attributes)]]"
+                  closable="[[!showOnly]]"
+                  disabled="[[showOnly]]">
+                </paper-chip-input-autcomplete>
               </template>
             </template>
           </div>
@@ -240,6 +231,13 @@
         }
         return model;
       }
+      
+      _computedLabel(showOnly) {
+        if (!showOnly) {
+          return '+Add (Enter) -Delete (Backspace)';
+        }
+        return '';
+      }
 
       formReset () {
         this.fields.forEach(fld => {
@@ -251,7 +249,7 @@
             el.checked = false;
           } else if (this._isCollection(fld.type)) {
             let el = this.shadowRoot.querySelector('paper-chip-input-autocomplete[name=' + fld.name + ']');
-            el._items = [];
+            el.items = [];
           }
         });
       }
