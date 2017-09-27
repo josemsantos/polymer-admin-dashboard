@@ -28,19 +28,32 @@
         return (attributes && attributes.textOnly);
       }
 
-      _applyDataToElement(field, data, showOnly) {
+      _applyDataToElement(field, data) {
+        let formField = this.shadowRoot.querySelector('[name=' + field + ']');
+        if (formField) {
+          if (formField.tagName === 'PAPER-CHECKBOX') {
+            formField.checked = data;
+          } else {
+            formField.value = data;
+          }
+        }
+      }
+
+      _applyExternalDataToElement(field, data) {
         let formField = this.shadowRoot.querySelector('[name=' + field + ']');
         if (formField) {
           if (Array.isArray(data)) {
             if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
-              formField._items = data;
+              formField._items = this._preSelectItemFromValues(formField.id, data);
             } else if (formField.tagName == "PAPER-CHIP-INPUT") {
-              formField.items = data;
+              formField.items = this._preSelectItemFromValues(formField.id, data);
             }
-          } else if (formField.tagName === 'PAPER-CHECKBOX') {
-            formField.checked = data;
           } else {
-            formField.value = data;
+            if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
+              formField._items = [];
+            } else if (formField.tagName == "PAPER-CHIP-INPUT") {
+              formField.items = [];
+            }
           }
         }
       }

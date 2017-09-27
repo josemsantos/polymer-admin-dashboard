@@ -20,6 +20,8 @@
       data="{{routeData}}"></app-route>
     <group-model
       fetch="[[key]]"
+      fetch-roles
+      on-groups-roles-changed="_setExternalData"
       on-model-response-changed="_setData"></group-model>
     <paper-material elevation="2">
       <dash-form
@@ -29,6 +31,7 @@
         model="[[groupModel.model]]"
         fields="[[form.fields]]"
         model-data="[[data]]"
+        external-sources="[[externalData]]"
         on-cancel="_goToList"
         show-only>
           <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[groupModel.name]]</h2></div>
@@ -81,6 +84,21 @@
 
       _setData (e) {
         this.data = e.detail.response;
+      }
+
+      _setExternalData (e) {
+        let roles = [];
+        if (e.detail.length) {
+          e.detail.forEach(item => {
+            roles.push({
+              text: item.name,
+              value: item.name
+            });
+          });
+        }
+        this.externalData = {
+          'roles': roles
+        };
       }
 
       _routeIdChanged (id) {
