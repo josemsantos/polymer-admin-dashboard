@@ -95,7 +95,7 @@
           bubbles: true,
           composed: true
         }));
-        this.shadowRoot.querySelector('dash-form').formReset();
+        this.shadowRoot.querySelector('dash-form').formReset();;
         e.detail.message = e.detail.message.response.name + " created";
         super._notifyUser(e)
       }
@@ -106,7 +106,7 @@
           e.detail.forEach(item => {
             roles.push({
               text: item.name,
-              value: item.id
+              value: item.name
             });
           });
         }

@@ -304,6 +304,7 @@
           this.modelElement = this.shadowRoot.querySelector(this.model);
           this.modelElement.connection = this.requestConnections[this.connection];
           this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
+          
           if (this.pageType === 'list') {
             this._addListEventListeners();
           }
@@ -311,7 +312,6 @@
       }
       
       onSelectedChange(selected) {
-        console.log(selected);
         if (selected) {
           if (this.pageType === 'list') {
             this.getList();

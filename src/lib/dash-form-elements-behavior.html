@@ -32,14 +32,10 @@
         let formField = this.shadowRoot.querySelector('[name=' + field + ']');
         if (formField) {
           if (Array.isArray(data)) {
-            /** This is for collections **/
-            if (formField.hasAttribute('text-only')) {
-              showOnly ? formField.items = data : formField._items = data;
-            } else {
-              this._cacheSelectedItems.push({
-                el: formField.id,
-                data: data
-              });
+            if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
+              formField._items = data;
+            } else if (formField.tagName == "PAPER-CHIP-INPUT") {
+              formField.items = data;
             }
           } else if (formField.tagName === 'PAPER-CHECKBOX') {
             formField.checked = data;
@@ -55,11 +51,7 @@
         if (formField) {
           if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
             /** This is for collections **/
-            if (formField.hasAttribute('text-only')) {
-              value = formField._items;
-            } else {
-              value = this._getValuesFromSelectedColletion(formField.id, formField._items);
-            }
+            value = this._getValuesFromSelectedColletion(formField.id, formField._items);
           } else if (formField.tagName == "PAPER-CHECKBOX") {
             value = formField.checked;
           } else {

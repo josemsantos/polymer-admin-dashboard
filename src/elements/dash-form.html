@@ -166,16 +166,14 @@
       static get properties() {
         return {
           key: Object,
-          _cacheSelectedItems: {
-            type: Array,
-            value: []
-          },
           _inputTypes: {
             type: Array,
             value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
                      "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
           },
-          modelReady: Boolean,
+          modelReady: {
+            type: Boolean,
+          },
           hasCancel: {
             type: Boolean,
           },
@@ -221,12 +219,6 @@
           for (let name in externalSources) {
             let el = this.shadowRoot.querySelector('#' + name);
             el.setAttribute('source', JSON.stringify(externalSources[name]));
-          }
-          for (let i in this._cacheSelectedItems) {
-            let obj = this._cacheSelectedItems[i];
-            let el = this.shadowRoot.querySelector('#' + obj.el);
-            let items = this._preSelectItemFromValues(obj.el, obj.data);
-            this.showOnly ? el.items = items : el._items = items;
           }
         }
       }
