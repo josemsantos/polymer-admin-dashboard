@@ -15,7 +15,8 @@
           },
           selected: {
             type: Boolean,
-            reflectToAttribute: true
+            reflectToAttribute: true,
+            observer: 'onSelectedChange'
           },
           successMessage: String,
           errorMessage: String,
@@ -304,12 +305,20 @@
           this.modelElement.connection = this.requestConnections[this.connection];
           this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
           if (this.pageType === 'list') {
-            this.getList();
             this._addListEventListeners();
+          }
+        });
+      }
+      
+      onSelectedChange(selected) {
+        console.log(selected);
+        if (selected) {
+          if (this.pageType === 'list') {
+            this.getList();
           } else if (this.pageType === 'form') {
             this.getForm();
           }
-        });
+        }
       }
 
       getItem (list, idx) {
