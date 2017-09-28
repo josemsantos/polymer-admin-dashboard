@@ -2,12 +2,12 @@
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/cms-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="groups-show">
+<dom-module id="cms-show">
   <template>
     <style include="shared-styles">
        :host {
@@ -18,42 +18,41 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-    <group-model
+    <cms-model
       fetch="[[key]]"
-      fetch-roles
-      on-groups-roles-changed="_setExternalData"
-      on-model-response-changed="_setData"></group-model>
+      endpoint="/api/v1/blocks"
+      on-model-response-changed="_setData"></cms-model>
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[groupModel.model]]"
+        model="[[cmsModel.model]]"
         fields="[[form.fields]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
         on-cancel="_goToList"
         show-only>
-          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>User Groups [[data.name]]</h2></div>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>CMS Block Content [[data.name]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
 
   <script>
     /**
-     * `groups-show` Description
+     * `cms-show` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsShow extends ModuleElementBehavior(Polymer.Element) {
+    class CmsShow extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'groups-show';
+        return 'cms-show';
       }
 
       /**
@@ -64,9 +63,13 @@
           isReady: Boolean,
           connection: {
             type: String,
-            value: 'seraph'
+            value: 'mouse'
           },
-          groupModel: HTMLElement,
+          cmsModel: HTMLElement,
+          externalData: {
+            type: Array,
+            value: []
+          },
           pageType: {
             type: String,
             value: 'form'
@@ -86,28 +89,14 @@
         this.data = e.detail.response;
       }
 
-      _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
-        };
-      }
-
       _routeIdChanged (id) {
         this.key = id;
+        console.log(id)
       }
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/groups/list'},
+          detail: {route: '/cms/list'},
           bubbles: true,
           composed: true
         }));
@@ -120,7 +109,7 @@
        */
       constructor() {
         super();
-        this.model = 'group-model';
+        this.model = 'cms-model';
       }
 
       /**
@@ -128,14 +117,14 @@
        */
       ready() {
         super.ready();
-        this.groupModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.groupModel.getForm();
+        this.cmsModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cmsModel.getForm();
 
         this.isReady = true;
       }
 
     }
 
-    window.customElements.define(GroupsShow.is, GroupsShow);
+    window.customElements.define(CmsShow.is, CmsShow);
   </script>
 </dom-module>

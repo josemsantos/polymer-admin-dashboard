@@ -170,10 +170,10 @@
           let key = document.createAttribute("key");
           key.value = item.key;
           this.dialog.setAttributeNode(key);
-
+          
           document.body.appendChild(this.dialog);
 
-          this.dialog.addEventListener('delete-group-confirmed', function (e) {
+          this.dialog.addEventListener('delete-confirmed', function (e) {
             this._deleteConfirmed(e.detail.key);
           }.bind(this));
         } else {

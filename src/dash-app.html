@@ -167,6 +167,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               fallback-selection="view404"
               role="main">
             <dashboard-home name="dashboard-home"></dashboard-home>
+            <cms-show 
+              permissions="[[permissions]]" 
+              name="cms-show"
+              route="[[subroute]]"></cms-show>
+            <cms-list 
+              permissions="[[permissions]]" 
+              name="cms-list"></cms-list>
+            <cms-create 
+              permissions="[[permissions]]" 
+              name="cms-create"
+              route="[[subroute]]"></cms-create>
+            <cms-edit 
+              permissions="[[permissions]]" 
+              name="cms-edit"
+              route="[[subroute]]"></cms-edit>
             <groups-list 
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
@@ -177,10 +192,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="groups-edit"
               route="[[subroute]]"></groups-edit>
-              <groups-show
-                permissions="[[permissions]]"
-                name="groups-show"
-                route="[[subroute]]"></groups-show>
+            <groups-show
+              permissions="[[permissions]]"
+              name="groups-show"
+              route="[[subroute]]"></groups-show>
             <users-list
               permissions="[[permissions]]"
               name="users-list"></users-list>
@@ -335,13 +350,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _authHeadersChanged (headers) {
         if (headers) {
-          this._addAuthHeadersToConnection(headers.conn, headers.headers);
+          this._addAuthHeadersToConnection(headers.headers);
         }
       }
 
-      _addAuthHeadersToConnection(conn, headers) {
-        for (var header in headers) {
-          Dash.connections[conn].headers[header] = headers[header];
+      _addAuthHeadersToConnection(headers) {
+        for (let header in headers) {
+          for (let conn in Dash.connections) {
+            Dash.connections[conn].headers[header] = headers[header];
+          }
         }
       }
 

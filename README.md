@@ -80,7 +80,7 @@ static get properties() {
     };
   }
 ```
-* on the construct define the endpoint value to fetch or edit the content
+* on the constructor define the endpoint value to fetch or edit the content
 ```js
 constructor() {
     super();
@@ -97,7 +97,7 @@ constructor() {
 ### Create the module list
 
 To add a new module create a new folder called cms inside the module folder.
-Keep in mind that any action element extends the `ModuleElementBehavior`, sin order to properly use the best of this helper you should declare in the element which pageType you are extending
+Keep in mind that any action element extends the `ModuleElementBehavior`, in order to properly use the best of this helper you should declare in the element which pageType you are extending
 ```js
 static get properties() {
     return {
