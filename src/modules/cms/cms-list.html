@@ -131,7 +131,6 @@
       }
 
       _deleteConfirmed (key) {
-        console.log(key)
         this.modelEndpoint = this.possibleEndpoints.delete;
         this.shadowRoot.querySelector(this.model).delete(key);
         this.modelEndpoint = this.possibleEndpoints.fetch;
