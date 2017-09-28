@@ -334,13 +334,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _authHeadersChanged (headers) {
         if (headers) {
-          this._addAuthHeadersToConnection(headers.conn, headers.headers);
+          this._addAuthHeadersToConnection(headers.headers);
         }
       }
 
-      _addAuthHeadersToConnection(conn, headers) {
-        for (var header in headers) {
-          Dash.connections[conn].headers[header] = headers[header];
+      _addAuthHeadersToConnection(headers) {
+        for (let header in headers) {
+          for (let conn in Dash.connections) {
+            Dash.connections[conn].headers[header] = headers[header];
+          }
         }
       }
 
