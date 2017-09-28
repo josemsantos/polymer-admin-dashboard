@@ -151,7 +151,8 @@
       }
 
       _posUpdateCallBack (response) {
-        super._posUpdateCallBack(response.response.username + " updated");
+        this.message = response.response.username + " updated";
+        super._posUpdateCallBack(response);
       }
 
       mapUser (data, rememberMe) {
