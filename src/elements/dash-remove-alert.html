@@ -53,7 +53,7 @@
       static get properties() {
         return {
           _dialog: HTMLElement,
-          key: Object,
+          key: String,
           message: String
         };
       }
@@ -68,7 +68,7 @@
       }
 
       delete () {
-        this.dispatchEvent(new CustomEvent('delete-group-confirmed', {
+        this.dispatchEvent(new CustomEvent('delete-confirmed', {
           bubbles: true,
           composed: true,
           detail: {
