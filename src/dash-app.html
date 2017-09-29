@@ -257,6 +257,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get observers() {
         return [
+          '_routePathChanged(route.path)',
           '_routePageChanged(routeData.module, routeData.page, isUserLogged)',
         ];
       }
@@ -283,6 +284,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
         } else {
           drawerLayout.drawer.toggle();
+        }
+      }
+
+      _routePathChanged(path) {
+        if (path === '/') {
+          this.redirectTo('/authentication/login');
         }
       }
 
