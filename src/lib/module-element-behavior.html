@@ -283,6 +283,10 @@
         this.successMessage = "";
         this.successMessage = _msg;
       }
+      
+      _setData (e) {
+        this.data = e.detail.response;
+      }
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
@@ -314,6 +318,9 @@
             this.getList();
           } else if (this.pageType === 'form') {
             this.getForm();
+            if (this.key) {
+              this.loadItem();
+            }
           }
         }
       }
@@ -338,6 +345,10 @@
 
       getList () {
         this.modelElement.search('', this.itemsPerPage, this.page, this.filterQuery, this.sortQuery);
+      }
+      
+      loadItem() {
+        this.modelElement.load(this.key);
       }
 
       getForm () {

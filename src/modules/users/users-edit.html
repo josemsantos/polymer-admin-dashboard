@@ -20,7 +20,6 @@
       data="{{routeData}}"></app-route>
       
     <user-model
-      fetch="[[key]]"
       fetch-groups
       on-users-groups-changed="_setExternalData"
       on-model-response-changed="_setData"
@@ -115,10 +114,6 @@
         this.externalData = {
           'access_groups': groups
         };
-      }
-
-      _setData (e) {
-        this.data = e.detail.response;
       }
 
       _routeIdChanged (id) {
