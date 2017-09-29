@@ -96,7 +96,7 @@
               <template is="dom-if" if="[[_isCollection(field.type)]]">
                 <paper-chip-input-autocomplete
                   id="[[field.name]]"
-                  label="[[_computedLabel(showOnly)]]"
+                  label="[[_computedLabel(showOnly, field.label)]]"
                   name$="[[field.name]]"
                   text-only$="[[_isTextonly(field.attributes)]]"
                   closable="[[!showOnly]]"
@@ -232,9 +232,10 @@
         return model;
       }
       
-      _computedLabel(showOnly) {
+      _computedLabel(showOnly, label) {
         if (!showOnly) {
-          return '+Add (Enter) -Delete (Backspace)';
+          let field = label ? label : '';
+          return '+Add ' + field + '(Enter) -Delete (Backspace)';
         }
         return '';
       }

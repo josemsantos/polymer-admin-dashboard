@@ -90,7 +90,7 @@
             type: Array,
             value: [
               {
-                label: 'Name',
+                label: 'Username',
                 name: 'username',
                 type: 'text',
                 validators: []
@@ -148,7 +148,7 @@
         let data = this._setActionsKey(e.detail.response.users);
         for (let i=0; i<data.length; i++) {
           data[i].disabled = false;
-          if (data[i].locked || data[i].inactive || data[i].credentials_expired) {
+          if (data[i].locked || data[i].credentials_expired) {
             data[i].disabled = true;
           }
         }

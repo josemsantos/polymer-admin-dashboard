@@ -189,6 +189,13 @@
                 readonly: true
               },
               validators: [
+                {
+                  type: 'regex',
+                  required: true,
+                  regex: '^.{5,}$',
+                  message: 'Invalid Username. Username should have at least 5 characters',
+                  stop: false
+                }
               ]
             },
             {
@@ -200,7 +207,7 @@
                   type: 'regex',
                   required: false,
                   regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
-                  message: 'Invalid Password. password should contains at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
+                  message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
                   stop: false
                 }
               ]

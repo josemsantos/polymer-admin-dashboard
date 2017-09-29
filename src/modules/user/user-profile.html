@@ -102,7 +102,9 @@
       }
 
       _userChanged (user) {
-        this.key = user.id;
+        if (user) {
+          this.key = user.id;
+        }
       }
 
       _setData (e) {
