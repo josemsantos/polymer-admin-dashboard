@@ -360,6 +360,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return '';
       }
 
+      _addSuperAdminToAccessControlActions(module) {
+        let superAdminRole = this.shadowRoot.querySelector('dash-access').superAdminRole;
+        if (module.actions) {
+          for (let action in module.actions) {
+            if (module.actions[action].restrictions) {
+              module.actions[action].restrictions.push(superAdminRole);
+            }
+          }
+        }
+        return module;
+      }
+
       _setAccessControl (e) {
         let modules = e.detail;
         let fragments = this.shadowRoot.querySelectorAll('iron-pages > *');
@@ -368,6 +380,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (module) {
             for (let j in modules) {
               if (modules[j][module]) {
+                modules[j][module] = this._addSuperAdminToAccessControlActions(modules[j][module]);
                 fragment.setAttribute('access-control', JSON.stringify(modules[j][module].actions));
               }
             }
