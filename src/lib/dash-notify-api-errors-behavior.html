@@ -1,0 +1,43 @@
+<script>
+  'use strict';
+
+  function DashNotifyApiErrorsBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+
+      _buildErrorMessage (errors) {
+        let _errors = [];
+        if (errors) {
+          for (let field in errors) {
+            _errors.push(errors[field]);
+          }
+        }
+        return _errors.join('\n');
+      }
+
+      notifyFromApiResponse(evnt) {
+        let payload = JSON.parse(evnt.target.responseText);
+        let error = payload.response;
+        let errorDetail = this._buildErrorMessage(payload.errors);
+
+        this.dispatchEvent(new CustomEvent('dash-notify', {
+          detail: {
+            type: 'error',
+            msg: error,
+            details: errorDetail
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      notifyFromApiResponseAndNavigate (evnt) {
+        this.notifyFromApiResponse(evnt);
+        this.dispatchEvent(new CustomEvent('dash-module-go-to-list'));
+      }
+    }
+  }
+</script>
