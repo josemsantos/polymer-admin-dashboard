@@ -37,6 +37,12 @@
           menu: {
             type: Array,
             notify: true
+          },
+          module: {
+            type: String,
+          },
+          action: {
+            type: String
           }
         };
       }
@@ -48,6 +54,12 @@
        */
       constructor() {
         super();
+      }
+
+      static get observers() {
+        return [
+          '_moduleActionChanged(permissions, module, action)'
+        ];
       }
 
       ready () {
@@ -112,6 +124,36 @@
         }
       }
 
+      _moduleActionChanged (permissions, moduleName, action) {
+
+        if (!permissions || !moduleName || !action) {
+          return;
+        }
+
+        action = (action === 'list') ? 'show' : action;
+
+        this.modules.forEach((module) => {
+          if (module[moduleName] && module[moduleName].actions && module[moduleName].actions[action]) {
+            if (!this._hasAccess(permissions, module[moduleName].actions[action].restrictions)) {
+              this.dispatchEvent(new CustomEvent('dash-notify', {
+                detail: {
+                  type: 'error',
+                  msg: 'Access not allowed!'
+                },
+                composed: true,
+                bubbles: true
+              }));
+              this.dispatchEvent(new CustomEvent('dash-go-to', {
+                detail: {
+                  route: '/'
+                },
+                composed: true,
+                bubbles: true
+              }));
+            }
+          }
+        });
+      }
 
     }
 
