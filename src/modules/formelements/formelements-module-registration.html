@@ -1,0 +1,71 @@
+<script>
+  'use strict';
+
+  function FormElementsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          form_elements_module: {
+            type: Object,
+            value: [
+              {
+                'formelements': {
+                  'inMenu': true,
+                  'menuGroup': 'Form Elements',
+                  'menuItems': [
+                    {
+                      'label': 'Form Elements',
+                      'action': 'list',
+                      'icon': 'my-icons:group',
+                      'name': 'formelements',
+                      'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                       'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                       'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                       'restrictions': [
+                        'ROLE_GROUPS_GUEST',
+                        'ROLE_GROUPS_STAFF',
+                        'ROLE_GROUPS_EDITOR',
+                        'ROLE_GROUPS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

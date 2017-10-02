@@ -1,0 +1,160 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/formelements-model.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="formelements-list">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+
+    <dash-list
+      heading="Form Elements"
+      items="[[items]]"
+      heading-style="title-header"
+      filters="[[filters]]"
+      icon="my-icons:group"
+      key="[[key]]"
+      columns="[[columns]]"
+      actions="[[userActions]]"
+      total-items="[[totalItems]]"
+      page="{{page}}"
+      custom-pagination
+      items-per-page="[[itemsPerPage]]"
+      notify-success="[[successMessage]]">
+    </dash-list>
+    <formelements-model
+      on-model-delete-success="_updateList">
+    </formelements-model>
+  </template>
+
+  <script>
+    /**
+     * `formelements-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class FormElementsList extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'formelements-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          key: {
+            type: String,
+            value: 'id'
+          },
+          module: {
+            type: String,
+            value: 'formelements'
+          },
+          model: String,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Id',
+                index: 'id',
+                type: 'data'
+              },
+              {
+                header: 'Label',
+                index: 'label',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'key',
+                type: 'actions'
+              },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Label',
+                name: 'label',
+                type: 'text',
+                validators: []
+              }
+            ]
+          },
+          actions: {
+            type: Object,
+            value: {
+              'create': {
+                'path': ':module/create/:key',
+              },
+              'show': {
+                'path': ':module/show/:key',
+              },
+              'edit': {
+                'path': ':module/edit/:key',
+              },
+              'delete': {
+                'event': 'delete-formelements',
+              }
+            }
+          }
+        };
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'formelements-model';
+      }
+      onResponseChanged (e) {
+        let list = this.shadowRoot.querySelector('dash-list');
+        this.totalItems = e.detail.response.paginator.total;
+        //list._totalFetched = this.groups.length;
+        this.items = this._setActionsKey(e.detail.response.results);
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        this.addEventListener('delete-formelements', function (e) {
+          let item = this.getItem(this.items, e.detail.key);
+          this._alert({
+            'key': item.id,
+            'message': item.name
+          });
+        }.bind(this));
+      }
+
+    }
+
+    window.customElements.define(FormElementsList.is, FormElementsList);
+  </script>
+</dom-module>
