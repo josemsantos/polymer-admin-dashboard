@@ -13,7 +13,44 @@ You can also:
   - Easily add many different connections to different API's (Although we think you should have a single endpoint for all your services)
 
 ## How to install and start the application
-@TODO
+
+##### Prerequisites
+Install [npm](https://nodejs.org/en/download/):
+
+    Download the installer adequate to your OS version. Make sure you install the most recent version of Node.js. It should be at least above 4.x.
+
+Install [bower](https://github.com/bower/bower):
+
+    npm install -g bower
+
+Install [polymer-cli](https://github.com/Polymer/polymer-cli):
+
+    npm install -g polymer-cli
+
+
+##### Clone the project
+
+    git clone git@github.com:josemsantos/polymer-admin-dashboard.git
+    cd polymer-admin-dashboard
+    cp parameters.dist.json parameters.json
+
+### Install dependencies
+
+Install all the npm dependencies set in the `package.json` file
+
+    npm install
+
+Install all the bower dependencies set in the `bower.json` file
+
+    bower install
+
+##### Build to apply parameters values
+
+Run the gulp task to build the parameters
+
+    gulp
+
+*`gulp` should have been installed by the npm install command*
 
 ## How To
 

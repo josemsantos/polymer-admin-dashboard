@@ -14,7 +14,8 @@
           response: {
             type: Object,
             observer: '_responseChanged'
-          }
+          },
+          message: String
         };
       }
 
@@ -49,9 +50,10 @@
       }
       
       _posUpdateCallBack (response) {
+        this.response = response;
         this.dispatchEvent(new CustomEvent('model-update-success', {
           detail: {
-            message: response
+            message: this.message
           },
           bubbles: true, 
           composed: true

@@ -21,7 +21,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="/src/configs/connections.html">
 <link rel="import" href="/src/elements/dash-access.html">
 <link rel="import" href="/src/elements/dash-firebase.html">
 <link rel="import" href="/src/elements/dash-user-actions.html">
@@ -148,7 +147,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-toolbar>
       </app-header>
 
-      <app-drawer-layout id="drawerLayout" responsive-width="690px" narrow="{{narrow}}" force-narrow="[[!isUserLogged]]">
+      <app-drawer-layout id="drawerLayout" responsive-width="690px" narrow="{{narrow}}" force-narrow="[[!isNavigationOpened]]">
           <!-- Drawer content -->
           <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
             <div class="drawer-content">
@@ -182,7 +181,15 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="cms-edit"
               route="[[subroute]]"></cms-edit>
-            <groups-list 
+            <digitalservices-list
+              permissions="[[permissions]]"
+              name="digitalservices-list"
+              route="[[subroute]]"></digitalservices-list>
+            <digitalservices-create
+              permissions="[[permissions]]"
+              name="digitalservices-create"
+              route="[[subroute]]"></digitalservices-create>
+            <groups-list
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
             <groups-create 
@@ -249,7 +256,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           permissions: Array,
           rememberMe: Boolean,
           isUserLogged: {
-            type: Boolean
+            type: Boolean,
+            observer: '_isUserLoggedChanged'
+          },
+          isNavigationOpened: {
+            type: Boolean,
+            value: false
           },
           menu: {
             type: Array,
@@ -273,8 +285,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       static get observers() {
         return [
+          '_routePathChanged(route.path)',
           '_routePageChanged(routeData.module, routeData.page, isUserLogged)',
         ];
+      }
+
+      _isUserLoggedChanged(isUserLogged) {
+        this.isNavigationOpened = isUserLogged;
       }
 
       _setUser (e) {
@@ -299,6 +316,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           drawerLayout.forceNarrow = !drawerLayout.forceNarrow;
         } else {
           drawerLayout.drawer.toggle();
+        }
+      }
+
+      _routePathChanged(path) {
+        if (path === '/') {
+          this.redirectTo('/authentication/login');
         }
       }
 
@@ -369,6 +392,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return '';
       }
 
+      _addSuperAdminToAccessControlActions(module) {
+        let superAdminRole = this.shadowRoot.querySelector('dash-access').superAdminRole;
+        if (module.actions) {
+          for (let action in module.actions) {
+            if (module.actions[action].restrictions) {
+              module.actions[action].restrictions.push(superAdminRole);
+            }
+          }
+        }
+        return module;
+      }
+
       _setAccessControl (e) {
         let modules = e.detail;
         let fragments = this.shadowRoot.querySelectorAll('iron-pages > *');
@@ -377,6 +412,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           if (module) {
             for (let j in modules) {
               if (modules[j][module]) {
+                modules[j][module] = this._addSuperAdminToAccessControlActions(modules[j][module]);
                 fragment.setAttribute('access-control', JSON.stringify(modules[j][module].actions));
               }
             }

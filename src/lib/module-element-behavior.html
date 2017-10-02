@@ -100,6 +100,18 @@
           let headers = Dash.connections[ns].headers;
 
           this.requestConnections[ns] = new RequestConnection(url, headers);
+
+          this.requestConnections[ns].getRequestManager().addEventListener('dash-notify', e => {
+            this.dispatchEvent(new CustomEvent('dash-notify', {
+              detail: e.detail,
+              composed: true,
+              bubbles: true
+            }));
+          });
+
+          this.requestConnections[ns].getRequestManager().addEventListener('dash-module-go-to-list', e => {
+            this._goToList();
+          });
         }
       }
 
@@ -170,7 +182,7 @@
           let key = document.createAttribute("key");
           key.value = item.key;
           this.dialog.setAttributeNode(key);
-          
+
           document.body.appendChild(this.dialog);
 
           this.dialog.addEventListener('delete-confirmed', function (e) {
@@ -285,6 +297,10 @@
         this.successMessage = _msg;
       }
 
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {route: this.getModuleName() + '/list'},
@@ -315,6 +331,9 @@
             this.getList();
           } else if (this.pageType === 'form') {
             this.getForm();
+            if (this.key) {
+              this.loadItem();
+            }
           }
         }
       }
@@ -339,6 +358,10 @@
 
       getList () {
         this.modelElement.search('', this.itemsPerPage, this.page, this.filterQuery, this.sortQuery);
+      }
+
+      loadItem() {
+        this.modelElement.load(this.key);
       }
 
       getForm () {

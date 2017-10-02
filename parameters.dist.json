@@ -1,0 +1,8 @@
+{
+    "connections": {
+        "seraph": {
+            "url": "http://seraph.jumiaone.local/api/v1",
+            "headers": {}
+        }
+    }
+}

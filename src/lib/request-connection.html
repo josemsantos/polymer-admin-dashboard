@@ -8,7 +8,11 @@
     constructor(url, headers) {
       this.requestManager = document.createElement('dash-request-manager');
       this.requestManager.host = url;
-      this.requestManager.appendHeaders(headers)
+      this.requestManager.appendHeaders(headers);
+    }
+
+    getRequestManager() {
+      return this.requestManager;
     }
 
     request(request) {

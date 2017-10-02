@@ -19,7 +19,6 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
     <group-model
-      fetch="[[key]]"
       fetch-roles
       on-groups-roles-changed="_setExternalData"
       on-model-response-changed="_setData"></group-model>
@@ -80,10 +79,6 @@
         return [
           '_routeIdChanged(routeData.id, isReady)',
         ];
-      }
-
-      _setData (e) {
-        this.data = e.detail.response;
       }
 
       _setExternalData (e) {

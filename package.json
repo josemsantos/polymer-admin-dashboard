@@ -5,7 +5,11 @@
     "browser-sync": "^2.18.13",
     "eslint": "^3.19.0",
     "eslint-config-google": "^0.7.0",
-    "eslint-plugin-html": "^2.0.0"
+    "eslint-plugin-html": "^2.0.0",
+    "gulp": "^3.9.1",
+    "gulp-if": "^2.0.1",
+    "gulp-replace": "^0.6.1",
+    "gulp-merge-json": "^1.1.0"
   },
   "scripts": {
     "lint": "npm run lint:javascript && polymer lint",

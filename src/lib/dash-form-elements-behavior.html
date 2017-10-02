@@ -44,14 +44,10 @@
         if (formField) {
           if (Array.isArray(data)) {
             if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
-              formField._items = this._preSelectItemFromValues(formField.id, data);
-            } else if (formField.tagName == "PAPER-CHIP-INPUT") {
               formField.items = this._preSelectItemFromValues(formField.id, data);
             }
           } else {
             if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
-              formField._items = [];
-            } else if (formField.tagName == "PAPER-CHIP-INPUT") {
               formField.items = [];
             }
           }
@@ -64,7 +60,7 @@
         if (formField) {
           if (formField.tagName == "PAPER-CHIP-INPUT-AUTOCOMPLETE") {
             /** This is for collections **/
-            value = this._getValuesFromSelectedColletion(formField.id, formField._items);
+            value = this._getValuesFromSelectedColletion(formField.id, formField.items);
           } else if (formField.tagName == "PAPER-CHECKBOX") {
             value = formField.checked;
           } else {
