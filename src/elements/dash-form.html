@@ -235,7 +235,7 @@
       _computedLabel(showOnly, label) {
         if (!showOnly) {
           let field = label ? label : '';
-          return '+Add ' + field + '(Enter) -Delete (Backspace)';
+          return '+Add ' + field + ' (Enter) -Delete (Backspace)';
         }
         return '';
       }
@@ -273,11 +273,11 @@
                 break;
             }
             if (validators[v].stop && errors.length > 0) {
-              return errors.join(', ');
+              return errors.join('\n');
             }
           }
         }
-        return errors.join(', ');
+        return errors.join('\n');
       }
 
       executeMe (e) {

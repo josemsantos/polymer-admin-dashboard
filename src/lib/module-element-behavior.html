@@ -100,6 +100,18 @@
           let headers = Dash.connections[ns].headers;
 
           this.requestConnections[ns] = new RequestConnection(url, headers);
+
+          this.requestConnections[ns].getRequestManager().addEventListener('dash-notify', e => {
+            this.dispatchEvent(new CustomEvent('dash-notify', {
+              detail: e.detail,
+              composed: true,
+              bubbles: true
+            }));
+          });
+
+          this.requestConnections[ns].getRequestManager().addEventListener('dash-module-go-to-list', e => {
+            this._goToList();
+          });
         }
       }
 
