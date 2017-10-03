@@ -97,7 +97,7 @@
           composed: true
         }));
         this.shadowRoot.querySelector('dash-form').formReset();
-        e.detail.message = e.detail.message.response.id + " created";
+        e.detail.message = "Form element " + e.detail.message.response.label + " created";
         super._notifyUser(e)
       }
 

@@ -69,7 +69,7 @@
       }
 
       _posUpdateCallBack (response) {
-        this.message = "Form Element ID " + response.response.id + " updated";
+        this.message = "Form Element " + response.response.label + " updated";
         super._posUpdateCallBack(response);
       }
 
@@ -122,15 +122,7 @@
               attributes: {
                   readonly: true
               },
-              validators: [
-                {
-                  type: 'regex',
-                  regex: '[0-9]+',
-                  message: 'ID must be a number',
-                  required: false,
-                  stop: false
-                }
-              ]
+              validators: []
             },
             {
               label: 'Top Level ID',
