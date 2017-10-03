@@ -21,7 +21,6 @@
       
     <formelements-model
       fetch-roles
-      on-formelements-changed="_setExternalData"
       on-model-response-changed="_setData"
       on-formelements-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate">
@@ -36,7 +35,6 @@
         fields="[[form.fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
-        external-sources="[[externalData]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
@@ -79,15 +77,16 @@
             value: 'form'
           },
           data: Object,
-          externalData: {
-            type: Object,
-          },
           form: Object,
           payload: {
             type: Array,
             value: [
-              'name',
-              'roles'
+              'top_level_id',
+              'parent_id',
+              'label',
+              'template_id',
+              'lists_id',
+              'default_lists_item_id'
             ]
           }
         };
@@ -99,27 +98,13 @@
         ];
       }
 
-      _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
-        };
-      }
-
       _routeIdChanged (id) {
         this.key = id;
       }
 
       _updateFormElement (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -159,8 +144,8 @@
         }.bind(this));
 
         this.addEventListener('update-formelements', function (e) {
-          this._updateFormElements(e);
-        });
+          this._updateFormElement(e);
+        }.bind(this));
       }
 
     }

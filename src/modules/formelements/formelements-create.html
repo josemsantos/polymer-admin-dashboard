@@ -27,7 +27,6 @@
           model="[[formElementsModel.model]]"
           fields="[[form.fields]]"
           actions="[[_formActions]]"
-          external-sources="[[externalData]]"
           notify-error="[[errorMessage]]"
           notify-success="[[successMessage]]"
           on-cancel="_goToList"
@@ -78,8 +77,12 @@
           payload: {
             type: Array,
             value: [
-              'name',
-              'roles',
+              'top_level_id',
+              'parent_id',
+              'label',
+              'template_id',
+              'lists_id',
+              'default_lists_item_id'
             ]
           }
         };
@@ -93,24 +96,12 @@
           bubbles: true,
           composed: true
         }));
-        this.shadowRoot.querySelector('dash-form').formReset();;
-        e.detail.message = e.detail.message.response.name + " created";
+        this.shadowRoot.querySelector('dash-form').formReset();
+        e.detail.message = e.detail.message.response.id + " created";
         super._notifyUser(e)
       }
 
       _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
-        };
       }
 
       _createGroup (e) {
@@ -122,7 +113,7 @@
         }
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.groupModel.create(null, JSON.stringify(payload));
+        this.formElementsModel.create(null, JSON.stringify(payload));
       }
 
       /**
@@ -140,8 +131,8 @@
        */
       ready() {
         super.ready();
-        this.groupModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.groupModel.getCreateForm();
+        this.formElementsModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.formElementsModel.getCreateForm();
 
         this.actions = this.form.actions;
         this.isReady = true;
@@ -153,6 +144,6 @@
 
     }
 
-    window.customElements.define(GroupsCreate.is, GroupsCreate);
+    window.customElements.define(FormElementsCreate.is, FormElementsCreate);
   </script>
 </dom-module>

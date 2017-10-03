@@ -41,8 +41,12 @@
             type: Object,
             value: {
               id: null,
-              name: null,
-              formElements: []
+              top_level_id: null,
+              parent_id: null,
+              label: null,
+              template_id: null,
+              lists_id: null,
+              default_lists_item_id: null
             }
           }
         };
@@ -111,6 +115,20 @@
       getForm () {
         return {
           fields: [
+            {
+              label: 'ID',
+              name: 'id',
+              type: 'number',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '[0-9]+',
+                  message: 'Must be a number',
+                  required: false,
+                  stop: false
+                }
+              ]
+            },
             {
               label: 'Top Level ID',
               name: 'top_level_id',
@@ -190,7 +208,7 @@
                   type: 'regex',
                   regex: '[0-9]*',
                   message: 'Must be a number or empty',
-                  required: true,
+                  required: false,
                   stop: false
                 }
               ]
@@ -199,7 +217,7 @@
           actions: {
             'edit' :{
               label: 'edit',
-              event: 'edit-formelements'
+              event: 'update-formelements'
             },
             'delete': {
               label: 'delete',

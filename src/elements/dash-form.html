@@ -255,29 +255,31 @@
         });
       }
 
-      validate (fields, request) {
+      validate (modelFields, request) {
         var errors = [];
-        for (let i in fields) {
-          let validators = fields[i].validators;
-          for (let v in validators) {
-            let required = (validators[v].required !== false) ? true : validators[v].required;
-            switch (validators[v].type) {
+        for (let i in modelFields) {
+          let validators = modelFields[i].validators;
+          for (let j in validators) {
+            let required = validators[j].required !== false;
+            switch (validators[j].type) {
               case 'regex':
-                if ((null === request[fields[i].name] || undefined === request[fields[i].name] || false === request[fields[i].name])
-                    && required) {
-                  errors.push(validators[v].message);
-                } else  if (request.hasOwnProperty(fields[i].name) && request[fields[i].name] !== undefined
-                    && null === request[fields[i].name].match(validators[v].regex)) {
-                  errors.push(validators[v].message);
+                let fieldValue = request[modelFields[i].name];
+                var reg = new RegExp(validators[j].regex);
+                //TODO
+                // field value cannot be false ??
+                if ((null === fieldValue || undefined === fieldValue || false === fieldValue) && required) {
+                  errors.push(modelFields[i].label + ": " + validators[j].message);
+                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && (false === reg.test(fieldValue))) {
+                  errors.push(modelFields[i].label + ": " + validators[j].message);
                 }
                 break;
             }
-            if (validators[v].stop && errors.length > 0) {
-              return errors.join(', ');
+            if (validators[j].stop && errors.length > 0) {
+              return errors.join(", ");
             }
           }
         }
-        return errors.join(', ');
+        return errors.join(", ");
       }
 
       executeMe (e) {
