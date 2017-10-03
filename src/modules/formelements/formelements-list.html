@@ -145,11 +145,11 @@
         super.ready();
 
         this.addEventListener('delete-formelements', function (e) {
-          let item = this.getItem(this.items, e.detail.key);
-          this._alert({
-            'key': item.id,
-            'message': item.name
-          });
+            let item = this.getItem(this.items, e.detail.key);
+            this._alert({
+                'key': item.id,
+                'message': item.label
+            });
         }.bind(this));
       }
 

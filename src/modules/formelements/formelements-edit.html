@@ -137,10 +137,10 @@
         this.isReady = true;
 
         this.addEventListener('delete-formelements', function (e) {
-          this._alert({
-            'key': this.key,
-            'message': this.data.name
-          });
+            this._alert({
+                'key': this.key,
+                'message': this.data.label
+            });
         }.bind(this));
 
         this.addEventListener('update-formelements', function (e) {
