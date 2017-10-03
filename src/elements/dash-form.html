@@ -68,6 +68,9 @@
         background-color:  var(--paper-red-500);
         color: #FFF;
       }
+      paper-input[type=hidden] {
+        display: none;
+      }
     </style>
     <div class="form-wrapper">
       <iron-form>
@@ -82,7 +85,7 @@
                 <paper-input 
                   name$="[[field.name]]" 
                   label="[[field.label]]" 
-                  type="[[field.type]]"
+                  type$="[[field.type]]"
                   readonly="[[_isReadonly(field.attributes)]]"
                   disabled="[[showOnly]]"></paper-input>
               </template>
@@ -271,7 +274,7 @@
                 } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && (false === reg.test(fieldValue))) {
                   errors.push(validators[j].message);
                 }
-                break;
+              break;
             }
             if (validators[j].stop && errors.length > 0) {
               return errors.join('\n');
