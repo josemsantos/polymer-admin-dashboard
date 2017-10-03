@@ -22,7 +22,7 @@
     <formelements-model
       fetch-roles
       on-model-response-changed="_setData"
-      on-formelements-update-success="_notifyUser"
+      on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate">
     </formelements-model>
 
@@ -71,7 +71,7 @@
             type: String,
             value: 'dozer'
           },
-          formElements: HTMLElement,
+          formElementsModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -145,7 +145,7 @@
 
         this.addEventListener('update-formelements', function (e) {
           this._updateFormElement(e);
-        }.bind(this));
+        });
       }
 
     }
