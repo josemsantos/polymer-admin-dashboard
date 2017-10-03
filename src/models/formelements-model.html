@@ -118,7 +118,10 @@
             {
               label: 'ID',
               name: 'id',
-              type: 'number',
+              type: 'hidden',
+              attributes: {
+                  readonly: true
+              },
               validators: [
                 {
                   type: 'regex',

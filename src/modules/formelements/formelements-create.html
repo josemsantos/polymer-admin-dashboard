@@ -64,7 +64,7 @@
             type: String,
             value: 'dozer'
           },
-          groupModel: HTMLElement,
+          formElementsModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -104,7 +104,7 @@
       _setExternalData (e) {
       }
 
-      _createGroup (e) {
+      _createFormElements (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -123,7 +123,7 @@
        */
       constructor() {
         super();
-        this.model = 'group-model';
+        this.model = 'formelements-model';
       }
 
       /**
