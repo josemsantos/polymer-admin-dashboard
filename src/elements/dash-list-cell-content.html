@@ -6,25 +6,28 @@
 <dom-module id="dash-list-cell-content">
   <template>
     <style>
-       :host {
+      :host {
         display: block
       }
-      .create,
-      .show {
+      paper-icon-button {
+        @apply --dash-list-cell-content-actions-custom;
+        border-radius: 2px;
+      }
+      paper-icon-button.create,
+      paper-icon-button.show {
         background-color:  var(--paper-blue-grey-500);
       }
-      .edit {
+      paper-icon-button.edit {
         background-color:  var(--paper-green-500);
       }
-      .delete {
+      paper-icon-button.delete {
         background-color:  var(--paper-red-500);
       }
-      .create,
-      .show,
-      .edit,
-      .delete {
+      paper-icon-button.create,
+      paper-icon-button.show,
+      paper-icon-button.edit,
+      paper-icon-button.delete {
         color: #FFF;
-        border-radius: 2px;
       }
     </style>
     <slot></slot>
@@ -33,7 +36,7 @@
         data-key$="[[key]]"
         data-action-type$="[[item.type]]"
         class$="[[item.type]]" 
-        icon$="[[getIcon(item.type)]]"
+        icon$="[[getIcon(item.type, item.icon)]]"
         on-tap="_callToAction"></paper-icon-button>
     </template>
   </template>
@@ -100,7 +103,7 @@
         super.ready();
       }
 
-      getIcon (type) {
+      getIcon (type, icon) {
         let defaultIcon = 'my-icons:edit';
         let icons = {
           show: 'my-icons:pageview',
@@ -108,8 +111,7 @@
           edit: 'my-icons:edit',
           delete: 'my-icons:delete'
         };
-
-        return icons[type] || defaultIcon;
+        return icon || icons[type] || defaultIcon;
       }
 
     }
