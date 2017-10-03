@@ -72,7 +72,7 @@
         var queryParams = "per_page=" +  itemsPerPage + '&';
         queryParams += page ? "page=" + page + '&': '';
         queryParams += filterQuery ? filterQuery : '';
-        queryParams += sortQuery ? sortQuery : '';
+        queryParams += sortQuery ? sortQuery : 'sort=id&order=reverse';
         method = method || 'GET';
         
         var _self = this;
