@@ -1,5 +1,7 @@
 bower_components/
 build/
 node_modules/
+src/env.js
+package-lock.json
 parameters.json
 src/env.js
