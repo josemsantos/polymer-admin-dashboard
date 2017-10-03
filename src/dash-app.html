@@ -125,6 +125,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <dash-access 
       permissions="[[permissions]]"
       menu="{{menu}}"
+      module="[[module]]"
+      action="[[page]]"
       on-dash-modules-registered="_setAccessControl"></dash-access>
 
     <dash-firebase
@@ -147,7 +149,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         </app-toolbar>
       </app-header>
 
-      <app-drawer-layout id="drawerLayout" responsive-width="690px" narrow="{{narrow}}" force-narrow="[[!isUserLogged]]">
+      <app-drawer-layout id="drawerLayout" responsive-width="690px" narrow="{{narrow}}" force-narrow="[[!isNavigationOpened]]">
           <!-- Drawer content -->
           <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
             <div class="drawer-content">
@@ -247,7 +249,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           permissions: Array,
           rememberMe: Boolean,
           isUserLogged: {
-            type: Boolean
+            type: Boolean,
+            observer: '_isUserLoggedChanged'
+          },
+          isNavigationOpened: {
+            type: Boolean,
+            value: false
           },
           menu: {
             type: Array,
@@ -274,6 +281,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           '_routePathChanged(route.path)',
           '_routePageChanged(routeData.module, routeData.page, isUserLogged)',
         ];
+      }
+
+      _isUserLoggedChanged(isUserLogged) {
+        this.isNavigationOpened = isUserLogged;
       }
 
       _setUser (e) {

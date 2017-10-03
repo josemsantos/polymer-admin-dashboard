@@ -23,6 +23,7 @@
         --paper-input-container-underline-disabled: {
           border-bottom: solid 1px var(--paper-blue-grey-600);
         }
+        --paper-chip-autocomplete-suggestion-height: 300px;
       }
       .title {
         @apply --form-title;
@@ -235,7 +236,7 @@
       _computedLabel(showOnly, label) {
         if (!showOnly) {
           let field = label ? label : '';
-          return '+Add ' + field + '(Enter) -Delete (Backspace)';
+          return '+Add ' + field + ' (Enter) -Delete (Backspace)';
         }
         return '';
       }
@@ -274,12 +275,12 @@
                 }
                 break;
             }
-            if (validators[j].stop && errors.length > 0) {
-              return errors.join(", ");
+            if (validators[v].stop && errors.length > 0) {
+              return errors.join('\n');
             }
           }
         }
-        return errors.join(", ");
+        return errors.join('\n');
       }
 
       executeMe (e) {

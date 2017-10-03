@@ -16,6 +16,8 @@
       }
       .paper-toast-message-container {
         flex: 1;
+        display: block;
+        overflow: hidden;
       }
       paper-toast.success {
         --paper-toast-background-color: var(--paper-green-500);
@@ -28,15 +30,21 @@
 
       #container {
         position:absolute;
-        top:0;
-        left: 0;
-        right: 0;
+        top: 0;
         display: block;
-        height:64px;
+        width: 100%;
+        height: 250px;
+      }
+      pre {
+        white-space: pre-wrap;       /* Since CSS 2.1 */
+        white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+        white-space: -pre-wrap;      /* Opera 4-6 */
+        white-space: -o-pre-wrap;    /* Opera 7 */
+        word-wrap: break-word;       /* Internet Explorer 5.5+ */
       }
     </style>
     <div id="container">
-      <paper-toast duration="5000" id="toastSuccess" class="fit-bottom success">
+      <paper-toast vertical-align="top" duration="5000" id="toastSuccess" class="fit-bottom success">
         <div class="paper-toast-message-container">
           <slot name="success">[[notifySuccess]]</slot>
         </div>
@@ -44,9 +52,9 @@
           <iron-icon icon="my-icons:close"></iron-icon>
         </paper-button>
       </paper-toast>
-      <paper-toast duration="5000" id="toastError" class="fit-bottom error">
+      <paper-toast vertical-align="top" duration="5000" id="toastError" class="fit-bottom error">
         <div class="paper-toast-message-container">
-          <slot name="error">[[notifyError]]</slot>
+          <slot name="error"><pre>[[notifyError]]</pre></slot>
         </div>
         <paper-button on-click="closeError">
           <iron-icon icon="my-icons:close"></iron-icon>
@@ -98,11 +106,13 @@
 
       openSuccess (message) {
         this.notifySuccess = message;
+        this._setPaperToastContainer();
         this.$.toastSuccess.open();
       }
 
       openError (message) {
         this.notifyError = message;
+        this._setPaperToastContainer();
         this.$.toastError.open();
       }
 
@@ -121,10 +131,6 @@
        */
       ready() {
         super.ready();
-
-        Polymer.RenderStatus.afterNextRender(this, function () {
-            this._setPaperToastContainer();
-        });
       }
 
     }
