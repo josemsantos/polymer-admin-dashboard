@@ -19,8 +19,6 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
     <digitalservice-model
-      fetch="[[key]]"
-      endpoint="/digitalservices"
       on-model-response-changed="_setData"></digitalservice-model>
     <paper-material elevation="2">
       <dash-form
