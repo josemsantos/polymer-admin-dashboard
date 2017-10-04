@@ -132,6 +132,11 @@
         if (e.detail.type === 'delete'){
             this._deleteConfirmed(e.detail.key);
         }
+        if (e.detail.payload.active === 1) {
+            e.detail.payload.active = true;
+        } else {
+            e.detail.payload.active = false;
+        }
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
