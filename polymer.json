@@ -1,11 +1,19 @@
 {
   "entrypoint": "index.html",
-  "shell": "src/my-app.html",
+  "shell": "src/dash-app.html",
   "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html",
-    "src/my-view404.html"
+    "src/my-view404.html",
+    "src/modules/dashboard/dashboard-home.html",
+    "src/modules/authentication/authentication-login.html",
+    "src/modules/groups/groups-list.html",
+    "src/modules/groups/groups-show.html",
+    "src/modules/groups/groups-create.html",
+    "src/modules/groups/groups-edit.html",
+    "src/modules/users/users-list.html",
+    "src/modules/users/users-show.html",
+    "src/modules/users/users-create.html",
+    "src/modules/users/users-edit.html",
+    "src/modules/user/user-profile.html"
   ],
   "sources": [
     "src/**/*",
@@ -14,7 +22,10 @@
   ],
   "extraDependencies": [
     "manifest.json",
-    "bower_components/webcomponentsjs/*.js"
+    "bower_components/webcomponentsjs/*.js",
+    "bower_components/localforage/dist/localforage.min.js",
+    "node_modules/web-animations-js/web-animations-next-lite.min.js",
+    "bower_components/webrtc-adapter/release/adapter.js"
   ],
   "lint": {
     "rules": ["polymer-2"]
@@ -24,10 +35,9 @@
       "preset": "es5-bundled"
     },
     {
-      "preset": "es6-bundled"
-    },
-    {
-      "preset": "es6-unbundled"
+      "basePath": "/flights/admin",
+      "preset": "es5-bundled",
+      "name": "es5-bundled-server"
     }
   ]
 }
