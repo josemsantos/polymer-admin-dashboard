@@ -1,0 +1,129 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="digitalservices-show">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+    <digitalservice-model
+      fetch="[[key]]"
+      endpoint="/digitalservices"
+      on-model-response-changed="_setData"></digitalservice-model>
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[digitalservice.model]]"
+        fields="[[form.fields]]"
+        model-data="[[data]]"
+        external-sources="[[externalData]]"
+        on-cancel="_goToList"
+        show-only>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `digitalservices-show` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DigitalServicesShow extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'digitalservices-show';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          digitalServiceModel: HTMLElement,
+          externalData: {
+            type: Array,
+            value: []
+          },
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: '/digitalservices/list'},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'digitalservice-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.digitalserviceModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.digitalserviceModel.getForm();
+
+        this.isReady = true;
+      }
+
+    }
+
+    window.customElements.define(DigitalServicesShow.is, DigitalServicesShow);
+  </script>
+</dom-module>

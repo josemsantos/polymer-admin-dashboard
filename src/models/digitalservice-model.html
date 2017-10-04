@@ -1,0 +1,132 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="digitalservice-model">
+    <template>
+        <style>
+            :host {
+                display: block
+            }
+        </style>
+    </template>
+
+    <script>
+        /**
+         * `digitalService-model` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+        class DigitalServiceModel extends ModelBehavior(Polymer.Element) {
+            /**
+             * String providing the tag name to register the element under.
+             */
+            static get is() {
+                return 'digitalservice-model';
+            }
+
+            /**
+             * Object describing property-related metadata used by Polymer features
+             */
+            static get properties() {
+                return {
+                    model: {
+                        type: Object,
+                        value: {
+                            id: null,
+                            name: null,
+                            icon: null,
+                            active: null
+                        }
+                    }
+                };
+            }
+
+            /**
+             * Instance of the element is created/upgraded. Use: initializing state,
+             * set up event listeners, create shadow dom.
+             * @constructor
+             */
+            constructor() {
+                super();
+                this.endpoint = '/digitalservices';
+            }
+
+            _posUpdateCallBack (response) {
+                super._posUpdateCallBack(response.response.name + " updated");
+            }
+
+            _responseChanged (response) {
+                this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+            }
+
+            /**
+             * Use for one-time configuration of your component after local DOM is initialized.
+             */
+            ready() {
+                super.ready();
+
+                Polymer.RenderStatus.afterNextRender(this, function () {
+                });
+            }
+
+            getForm () {
+                return {
+                    fields: [
+                        {
+                            label: 'Name',
+                            name: 'name',
+                            type: 'text',
+                            validators: [
+                                {
+                                    type: 'regex',
+                                    regex: '^(.){1,}$',
+                                    message: 'Invalid Digital Service name',
+                                    required: true,
+                                }
+                            ]
+                        },
+                        {
+                            label: 'Icon',
+                            name: 'icon',
+                            type: 'text',
+                            validators: []
+                        },
+                        {
+                            label: 'Active',
+                            name: 'active',
+                            type: 'checkbox',
+                            validatores: []
+                        }
+                    ],
+                    actions: {
+                        'edit' :{
+                            label: 'edit',
+                            event: 'update-digitalService'
+                        },
+                        'delete': {
+                            label: 'delete',
+                            event: 'delete-digitalService',
+                        }
+                    }
+                };
+            }
+
+            getCreateForm () {
+                let form = this.getForm();
+                form.actions = {
+                    'create' :{
+                        label: 'Create',
+                        event: 'create-digitalservices'
+                    },
+                };
+                return form;
+            }
+
+        }
+
+        window.customElements.define(DigitalServiceModel.is, DigitalServiceModel);
+    </script>
+</dom-module>
