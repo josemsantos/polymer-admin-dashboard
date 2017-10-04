@@ -28,7 +28,7 @@
             font-weight: 400;
             font-size: 14px;
           }
-        }
+       }
        paper-material {
          @apply --dash-list-paper-material;
        }
@@ -152,7 +152,7 @@
             <dash-list-footer
               page="{{page}}"
               items-per-page="[[itemsPerPage]]"
-              total-items="[[totalItems]]"><dash-list-footer>
+              total-items="[[totalItems]]"></dash-list-footer>
           </div>
         </template>
       </div>
@@ -183,7 +183,7 @@
       static get properties() {
         return {
           _hasFooter: {
-            computed: '_hasFooter(customPagination, showListOnly)'
+            computed: '_hasFooterComputed(customPagination, showListOnly)'
           },
           _columnActions: {
             type: Array,
@@ -269,7 +269,7 @@
         }));
       }
 
-      _hasFooter(customPagination, showListOnly) {
+      _hasFooterComputed(customPagination, showListOnly) {
         return customPagination && !showListOnly;
       }
 

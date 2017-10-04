@@ -1,0 +1,181 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/listitem-model.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="listitems-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+    </style>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+
+    <dash-list
+      heading=[[heading]]
+      items="[[items]]"
+      heading-style="title-header"
+      filters="[[filters]]"
+      icon="my-icons:menu"
+      key="[[key]]"
+      columns="[[columns]]"
+      actions="[[userActions]]"
+      total-items="[[totalItems]]"
+      page="{{page}}"
+      custom-pagination
+      items-per-page="[[itemsPerPage]]"
+      notify-success="[[successMessage]]"></dash-list>
+    <listitem-model
+      on-model-delete-success="_updateList"></listitem-model>
+  </template>
+
+  <script>
+    /**
+     * `lists-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListItemsList extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'listitems-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          heading: {
+            value: ''
+          },
+          key: {
+            type: String,
+            value: 'id'
+          },
+          module: {
+            type: String,
+            value: 'listitems'
+          },
+          model: String,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Id',
+                index: 'id',
+                type: 'data'
+              },
+              {
+                header: 'Name',
+                index: 'name',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'key',
+                type: 'actions'
+              },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Name',
+                name: 'name',
+                type: 'text',
+                validators: []
+              }
+            ]
+          },
+          actions: {
+            type: Object,
+            value: {
+              'create': {
+                'path': '',
+              },
+              'show': {
+                'path': ':module/show/:key',
+              },
+              'edit': {
+                'path': ':module/edit/:key',
+              },
+              'delete': {
+                'event': 'delete-listitem',
+              }
+            }
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          this.heading = 'List Items of list #' + id;
+          this.actions.create.path = ':module/create/' + id;
+        }
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'listitem-model';
+      }
+
+      onResponseChanged (e) {
+        let list = this.shadowRoot.querySelector('dash-list');
+        this.totalItems = e.detail.response.total;
+        this.items = this._setActionsKey(e.detail.response.results);
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        this.isReady = true;
+
+        this.addEventListener('delete-listitem', function (e) {
+          let item = this.getItem(this.items, e.detail.key);
+          this._alert({
+            'key': item.id,
+            'message': item.name
+          });
+        }.bind(this));
+      }
+    }
+
+    window.customElements.define(ListItemsList.is, ListItemsList);
+  </script>
+</dom-module>

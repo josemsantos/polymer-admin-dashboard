@@ -1,0 +1,170 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/listitem-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="listitems-edit">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+      
+    <listitem-model
+      on-model-response-changed="_setData"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyAndNavigate"></listitem-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[listItemModel.model]]"
+        fields="[[form.fields]]"
+        actions="[[_formActions]]"
+        model-data="[[data]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-cancel="_goToList"
+        on-submit="_execAction">
+        <div class="title title-header"><h2><iron-icon icon="my-icons:menu"></iron-icon>Edit List Item of list #[[listId]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `listitems-edit` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListItemsEdit extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'listitems-edit';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          listId: {
+            value: null
+          },
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          listItemModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'list_id',
+              'name',
+              'icon'
+            ]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+          '_dataChanged(data, isReady)'
+        ];
+      }
+
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          this.key = id; // set id to load form data from endpoint
+        }
+      }
+
+      _dataChanged (data, isReady) {
+        if (data && isReady) {
+          this.listId = data.list_id;
+        }
+      }
+
+      _updateListItem (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.listItemModel.update(null, this.key, JSON.stringify(payload));
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: this.getModuleName() + '/list/' + this.listId},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'listitem-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.listItemModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.listItemModel.getForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('delete-listitem', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-listitem', function (e) {
+          this._updateListItem(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(ListItemsEdit.is, ListItemsEdit);
+  </script>
+</dom-module>
