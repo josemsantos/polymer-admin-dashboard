@@ -1,0 +1,150 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cms-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cms-create">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+    </style>
+        
+      <cms-model
+        endpoint="[[modelEndpoint]]"
+        on-model-create-success="_notifyUser"></cms-model>
+  
+      <paper-material elevation="2">
+        <dash-form
+          class="default"
+          has-cancel
+          key="[[key]]"
+          model="[[cmsModel.model]]"
+          fields="[[form.fields]]"
+          actions="[[_formActions]]"
+          notify-error="[[errorMessage]]"
+          notify-success="[[successMessage]]"
+          on-cancel="_goToList"
+          on-submit="_execAction"
+          model-ready>
+            <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New CMS Block Content</h2></div>
+        </dash-form>
+      </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `cms-create` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class CmsCreate extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'cms-create';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          possibleEndpoints: {
+            type: Object,
+            value: {
+              fetch: '/api/v1/blocks',
+              create: '/api/v1/blocks/add'
+            }
+          },
+          modelEndpoint: String,
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'mouse'
+          },
+          cmsModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'key',
+              'name',
+              'content',
+            ]
+          }
+        };
+      }
+
+      _notifyUser (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/edit/' + e.detail.message.response.key
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
+        e.detail.message = e.detail.message.response.name + " created";
+        super._notifyUser(e)
+      }
+
+      _createCms (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.modelEndpoint = this.possibleEndpoints.create;
+        this.cmsModel.create(null, JSON.stringify(payload));
+
+        this.modelEndpoint = this.possibleEndpoints.fetch;
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'cms-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.cmsModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cmsModel.getCreateForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('create-cms', function (e) {
+          this._createCms(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(CmsCreate.is, CmsCreate);
+  </script>
+</dom-module>

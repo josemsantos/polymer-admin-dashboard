@@ -1,0 +1,65 @@
+<script>
+  'use strict';
+
+  function DigitalServicesModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          digitalservices_module: {
+            type: Object,
+            value: [
+              {
+                'digitalservices': {
+                  'inMenu': true,
+                  'menuGroup': 'Digital Service Management',
+                  'menuItems': [
+                    {
+                      'label': 'Static Content',
+                      'action': 'list',
+                      'icon': 'my-icons:group',
+                      'name': 'digitalservices',
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_BLOCKS_GUEST',
+                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
+                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
+                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_BLOCKS_GUEST',
+                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
+                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
+                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
+                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
+                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
+                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

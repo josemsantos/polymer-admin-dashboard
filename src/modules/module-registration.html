@@ -1,3 +1,5 @@
+<link rel="import" href="cms/cms-module-registration.html">
+<link rel="import" href="digitalservices/digitalservices-module-registration.html">
 <link rel="import" href="groups/groups-module-registration.html">
 <link rel="import" href="users/users-module-registration.html">
 <link rel="import" href="user/user-module-registration.html">
@@ -9,7 +11,9 @@
       return class extends UserModuleRegistration(
                            UsersModuleRegistration(
                            FormElementsModuleRegistration(
-                           GroupsModuleRegistration(superClass)))) {
+                           CmsModuleRegistration(
+                           DigitalServicesModuleRegistration(
+                           GroupsModuleRegistration(superClass)))))) {
         static get properties() {
           return {
             modules: {
@@ -29,6 +33,8 @@
               'inMenu': false
             }
           });
+          this._addModules(this.cms_module);
+          this._addModules(this.digitalservices_module);
           this._addModules(this.group_module);
           this._addModules(this.users_module);
           this._addModules(this.user_module);

@@ -1,19 +1,19 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/cms-model.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="groups-list">
+<dom-module id="cms-list">
   <template>
     <style include="shared-styles">
        :host {
-        display: block;
+        display: block
       }
     </style>
 
     <dash-list
-      heading="User Groups"
+      heading="CMS Block Content"
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
@@ -26,25 +26,26 @@
       custom-pagination
       items-per-page="[[itemsPerPage]]"
       notify-success="[[successMessage]]"></dash-list>
-    <group-model
-      on-model-delete-success="_updateList"></group-model>
+    <cms-model
+      endpoint="[[modelEndpoint]]"
+      on-model-delete-success="_updateList"></cms-model>
   </template>
 
   <script>
     /**
-     * `groups-list` Description
+     * `cms-list` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsList extends ModuleElementBehavior(Polymer.Element) {
+    class CmsList extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'groups-list';
+        return 'cms-list';
       }
 
       /**
@@ -52,30 +53,38 @@
        */
       static get properties() {
         return {
+          possibleEndpoints: {
+            type: Object,
+            value: {
+              fetch: '/api/v1/blocks/list',
+              delete: '/api/v1/blocks/remove'
+            }
+          },
+          modelEndpoint: String,
           key: {
             type: String,
-            value: 'id'
+            value: 'key'
           },
           module: {
             type: String,
-            value: 'groups'
+            value: 'cms'
           },
           model: String,
           connection: {
             type: String,
-            value: 'seraph'
+            value: 'mouse'
           },
           columns: {
             type: Array,
             value: [
               {
-                header: 'Id',
-                index: 'id',
+                header: 'Name',
+                index: 'name',
                 type: 'data'
               },
               {
-                header: 'Name',
-                index: 'name',
+                header: 'Last updated',
+                index: 'updated_at',
                 type: 'data'
               },
               {
@@ -88,6 +97,12 @@
           filters: {
             type: Array,
             value: [
+              {
+                label: 'Key',
+                name: 'key',
+                type: 'text',
+                validators: []
+              },
               {
                 label: 'Name',
                 name: 'name',
@@ -108,7 +123,7 @@
                 'path': ':module/edit/:key',
               },
               'delete': {
-                'event': 'delete-group',
+                'event': 'delete-cms',
               }
             }
           }
@@ -116,7 +131,9 @@
       }
 
       _deleteConfirmed (key) {
+        this.modelEndpoint = this.possibleEndpoints.delete;
         this.shadowRoot.querySelector(this.model).delete(key);
+        this.modelEndpoint = this.possibleEndpoints.fetch;
       }
 
       /**
@@ -126,13 +143,14 @@
        */
       constructor() {
         super();
-        this.model = 'group-model';
+        this.model = 'cms-model';
+        this.modelEndpoint = this.possibleEndpoints.fetch;
       }
 
       onResponseChanged (e) {
         let list = this.shadowRoot.querySelector('dash-list');
-        this.totalItems = e.detail.response.total;
-        this.items = this._setActionsKey(e.detail.response.groups);
+        this.totalItems = e.detail.response.length;
+        this.items = this._setActionsKey(e.detail.response);
       }
 
       /**
@@ -141,10 +159,10 @@
       ready() {
         super.ready();
 
-        this.addEventListener('delete-group', function (e) {
+        this.addEventListener('delete-cms', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({
-            'key': item.id,
+            'key': item.key,
             'message': item.name
           });
         }.bind(this));
@@ -152,6 +170,6 @@
 
     }
 
-    window.customElements.define(GroupsList.is, GroupsList);
+    window.customElements.define(CmsList.is, CmsList);
   </script>
 </dom-module>

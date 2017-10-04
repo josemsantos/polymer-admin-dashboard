@@ -23,7 +23,6 @@
           display: block;
           --paper-datatable-api-custom-td: {
             text-align:right;
-            width: 150px;
           }
           --paper-datatable-api-header: {
             font-weight: 400;
@@ -264,6 +263,7 @@
             if (action !== 'create') {
               _cActions.push({
                 type: action,
+                icon: actions[action].icon
               });
             }
           }
