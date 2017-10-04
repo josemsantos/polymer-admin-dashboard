@@ -133,7 +133,7 @@
       }
       onResponseChanged (e) {
         let list = this.shadowRoot.querySelector('dash-list');
-        this.totalItems = e.detail.response.paginator.total;
+        this.totalItems = e.detail.response.total;
         //list._totalFetched = this.groups.length;
         this.items = this._setActionsKey(e.detail.response.results);
       }
