@@ -132,6 +132,7 @@
         if (e.detail.type === 'delete'){
             this._deleteConfirmed(e.detail.key);
         }
+        
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
