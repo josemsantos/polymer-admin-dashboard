@@ -35,7 +35,7 @@
       "preset": "es5-bundled"
     },
     {
-      "basePath": "/flights/admin",
+      "basePath": "/",
       "preset": "es5-bundled",
       "name": "es5-bundled-server"
     }
