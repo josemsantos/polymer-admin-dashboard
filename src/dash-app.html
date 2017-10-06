@@ -450,18 +450,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       redirectTo (page, data) {
-        this.set('route.path', page);
+        let path = this.rootPath + page;
+        this.set('route.path', path);
         if (undefined !== data) {
           this.set('_queryParams', data);
         }
       }
 
       goToLoginPage () {
-        this.redirectTo(this.rootPath + 'authentication/login');
+        this.redirectTo('authentication/login');
       }
 
       goToDashBoard () {
-        this.redirectTo(this.rootPath + 'dashboard/home');
+        this.redirectTo('dashboard/home');
       }
 
       goToHomePage() {
