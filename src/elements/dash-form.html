@@ -55,7 +55,7 @@
       .checkbox-container {
         padding: 16px 0;
       }
-      .cancel, .reset {
+      .cancel, .filter {
         color: var(--paper-blue-500);
         font-weight: 500;
       }
@@ -83,11 +83,10 @@
             <template is="dom-repeat" items="[[fields]]" as="field">
               <template is="dom-if" if="[[_isInput(field.type)]]">
                 <paper-input 
-                  name$="[[field.name]]" 
-                  label="[[field.label]]" 
+                  name$="[[field.name]]"
+                  label="[[field.label]]"
                   type$="[[field.type]]"
-                  readonly="[[_isReadonly(field.attributes)]]"
-                  disabled="[[showOnly]]"></paper-input>
+                  disabled="[[_isReadonly(field.attributes, showOnly)]]"></paper-input>
               </template>
               <template is="dom-if" if="[[_isCheckbox(field.type)]]">
                 <div class="checkbox-container">
@@ -239,8 +238,7 @@
       
       _computedLabel(showOnly, label) {
         if (!showOnly) {
-          let field = label ? label : '';
-          return '+Add ' + field + ' (Enter) -Delete (Backspace)';
+          return label;
         }
         return '';
       }
