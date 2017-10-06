@@ -14,43 +14,43 @@
                   'menuGroup': 'Digital Service',
                   'menuItems': [
                     {
-                      'label': 'List',
+                      'label': 'Types',
                       'action': 'list',
                       'icon': 'my-icons:group',
                       'name': 'digitalservices',
                       'restrictions': [
-                        'ROLE_DIGITALSERVICES_BLOCKS_GUEST',
-                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
-                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
-                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                        'ROLE_DIGITALSERVICES_GUEST',
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
                       ]
                     }
                   ],
                   'actions': {
                     'show': {
                       'restrictions': [
-                        'ROLE_DIGITALSERVICES_BLOCKS_GUEST',
-                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
-                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
-                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                        'ROLE_DIGITALSERVICES_GUEST',
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
                       ]
                     },
                     'create': {
                       'restrictions': [
-                        'ROLE_DIGITALSERVICES_BLOCKS_STAFF',
-                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
-                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
                       ]
                     },
                     'edit': {
                       'restrictions': [
-                        'ROLE_DIGITALSERVICES_BLOCKS_EDITOR',
-                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
                       ]
                     },
                     'delete': {
                       'restrictions': [
-                        'ROLE_DIGITALSERVICES_BLOCKS_ADMIN'
+                        'ROLE_DIGITALSERVICES_ADMIN'
                       ]
                     },
                   }

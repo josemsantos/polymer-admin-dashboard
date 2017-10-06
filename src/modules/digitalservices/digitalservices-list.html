@@ -4,7 +4,7 @@
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="digitalServices-list">
+<dom-module id="digitalservices-list">
   <template>
     <style include="shared-styles">
        :host {
@@ -26,14 +26,14 @@
       custom-pagination
       items-per-page="[[itemsPerPage]]"
       notify-success="[[successMessage]]"></dash-list>
-    <digitalService-model
+    <digitalservice-model
       endpoint="[[modelEndpoint]]"
-      on-model-delete-success="_updateList"></digitalService-model>
+      on-model-delete-success="_updateList"></digitalservice-model>
   </template>
 
   <script>
     /**
-     * `digitalService-list` Description
+     * `digitalservice-list` Description
      *
      * @summary ShortDescription.
      * @customElement
@@ -117,7 +117,7 @@
                 'path': ':module/edit/:key',
               },
               'delete': {
-                'event': 'delete-digitalService',
+                'event': 'delete-digitalservice',
               }
             }
           }
@@ -137,7 +137,7 @@
        */
       constructor() {
         super();
-        this.model = 'digitalService-model';
+        this.model = 'digitalservice-model';
         this.modelEndpoint = this.possibleEndpoints.fetch;
       }
 
@@ -153,7 +153,7 @@
       ready() {
         super.ready();
 
-        this.addEventListener('delete-digitalService', function (e) {
+        this.addEventListener('delete-digitalservice', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({
             'key': item.key,
