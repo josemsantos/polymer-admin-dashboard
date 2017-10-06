@@ -11,6 +11,15 @@
       :host {
         display: block;
       }
+
+      .card-content {
+        padding: 16px;
+      }
+
+      paper-button.cancel {
+        color: var(--paper-blue-500);
+        font-weight: 500;
+      }
     </style>
 
     <app-route
@@ -31,7 +40,17 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
-      notify-success="[[successMessage]]"></dash-list>
+      notify-success="[[successMessage]]">
+
+      <div slot="after-list">
+        <div class="card-content">
+          <paper-button
+            on-tap="_goToParentList"
+            class="cancel">Back to List</paper-button>
+        </div>
+      </div>
+    </dash-list>
+
     <listitem-model
       on-model-delete-success="_updateList"></listitem-model>
   </template>
@@ -139,7 +158,45 @@
         if (id && isReady) {
           this.heading = 'List Items of list #' + id;
           this.actions.create.path = ':module/create/' + id;
+          this.listId = id;
         }
+      }
+
+      _filter (e) {
+        this.filterSortRequest = true;
+        this.page = 1; //reset pagination element
+        let filterQuery = '';
+        let queryParam = '';
+        let propertyName = '';
+        for (let i=0; i<this.filters.length; i++) {
+          propertyName = this.filters[i].name;
+          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+          filterQuery += queryParam;
+        }
+        this.filterQuery = filterQuery + '&list_id=' + this.listId;
+        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery);
+        this.filterSortRequest = false;
+      }
+
+      _sort (e) {
+        this.filterSortRequest = true;
+        this.page = 1; //reset pagination element
+        let direction = e.detail.sort.direction == 'desc' ? 'normal' : 'reverse';
+        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + direction;
+        this.modelElement.search('', this.itemsPerPage, 1, 'list_id=' + this.listId + '&', this.sortQuery);
+        this.filterSortRequest = false;
+      }
+
+      getList () {
+        this.modelElement.search('', this.itemsPerPage, this.page, 'list_id=' + this.listId + '&', 'sort=id&order=normal');
+      }
+
+      _goToParentList() {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: '/lists/list'},
+          bubbles: true,
+          composed: true
+        }));
       }
 
       /**
