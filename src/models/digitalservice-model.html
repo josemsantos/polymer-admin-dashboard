@@ -2,131 +2,139 @@
 <link rel="import" href="../lib/model-behavior.html">
 
 <dom-module id="digitalservice-model">
-    <template>
-        <style>
-            :host {
-                display: block
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+      * `digitalservice-model` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
+    class DigitalServiceModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'digitalservice-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              id: null,
+              name: null,
+              icon: null,
+              active: null
             }
-        </style>
-    </template>
+          }
+        };
+      }
 
-    <script>
-        /**
-         * `digitalservice-model` Description
-         *
-         * @summary ShortDescription.
-         * @customElement
-         * @polymer
-         * @extends {Polymer.Element}
-         */
-        class DigitalServiceModel extends ModelBehavior(Polymer.Element) {
-            /**
-             * String providing the tag name to register the element under.
-             */
-            static get is() {
-                return 'digitalservice-model';
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/digitalservices';
+      }
+
+      _posUpdateCallBack(response) {
+        this.message = response.response.name + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      _responseChanged(response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', { detail: response }));
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+        });
+      }
+
+      getForm() {
+        return {
+          fields: [
+            {
+              label: 'Name',
+              name: 'name',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Digital Service name',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Icon',
+              name: 'icon',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){3,}$',
+                  message: 'Invalid Icon, icon is mandatory',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Active',
+              name: 'active',
+              type: 'checkbox',
+              validatores: []
             }
-
-            /**
-             * Object describing property-related metadata used by Polymer features
-             */
-            static get properties() {
-                return {
-                    model: {
-                        type: Object,
-                        value: {
-                            id: null,
-                            name: null,
-                            icon: null,
-                            active: null
-                        }
-                    }
-                };
+          ],
+          actions: {
+            'edit': {
+              label: 'edit',
+              event: 'update-digitalservice'
+            },
+            'delete': {
+              label: 'delete',
+              event: 'delete-digitalservice',
             }
+          }
+        };
+      }
 
-            /**
-             * Instance of the element is created/upgraded. Use: initializing state,
-             * set up event listeners, create shadow dom.
-             * @constructor
-             */
-            constructor() {
-                super();
-                this.endpoint = '/digitalservices';
-            }
+      getCreateForm() {
+        let form = this.getForm();
+        form.actions = {
+          'create': {
+            label: 'Create',
+            event: 'create-digitalservice'
+          },
+        };
+        return form;
+      }
 
-            _posUpdateCallBack (response) {
-                super._posUpdateCallBack(response.response.name + " updated");
-            }
+    }
 
-            _responseChanged (response) {
-                this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
-            }
-
-            /**
-             * Use for one-time configuration of your component after local DOM is initialized.
-             */
-            ready() {
-                super.ready();
-
-                Polymer.RenderStatus.afterNextRender(this, function () {
-                });
-            }
-
-            getForm () {
-                return {
-                    fields: [
-                        {
-                            label: 'Name',
-                            name: 'name',
-                            type: 'text',
-                            validators: [
-                                {
-                                    type: 'regex',
-                                    regex: '^(.){1,}$',
-                                    message: 'Invalid Digital Service name',
-                                    required: true,
-                                }
-                            ]
-                        },
-                        {
-                            label: 'Icon',
-                            name: 'icon',
-                            type: 'text',
-                            validators: []
-                        },
-                        {
-                            label: 'Active',
-                            name: 'active',
-                            type: 'checkbox',
-                            validatores: []
-                        }
-                    ],
-                    actions: {
-                        'edit' :{
-                            label: 'edit',
-                            event: 'update-digitalservice'
-                        },
-                        'delete': {
-                            label: 'delete',
-                            event: 'delete-digitalservice',
-                        }
-                    }
-                };
-            }
-
-            getCreateForm () {
-                let form = this.getForm();
-                form.actions = {
-                    'create' :{
-                        label: 'Create',
-                        event: 'create-digitalservices'
-                    },
-                };
-                return form;
-            }
-
-        }
-
-        window.customElements.define(DigitalServiceModel.is, DigitalServiceModel);
-    </script>
+    window.customElements.define(DigitalServiceModel.is, DigitalServiceModel);
+  </script>
 </dom-module>

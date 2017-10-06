@@ -28,10 +28,9 @@
         model="[[digitalservice.model]]"
         fields="[[form.fields]]"
         model-data="[[data]]"
-        external-sources="[[externalData]]"
         on-cancel="_goToList"
         show-only>
-          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service</h2></div>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service - [[data.name]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -64,10 +63,6 @@
             value: 'dozer'
           },
           digitalServiceModel: HTMLElement,
-          externalData: {
-            type: Array,
-            value: []
-          },
           pageType: {
             type: String,
             value: 'form'
