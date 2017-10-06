@@ -28,7 +28,10 @@
             font-weight: 400;
             font-size: 14px;
           }
-        }
+       }
+       paper-material {
+         @apply --dash-list-paper-material;
+       }
         paper-datatable-api {
           --paper-datatable-api-checked-checkbox-color: var(--primary-color);
           --paper-datatable-api-tr-hover-background-color: var(--paper-grey-200);
@@ -44,6 +47,7 @@
           background-color: #FFF;
           color: #000;
           border-left: solid 4px var(--paper-blue-800);
+          @apply --dash-list-card-content;
         }
 
         h2 {
@@ -88,25 +92,27 @@
         }
     </style>
 
-    <paper-material elevation="2">
+    <paper-material elevation="[[elevation]]">
       <div class="card-content">
-        <div class$="header [[headingStyle]]">
-          <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
-          <template is="dom-if" if="[[actions.create]]">
-            <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
-          </template>
-        </div>
-        <div class="filter">
-          <h2>
-            <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
-          </h2>
-          <iron-collapse>
-            <dash-form
-              fields="[[filters]]"
-              actions="[[_filterActions]]"
-              on-filter="_filterRequest"></dash-form>
-          </iron-collapse>
-        </div>
+        <template is="dom-if" if="[[!showListOnly]]">
+          <div class$="header [[headingStyle]]">
+            <h2><iron-icon icon="[[icon]]"></iron-icon>[[heading]]</h2>
+            <template is="dom-if" if="[[actions.create]]">
+              <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
+            </template>
+          </div>
+          <div class="filter">
+            <h2>
+              <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
+            </h2>
+            <iron-collapse>
+              <dash-form
+                fields="[[filters]]"
+                actions="[[_filterActions]]"
+                on-filter="_filterRequest"></dash-form>
+            </iron-collapse>
+          </div>
+        </template>
         <paper-datatable-api
           data="[[items]]"
           selected-rows="{{selectedRows}}"
@@ -141,12 +147,12 @@
             </paper-datatable-api-column>
           </template>
         </paper-datatable-api>
-        <template is="dom-if" if="[[customPagination]]">
+        <template is="dom-if" if="[[_hasFooter]]">
           <div class="footer-pagination">
             <dash-list-footer
               page="{{page}}"
               items-per-page="[[itemsPerPage]]"
-              total-items="[[totalItems]]"><dash-list-footer>
+              total-items="[[totalItems]]"></dash-list-footer>
           </div>
         </template>
       </div>
@@ -176,6 +182,9 @@
        */
       static get properties() {
         return {
+          _hasFooter: {
+            computed: '_hasFooterComputed(customPagination, showListOnly)'
+          },
           _columnActions: {
             type: Array,
             value: []
@@ -192,6 +201,14 @@
                 'label': 'Apply'
               }
             ]
+          },
+          elevation: {
+            type: Number,
+            value: 2
+          },
+          showListOnly: {
+            type: Boolean,
+            value: false
           },
           heading: String,
           icon: String,
@@ -250,6 +267,10 @@
           bubbles: true,
           composed: true
         }));
+      }
+
+      _hasFooterComputed(customPagination, showListOnly) {
+        return customPagination && !showListOnly;
       }
 
       _isDraggable(column) {
