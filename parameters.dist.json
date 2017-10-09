@@ -8,5 +8,6 @@
             "url": "http://dozer.jone:8090/api/v1",
             "headers": {}
         }
-    }
+    },
+    "rootPath": "/"
 }

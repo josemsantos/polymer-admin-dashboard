@@ -21,12 +21,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
 <link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
-<link rel="import" href="/src/elements/dash-access.html">
-<link rel="import" href="/src/elements/dash-firebase.html">
-<link rel="import" href="/src/elements/dash-user-actions.html">
-<link rel="import" href="/src/elements/dash-navigation-menu.html">
-<link rel="import" href="/src/elements/dash-notifications.html">
-<link rel="import" href="/src/elements/dash-logged-user.html">
+<link rel="import" href="elements/dash-access.html">
+<link rel="import" href="elements/dash-firebase.html">
+<link rel="import" href="elements/dash-user-actions.html">
+<link rel="import" href="elements/dash-navigation-menu.html">
+<link rel="import" href="elements/dash-notifications.html">
+<link rel="import" href="elements/dash-logged-user.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="my-icons.html">
@@ -101,7 +101,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         bottom: 0;
         left: 0;
         right: 0;
-        background-image: url('/images/bg.png');
+        background-image: url('../images/bg.png');
         background-size: cover;
         background-color: var(--paper-blue-500);
         height: 264px;
@@ -344,8 +344,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _routePathChanged(path) {
-        if (path === '/') {
-          this.redirectTo('/authentication/login');
+        if (path === this.rootPath) {
+          this.goToLoginPage();
         }
       }
 
@@ -498,18 +498,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       redirectTo (page, data) {
-        this.set('route.path', page);
+        let path = this.rootPath + page;
+        this.set('route.path', path);
         if (undefined !== data) {
           this.set('_queryParams', data);
         }
       }
 
       goToLoginPage () {
-        this.redirectTo(this.rootPath + 'authentication/login');
+        this.redirectTo('authentication/login');
       }
 
       goToDashBoard () {
-        this.redirectTo(this.rootPath + 'dashboard/home');
+        this.redirectTo('dashboard/home');
       }
 
       goToHomePage() {
