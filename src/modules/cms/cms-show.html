@@ -94,14 +94,6 @@
         console.log(id)
       }
 
-      _goToList (e) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/cms/list'},
-          bubbles: true,
-          composed: true
-        }));
-      }
-
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
