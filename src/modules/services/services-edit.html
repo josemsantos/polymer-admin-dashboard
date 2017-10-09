@@ -3,11 +3,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="digitalservices-edit">
+<dom-module id="services-edit">
   <template>
     <style include="shared-styles">
        :host {
@@ -18,47 +19,48 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-      
+
     <digitalservice-model
+      on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
+      
+    <service-model
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
-      on-model-delete-success="_notifyAndNavigate">
-
-    </digitalservice-model>
+      on-model-delete-success="_notifyAndNavigate"></service-model>
 
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[digitalserviceModel.model]]"
+        model="[[serviceModel.model]]"
+        model-data="[[data]]"
         fields="[[form.fields]]"
         actions="[[_formActions]]"
-        model-data="[[data]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service - [[data.name]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Service list item [[data.title]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
 
   <script>
     /**
-     * `digitalservices-edit` Description
+     * `services-edit` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DigitalServicesEdit extends ModuleElementBehavior(Polymer.Element) {
+    class ServicesEdit extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'digitalservices-edit';
+        return 'services-edit';
       }
 
       /**
@@ -66,12 +68,13 @@
        */
       static get properties() {
         return {
+          digitalServiceData: Object,
           isReady: Boolean,
           connection: {
             type: String,
             value: 'dozer'
           },
-          digitalserviceModel: HTMLElement,
+          serviceModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -81,30 +84,59 @@
           payload: {
             type: Array,
             value: [
-              'name',
-              'icon',
+              'title',
+              'digital_services_id',
               'active'
             ]
           }
         };
       }
 
-      _notifyUser (e) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {
-              route: this.getModuleName() + '/list'
-          },
-          bubbles: true,
-          composed: true
-        }));
-        this.shadowRoot.querySelector('dash-form').formReset();
-        super._notifyUser(e)
-      }
-
       static get observers() {
         return [
           '_routeIdChanged(routeData.id, isReady)',
+          '_isDigitalServiceAndDataReady(data, digitalServiceData)',
         ];
+      }
+
+      _setDigitalServiceData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.digitalServiceData = e.detail.response.results;
+        }
+      }
+
+      _isDigitalServiceAndDataReady (data, digitalServiceData) {
+        if (data && digitalServiceData) {
+          let _items = [];
+          let _tobeSelected = this.data.digital_service.id;
+          let _selected;
+          for (let i in digitalServiceData) {
+            if (_tobeSelected == digitalServiceData[i].id) {
+              _selected = i;
+            }
+            _items.push({
+              key: digitalServiceData[i].id,
+              label: digitalServiceData[i].name
+            })
+          }
+
+          let _form = this.serviceModel.getForm();
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('digital_services_id', _items, _selected, _form.fields);
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+          
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          setTimeout(function() {
+            this.shadowRoot.querySelector('dash-form').reloadData(data);
+          }.bind(this), 1);
+        }
       }
 
       _setData (e) {
@@ -115,7 +147,7 @@
         this.key = id;
       }
 
-      _updateDigitalService (e) {
+      _updateservice (e) {        
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -124,11 +156,21 @@
         }
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.digitalserviceModel.update(null, this.key, JSON.stringify(payload));
+        payload.digital_services_id = parseInt(payload.digital_services_id);
+        this.serviceModel.update(null, this.key, JSON.stringify(payload));
       }
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      onSelectedChange(selected) {
+        super.onSelectedChange(selected);
+        if (selected) {
+          this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
+          this.digitalServiceModel.connection = this.requestConnections[this.connection];
+          this.digitalServiceModel.search();
+        }
       }
 
       /**
@@ -138,7 +180,7 @@
        */
       constructor() {
         super();
-        this.model = 'digitalservice-model';
+        this.model = 'service-model';
       }
 
       /**
@@ -146,26 +188,22 @@
        */
       ready() {
         super.ready();
-        this.digitalserviceModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.digitalserviceModel.getForm();
+        this.serviceModel = this.shadowRoot.querySelector(this.model);
 
-        this.actions = this.form.actions;
-        this.isReady = true;
-
-        this.addEventListener('delete-digitalservice', function (e) {
+        this.addEventListener('delete-service', function (e) {
           this._alert({
             'key': this.key,
-            'message': this.data.name
+            'message': this.data.title
           });
         }.bind(this));
 
-        this.addEventListener('update-digitalservice', function (e) {
-          this._updateDigitalService(e);
+        this.addEventListener('update-service', function (e) {
+          this._updateservice(e);
         });
       }
 
     }
 
-    window.customElements.define(DigitalServicesEdit.is, DigitalServicesEdit);
+    window.customElements.define(ServicesEdit.is, ServicesEdit);
   </script>
 </dom-module>

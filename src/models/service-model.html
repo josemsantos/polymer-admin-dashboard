@@ -1,7 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../lib/model-behavior.html">
 
-<dom-module id="digitalservice-model">
+<dom-module id="service-model">
   <template>
     <style>
        :host {
@@ -12,19 +12,19 @@
 
   <script>
     /**
-      * `digitalservice-model` Description
-      *
-      * @summary ShortDescription.
-      * @customElement
-      * @polymer
-      * @extends {Polymer.Element}
-      */
-    class DigitalServiceModel extends ModelBehavior(Polymer.Element) {
+         * `service-model` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+    class ServiceModel extends ModelBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'digitalservice-model';
+        return 'service-model';
       }
 
       /**
@@ -36,8 +36,8 @@
             type: Object,
             value: {
               id: null,
-              name: null,
-              icon: null,
+              title: null,
+              digital_services_id: null,
               active: null
             }
           }
@@ -51,11 +51,11 @@
        */
       constructor() {
         super();
-        this.endpoint = '/digitalservices';
+        this.endpoint = '/services';
       }
 
       _posUpdateCallBack(response) {
-        this.message = response.response.name + " updated";
+        this.message = response.response.title + " updated";
         super._posUpdateCallBack(response);
       }
 
@@ -77,27 +77,29 @@
         return {
           fields: [
             {
-              label: 'Name',
-              name: 'name',
+              label: 'Title',
+              name: 'title',
               type: 'text',
               validators: [
                 {
                   type: 'regex',
                   regex: '^(.){1,}$',
-                  message: 'Invalid Digital Service name',
+                  message: 'Invalid Service title',
                   required: true,
                 }
               ]
             },
             {
-              label: 'Icon',
-              name: 'icon',
-              type: 'text',
+              label: 'Service Type',
+              name: 'digital_services_id',
+              type: 'dropdown',
+              items: [],
+              selected: 0,
               validators: [
                 {
                   type: 'regex',
-                  regex: '^(.){3,}$',
-                  message: 'Invalid Icon, icon is mandatory',
+                  regex: '^\\d{1,}$',
+                  message: 'Invalid Service Type',
                   required: true,
                 }
               ]
@@ -112,11 +114,11 @@
           actions: {
             'edit': {
               label: 'edit',
-              event: 'update-digitalservice'
+              event: 'update-service'
             },
             'delete': {
               label: 'delete',
-              event: 'delete-digitalservice',
+              event: 'delete-service',
             }
           }
         };
@@ -127,7 +129,7 @@
         form.actions = {
           'create': {
             label: 'Create',
-            event: 'create-digitalservice'
+            event: 'create-service'
           },
         };
         return form;
@@ -135,6 +137,6 @@
 
     }
 
-    window.customElements.define(DigitalServiceModel.is, DigitalServiceModel);
+    window.customElements.define(ServiceModel.is, ServiceModel);
   </script>
 </dom-module>

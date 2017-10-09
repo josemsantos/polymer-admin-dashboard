@@ -3,11 +3,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="digitalservices-show">
+<dom-module id="services-show">
   <template>
     <style include="shared-styles">
        :host {
@@ -19,37 +20,39 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
     <digitalservice-model
-      on-model-response-changed="_setData"></digitalservice-model>
+      on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
+    <service-model
+      on-model-response-changed="_setData"></service-model>
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[digitalservice.model]]"
+        model="[[serviceModel.model]]"
         fields="[[form.fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         show-only>
-          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service - [[data.name]]</h2></div>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Services List Item [[data.title]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
 
   <script>
     /**
-     * `digitalservices-show` Description
+     * `services-show` Description
      *
      * @summary ShortDescription.
      * @customElement
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DigitalServicesShow extends ModuleElementBehavior(Polymer.Element) {
+    class ServicesShow extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'digitalservices-show';
+        return 'services-show';
       }
 
       /**
@@ -62,7 +65,7 @@
             type: String,
             value: 'dozer'
           },
-          digitalServiceModel: HTMLElement,
+          serviceModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -71,11 +74,60 @@
           form: Object
         };
       }
-
+      
       static get observers() {
         return [
           '_routeIdChanged(routeData.id, isReady)',
+          '_isDigitalServiceAndDataReady(data, digitalServiceData)',
         ];
+      }
+
+      _setDigitalServiceData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.digitalServiceData = e.detail.response.results;
+        }
+      }
+
+      _isDigitalServiceAndDataReady (data, digitalServiceData) {
+        if (data && digitalServiceData) {
+          let _items = [];
+          let _tobeSelected = this.data.digital_service.id;
+          let _selected;
+          for (let i in digitalServiceData) {
+            if (_tobeSelected == digitalServiceData[i].id) {
+              _selected = i;
+            }
+            _items.push({
+              key: digitalServiceData[i].id,
+              label: digitalServiceData[i].name
+            })
+          }
+
+          let _form = this.serviceModel.getForm();
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('digital_services_id', _items, _selected, _form.fields);
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+          
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          setTimeout(function() {
+            this.shadowRoot.querySelector('dash-form').reloadData(data);
+          }.bind(this), 1);
+        }
+      }
+
+      onSelectedChange(selected) {
+        super.onSelectedChange(selected);
+        if (selected) {
+          this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
+          this.digitalServiceModel.connection = this.requestConnections[this.connection];
+          this.digitalServiceModel.search();
+        }
       }
 
       _setData (e) {
@@ -88,7 +140,7 @@
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/digitalservices/list'},
+          detail: {route: '/services/list'},
           bubbles: true,
           composed: true
         }));
@@ -101,7 +153,7 @@
        */
       constructor() {
         super();
-        this.model = 'digitalservice-model';
+        this.model = 'service-model';
       }
 
       /**
@@ -109,14 +161,11 @@
        */
       ready() {
         super.ready();
-        this.digitalserviceModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.digitalserviceModel.getForm();
-
-        this.isReady = true;
+        this.serviceModel = this.shadowRoot.querySelector(this.model);
       }
 
     }
 
-    window.customElements.define(DigitalServicesShow.is, DigitalServicesShow);
+    window.customElements.define(ServicesShow.is, ServicesShow);
   </script>
 </dom-module>

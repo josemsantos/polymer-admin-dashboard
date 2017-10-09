@@ -69,8 +69,13 @@
       }
 
       search(method, itemsPerPage, page, filterQuery, sortQuery) {
-        var queryParams = "per_page=" +  itemsPerPage + '&';
-        queryParams += page ? "page=" + page + '&': '';
+        let queryParams = "";
+        if (itemsPerPage) {
+          queryParams = "per_page=" +  itemsPerPage + '&';
+        }
+        if (page) {
+          queryParams += page ? "page=" + page + '&': '';
+        }
         queryParams += filterQuery ? filterQuery : '';
         queryParams += sortQuery ? sortQuery : 'sort=id&order=reverse';
         method = method || 'GET';

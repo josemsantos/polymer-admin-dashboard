@@ -1,10 +1,10 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="digitalservices-list">
+<dom-module id="services-list">
   <template>
     <style include="shared-styles">
        :host {
@@ -13,7 +13,7 @@
     </style>
 
     <dash-list
-      heading="Digital Service - Types"
+      heading="Services List"
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
@@ -26,8 +26,9 @@
       custom-pagination
       items-per-page="[[itemsPerPage]]"
       notify-success="[[successMessage]]"></dash-list>
-    <digitalservice-model
-      on-model-delete-success="_updateList"></digitalservice-model>
+
+    <service-model
+      on-model-delete-success="_updateList"></service-model>
   </template>
 
   <script>
@@ -39,12 +40,12 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class DigitalServicesList extends ModuleElementBehavior(Polymer.Element) {
+    class ServicesList extends ModuleElementBehavior(Polymer.Element) {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'digitalservices-list';
+        return 'services-list';
       }
 
       /**
@@ -58,7 +59,7 @@
           },
           module: {
             type: String,
-            value: 'digitalservices'
+            value: 'services'
           },
           model: String,
           connection: {
@@ -69,8 +70,8 @@
             type: Array,
             value: [
               {
-                header: 'Name',
-                index: 'name',
+                header: 'Title',
+                index: 'title',
                 type: 'data'
               },
               {
@@ -89,8 +90,8 @@
             type: Array,
             value: [
               {
-                label: 'Name',
-                name: 'name',
+                label: 'Title',
+                name: 'title',
                 type: 'text',
                 validators: []
               }
@@ -108,7 +109,7 @@
                 'path': ':module/edit/:key',
               },
               'delete': {
-                'event': 'delete-digitalservice',
+                'event': 'delete-service',
               }
             }
           }
@@ -126,7 +127,7 @@
        */
       constructor() {
         super();
-        this.model = 'digitalservice-model';
+        this.model = 'service-model';
       }
 
       onResponseChanged (e) {
@@ -141,17 +142,17 @@
       ready() {
         super.ready();
 
-        this.addEventListener('delete-digitalservice', function (e) {
+        this.addEventListener('delete-service', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({
             'key': item.key,
-            'message': item.name,
+            'message': item.title,
           });
         }.bind(this));
       }
 
     }
 
-    window.customElements.define(DigitalServicesList.is, DigitalServicesList);
+    window.customElements.define(ServicesList.is, ServicesList);
   </script>
 </dom-module>
