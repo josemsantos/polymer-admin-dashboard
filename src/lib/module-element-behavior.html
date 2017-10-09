@@ -303,7 +303,7 @@
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: this.getModuleName() + '/list'},
+          detail: {route: this.rootPath + this.getModuleName() + '/list'},
           bubbles: true,
           composed: true
         }));
