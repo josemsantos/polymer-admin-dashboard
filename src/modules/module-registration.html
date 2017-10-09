@@ -1,21 +1,23 @@
 <link rel="import" href="cms/cms-module-registration.html">
 <link rel="import" href="digitalservices/digitalservices-module-registration.html">
 <link rel="import" href="services/services-module-registration.html">
+<link rel="import" href="lists/lists-module-registration.html">
+<link rel="import" href="listitems/listitems-module-registration.html">
 <link rel="import" href="groups/groups-module-registration.html">
 <link rel="import" href="users/users-module-registration.html">
 <link rel="import" href="user/user-module-registration.html">
-<link rel="import" href="formelements/formelements-module-registration.html">
 <script>
     'use strict';
   
     function ModuleRegistration(superClass) {
       return class extends ServicesModuleRegistration(
-                            FormElementsModuleRegistration(
+                            ListsModuleRegistration(
+                            ListItemsModuleRegistration(
                             CmsModuleRegistration(
                             DigitalServicesModuleRegistration(
                             UserModuleRegistration(
                             UsersModuleRegistration(
-                            GroupsModuleRegistration(superClass))))))) {
+                            GroupsModuleRegistration(superClass)))))))) {
         static get properties() {
           return {
             modules: {
@@ -36,12 +38,13 @@
             }
           });
           this._addModules(this.cms_module);
+          this._addModules(this.lists_module);
+          this._addModules(this.listitems_module);
           this._addModules(this.digitalservices_module);
           this._addModules(this.services_module);
           this._addModules(this.group_module);
           this._addModules(this.users_module);
           this._addModules(this.user_module);
-          this._addModules(this.form_elements_module);
           this.dispatchEvent(new CustomEvent('dash-modules-registered', {
             detail: this.modules,
             bubbles: true,

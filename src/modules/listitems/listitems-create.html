@@ -1,0 +1,170 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/listitem-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="listitems-create">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+    </style>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+        
+    <listitem-model
+      on-model-create-success="_notifyUser"></listitem-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[listItemModel.model]]"
+        fields="[[form.fields]]"
+        actions="[[_formActions]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-cancel="_goToList"
+        on-submit="_execAction"
+        model-ready>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:menu"></iron-icon>New List Item of list #[[listId]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `listitems-create` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListItemsCreate extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'listitems-create';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          listId: {
+            value: null
+          },
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          listItemModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'list_id',
+              'name',
+              'icon'
+            ]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _notifyUser (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/list/' + this.listId
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
+        e.detail.message = e.detail.message.response.name + " created";
+        super._notifyUser(e)
+      }
+
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          this.listId = id;
+        }
+      }
+
+      _createListItem (e) {
+        // set parent Id from route Id
+        e.detail.payload.list_id = this.listId;
+
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.listItemModel.create(null, JSON.stringify(payload));
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: this.getModuleName() + '/list/' + this.listId},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'listitem-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        this.listItemModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.listItemModel.getCreateForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('create-listitem', function (e) {
+          this._createListItem(e);
+        });
+      }
+    }
+
+    window.customElements.define(ListItemsCreate.is, ListItemsCreate);
+  </script>
+</dom-module>

@@ -183,6 +183,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="cms-edit"
               route="[[subroute]]"></cms-edit>
+			<lists-list
+              permissions="[[permissions]]"
+              name="lists-list"></lists-list>
+            <listitems-list
+              permissions="[[permissions]]"
+              name="listitems-list"
+              route="[[subroute]]"></listitems-list>
+            <lists-create
+              permissions="[[permissions]]"
+              name="lists-create"></lists-create>
+            <listitems-create
+              permissions="[[permissions]]"
+              name="listitems-create"
+              route="[[subroute]]"></listitems-create>
+            <lists-edit
+              permissions="[[permissions]]"
+              name="lists-edit"
+              route="[[subroute]]"></lists-edit>
+            <listitems-edit
+              permissions="[[permissions]]"
+              name="listitems-edit"
+              route="[[subroute]]"></listitems-edit>
+            <lists-show
+              permissions="[[permissions]]"
+              name="lists-show"
+              route="[[subroute]]"></lists-show>
+            <listitems-show
+              permissions="[[permissions]]"
+              name="listitems-show"
+              route="[[subroute]]"></listitems-show>
             <digitalservices-list
               permissions="[[permissions]]"
               name="digitalservices-list"
@@ -260,7 +290,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="user-profile"
               storage="[[fireStorage]]"
-              real-db="[[fireDB]]"></user-profile >
+              real-db="[[fireDB]]"></user-profile>
             <authentication-login
               name$="[[loginPage]]" 
               on-dash-user-logged="_setUser"></authentication-login>
