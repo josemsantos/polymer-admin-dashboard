@@ -5,3 +5,4 @@ src/env.js
 package-lock.json
 parameters.json
 src/env.js
+.idea/

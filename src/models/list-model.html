@@ -1,0 +1,133 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="list-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+     * `lists-model` Description
+     *
+     * @summary Lists data logic.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'list-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              id: null,
+              name: null,
+              active: null,
+              created_at: null,
+              updated_at: null
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/lists';
+      }
+
+      _posUpdateCallBack (response) {
+        this.message = response.response.name + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      _responseChanged (response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+        });
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: 'Active',
+              name: 'active',
+              type: 'checkbox',
+              validators: [
+                {
+                  type: 'boolean',
+                  required: true
+                }
+              ]
+            },
+            {
+              label: 'Name',
+              name: 'name',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Name',
+                  required: true,
+                  stop: true
+                }
+              ]
+            }
+          ],
+          actions: {
+            'edit' :{
+              label: 'edit',
+              event: 'update-list'
+            },
+            'delete': {
+              label: 'delete',
+              event: 'delete-list',
+            }
+          }
+        };
+      }
+
+      getCreateForm () {
+        let form = this.getForm();
+        form.actions = {
+          'create' :{
+            label: 'Create',
+            event: 'create-list'
+          },
+        };
+        return form;
+      }
+    }
+
+    window.customElements.define(ListModel.is, ListModel);
+  </script>
+</dom-module>
