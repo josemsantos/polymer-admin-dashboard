@@ -17,7 +17,7 @@
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
-      icon="my-icons:group"
+      icon="my-icons:phone-android"
       key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"
@@ -28,6 +28,7 @@
       notify-success="[[successMessage]]"></dash-list>
     <digitalservice-model
       on-model-delete-success="_updateList"></digitalservice-model>
+    <button onclick="[[_createFormElement]]">Create Form Element</button>
   </template>
 
   <script>
@@ -102,13 +103,13 @@
               'create': {
               },
               'show': {
-                'path': ':module/show/:key',
+                'path': ':module/show/:key'
               },
               'edit': {
-                'path': ':module/edit/:key',
+                'path': ':module/edit/:key'
               },
               'delete': {
-                'event': 'delete-digitalservice',
+                'event': 'delete-digitalservice'
               }
             }
           }
