@@ -88,7 +88,7 @@
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/digitalservices/list'},
+          detail: {route: this.rootPath + 'digitalservices/list'},
           bubbles: true,
           composed: true
         }));

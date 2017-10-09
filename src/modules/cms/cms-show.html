@@ -96,7 +96,7 @@
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/cms/list'},
+          detail: {route: this.rootPath + 'cms/list'},
           bubbles: true,
           composed: true
         }));

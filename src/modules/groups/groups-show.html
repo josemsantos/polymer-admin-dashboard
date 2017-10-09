@@ -102,7 +102,7 @@
 
       _goToList (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: '/groups/list'},
+          detail: {route: this.rootPath + 'groups/list'},
           bubbles: true,
           composed: true
         }));
