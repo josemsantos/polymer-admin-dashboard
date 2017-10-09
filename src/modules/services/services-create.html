@@ -2,11 +2,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
-<dom-module id="digitalservices-create">
+<dom-module id="services-create">
   <template>
     <style include="shared-styles">
       :host {
@@ -15,14 +16,17 @@
     </style>
 
     <digitalservice-model
-      on-model-create-success="_notifyUser"></digitalservice-model>
+      on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
+
+    <service-model
+      on-model-create-success="_notifyUser"></service-model>
 
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[digitalServiceModel.model]]"
+        model="[[serviceModel.model]]"
         fields="[[form.fields]]"
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
@@ -30,26 +34,26 @@
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Digital Service</h2></div>
+        <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Service list item</h2></div>
       </dash-form>
     </paper-material>
   </template>
 
   <script>
-   /**
-    * `digitalservices-create` Description
-    *
-    * @summary ShortDescription.
-    * @customElement
-    * @polymer
-    * @extends {Polymer.Element}
-    */
-    class DigitalServicesCreate extends ModuleElementBehavior(Polymer.Element) {
+    /**
+      * `services-create` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
+    class ServicesCreate extends ModuleElementBehavior(Polymer.Element) {
       /**
         * String providing the tag name to register the element under.
         */
       static get is() {
-        return 'digitalservices-create';
+        return 'services-create';
       }
 
       /**
@@ -64,9 +68,9 @@
           },
           module: {
             type: String,
-            value: 'digitalservices'
+            value: 'services'
           },
-          digitalServiceModel: HTMLElement,
+          serviceModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -76,12 +80,37 @@
           payload: {
             type: Array,
             value: [
-              'name',
-              'icon',
+              'title',
+              'digital_services_id',
               'active',
             ]
           }
         };
+      }
+
+      _setDigitalServiceData(e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.digitalServiceData = e.detail.response.results;
+          let _items = [];
+          for (let i in this.digitalServiceData) {
+            _items.push({
+              key: this.digitalServiceData[i].id,
+              label: this.digitalServiceData[i].name
+            })
+          }
+
+          let _form = this.serviceModel.getCreateForm();
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                          .setDataToFormElement('digital_services_id', _items, null, _form.fields);
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+          
+          this.actions = this.form.actions;
+          this.isReady = true;
+        }
       }
 
       _notifyUser(e) {
@@ -93,11 +122,11 @@
           composed: true
         }));
         this.shadowRoot.querySelector('dash-form').formReset();
-        e.detail.message = e.detail.message.response.name + " created";
+        e.detail.message = e.detail.message.response.title + " created";
         super._notifyUser(e)
       }
 
-      _createDigitalServices(e) {
+      _createService(e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -106,7 +135,8 @@
         }
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.digitalServiceModel.create(null, JSON.stringify(payload));
+        payload.digital_services_id = parseInt(payload.digital_services_id);
+        this.serviceModel.create(null, JSON.stringify(payload));
       }
 
       /**
@@ -116,7 +146,16 @@
         */
       constructor() {
         super();
-        this.model = 'digitalservice-model';
+        this.model = 'service-model';
+      }
+
+      onSelectedChange(selected) {
+        super.onSelectedChange(selected);
+        if (selected) {
+          this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
+          this.digitalServiceModel.connection = this.requestConnections[this.connection];
+          this.digitalServiceModel.search();
+        }
       }
 
       /**
@@ -124,19 +163,15 @@
         */
       ready() {
         super.ready();
-        this.digitalServiceModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.digitalServiceModel.getCreateForm();
+        this.serviceModel = this.shadowRoot.querySelector(this.model);
 
-        this.actions = this.form.actions;
-        this.isReady = true;
-
-        this.addEventListener('create-digitalservice', function (e) {
-          this._createDigitalServices(e);
+        this.addEventListener('create-service', function (e) {
+          this._createService(e);
         });
       }
 
     }
 
-    window.customElements.define(DigitalServicesCreate.is, DigitalServicesCreate);
+    window.customElements.define(ServicesCreate.is, ServicesCreate);
   </script>
 </dom-module>

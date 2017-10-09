@@ -1,23 +1,23 @@
 <script>
   'use strict';
 
-  function DigitalServicesModuleRegistration(superClass) {
+  function ServicesModuleRegistration(superClass) {
     return class extends superClass {
       static get properties() {
         return {
-          digitalservices_module: {
+          services_module: {
             type: Object,
             value: [
               {
-                'digitalservices': {
+                'services': {
                   'inMenu': true,
                   'menuGroup': 'Digital Service',
                   'menuItems': [
                     {
-                      'label': 'Types',
+                      'label': 'Services List',
                       'action': 'list',
                       'icon': 'my-icons:group',
-                      'name': 'digitalservices',
+                      'name': 'services',
                       'restrictions': [
                         'ROLE_DIGITALSERVICES_GUEST',
                         'ROLE_DIGITALSERVICES_STAFF',
