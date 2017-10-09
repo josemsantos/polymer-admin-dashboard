@@ -1,9 +1,11 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="digitalservices-formelement.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -40,6 +42,18 @@
         on-cancel="_goToList"
         on-submit="_execAction">
           <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Digital Service - [[data.name]]</h2></div>
+          <div slot="footer">
+            <div class="text-centered">
+              <paper-button raised>
+                <iron-icon icon="my-icons:add"></iron-icon>
+                ADD FORM ELEMENT
+              </paper-button>
+            </div>
+            <digitalservices-formelement
+              formelement-id="[[data.formelement_id]]"
+              access-control="[[accessControl]]"
+              permissions="[[permissions]]"></digitalservices-formelement>
+          </div>
       </dash-form>
     </paper-material>
   </template>
@@ -109,6 +123,7 @@
 
       _setData (e) {
         this.data = e.detail.response;
+        this.set('data.formelement_id', 0);
       }
 
       _routeIdChanged (id) {

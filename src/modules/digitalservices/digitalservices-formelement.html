@@ -1,0 +1,212 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/formelement-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="digitalservices-formelement">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      dash-form.inline-form {
+        margin-top: 16px;
+        --form-layout: {
+          background-color: #FFF;
+        }
+        --form-body: {
+          padding: 32px 0;
+        }
+        --form-title: {
+          border:none;
+        }
+        --form-wrapper: {
+          border:none;
+        }
+        --form-action-box: {
+          padding: 0;
+        }
+      }
+    </style>
+    <formelement-model
+      fetch-templates
+      on-formelement-templates-changed="_setTemplates"
+      on-model-create-success="_notifyUser"></formelement-model>
+
+    <dash-form
+      class="inline-form"
+      key="[[key]]"
+      model="[[formelementModel.model]]"
+      fields="[[form.fields]]"
+      actions="[[_formActions]]"
+      model-data="[[data]]"
+      notify-error="[[errorMessage]]"
+      notify-success="[[successMessage]]"
+      on-cancel="_goToList"
+      on-submit="_execAction">
+      <div slot="action-box">
+        <div class="text-centered">
+          <paper-button raised>
+            <iron-icon icon="my-icons:add"></iron-icon>
+            ADD FORM ELEMENT
+          </paper-button>
+        </div>
+      </div>
+    </dash-form>
+
+  </template>
+
+  <script>
+    /**
+     * `digitalservices-formelement` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DigitalservicesFormelement extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'digitalservices-formelement';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          module: {
+            type: String,
+            value: 'digitalservices'
+          },
+          formelementModel: HTMLElement,
+          formelementId: {
+            type: Number,
+            refelectToAttribute: true,
+            observer: '_formelementIdChanged'
+          },
+          templates: {
+            type: Array
+          },
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'top_level_id',
+              'parent_id',
+              'label',
+              'template_id',
+              'lists_id',
+              'default_lists_item_id'
+            ]
+          }
+
+        };
+      }
+
+      static get observers() {
+        return [
+          '_isTemplatesAndDataReady(data, templates)',
+        ];
+      }
+
+      _setTemplates (e) {
+        this.templates = (e.detail.length) ? e.detail : [];
+      }
+
+      _formelementIdChanged (formelementId) {
+        if (!formelementId) {
+          this.data  = {
+            id: 0,
+            template_id: 1
+          }
+        }
+      }
+
+      _isTemplatesAndDataReady (data, templates) {
+        if (data && templates) {
+          let _items = [];
+          let _tobeSelected = this.data.template_id;
+          let _selected;
+          for (let i in templates) {
+            if (_tobeSelected == templates[i].id) {
+              _selected = i;
+            }
+            _items.push({
+              key: templates[i].id,
+              label: templates[i].name
+            })
+          }
+
+          let _form = this.formelementModel.getForm();
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('template_id', _items, _selected, _form.fields);
+          console.log(_fields)
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+          
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          if (data.id > 0) {
+            setTimeout(function() {
+              this.shadowRoot.querySelector('dash-form').reloadData(data);
+            }.bind(this), 1);
+          }
+        }
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = "formelement-model";
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.formelementModel = this.shadowRoot.querySelector(this.model);
+
+        this.addEventListener('delete-formelement', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-formelement', function (e) {
+          this._updateFormElement(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(DigitalservicesFormelement.is, DigitalservicesFormelement);
+  </script>
+</dom-module>
