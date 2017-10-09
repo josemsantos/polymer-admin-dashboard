@@ -20,6 +20,10 @@
         return type === 'collection';
       }
 
+      _isDropdown(type) {
+        return type === 'dropdown';
+      }
+
       _isReadonly(attributes, showOnly) {
         return (attributes && attributes.readonly || showOnly);
       }
@@ -62,7 +66,10 @@
             /** This is for collections **/
             value = this._getValuesFromSelectedColletion(formField.id, formField.items);
           } else if (formField.tagName == "PAPER-CHECKBOX") {
-            value = formField.checked;
+            value = Boolean(formField.checked);
+          } else if (formField.tagName == "PAPER-DROPDOWN-MENU") {
+            let item = formField.selectedItem;
+            value = item.dataset.key;
           } else {
             value = formField.value;
           }
