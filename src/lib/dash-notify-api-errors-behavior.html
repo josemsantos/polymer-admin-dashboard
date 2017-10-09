@@ -23,15 +23,17 @@
         let error = payload.response;
         let errorDetail = this._buildErrorMessage(payload.errors);
 
-        this.dispatchEvent(new CustomEvent('dash-notify', {
-          detail: {
-            type: 'error',
-            msg: error,
-            details: errorDetail
-          },
-          bubbles: true,
-          composed: true
-        }));
+        if (error) {
+          this.dispatchEvent(new CustomEvent('dash-notify', {
+            detail: {
+              type: 'error',
+              msg: error,
+              details: errorDetail
+            },
+            bubbles: true,
+            composed: true
+          }));
+        }
       }
 
       notifyFromApiResponseAndNavigate (evnt) {
