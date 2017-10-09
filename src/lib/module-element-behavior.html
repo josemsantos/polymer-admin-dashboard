@@ -64,8 +64,7 @@
           },
           payload: {
             type: Array,
-            value: [
-            ]
+            value: []
           }
         }
       }
@@ -136,7 +135,7 @@
         } else {
           return {
             action: '_goToPath',
-            data: '/' + this.module + '/' + actionName
+            data: this.module + '/' + actionName
           };
         }
       }
