@@ -129,14 +129,14 @@
             value: 'form'
           },
           parentId: Number,
-          topLevelId: Number,
+          digitalServiceId: Number,
           data: Object,
           form: Object,
           fields: Array,
           payload: {
             type: Array,
             value: [
-              'top_level_id',
+              'digital_service_id',
               'parent_id',
               'label',
               'template_id',
@@ -310,9 +310,14 @@
         }
         if (!this.parentId) {
           delete payload['parent_id'];
+        } else {
+          payload['parent_id'] = this.parentId;
         }
-        if (!this.topLevelId) {
-          delete payload['top_level_id'];
+        
+        if (!this.digitalServiceId) {
+          delete payload['digital_service_id'];
+        } else {
+          payload['digital_service_id'] = this.digitalServiceId;
         }
         
         if (this.formelementId) {
