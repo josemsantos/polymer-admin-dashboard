@@ -1,6 +1,7 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../models/formelement-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
@@ -29,8 +30,21 @@
         --form-action-box: {
           padding: 0;
         }
+        --dash-form-button-edit: {
+          background-color: #FFF;
+          border: solid 1px var(--paper-green-500);
+          color: var(--paper-green-500);
+        }
+        --dash-form-button-delete: {
+          background-color: #FFF;
+          border: solid 1px var(--paper-red-500);
+          color: var(--paper-red-500);
+        }
       }
     </style>
+    <list-model
+      on-model-response-changed="_setLists"></list-model>
+
     <formelement-model
       fetch-templates
       on-formelement-templates-changed="_setTemplates"
@@ -90,6 +104,11 @@
             type: String,
             value: 'digitalservices'
           },
+          selected: {
+            type: Boolean,
+            observer: 'onSelectedChange'
+          },
+          listModel: HTMLElement,
           formelementModel: HTMLElement,
           formelementId: {
             type: Number,
@@ -97,6 +116,9 @@
             observer: '_formelementIdChanged'
           },
           templates: {
+            type: Array
+          },
+          lists: {
             type: Array
           },
           pageType: {
@@ -122,8 +144,15 @@
 
       static get observers() {
         return [
-          '_isTemplatesAndDataReady(data, templates)',
+          '_isTemplatesListsAndDataReady(data, templates, lists)',
         ];
+      }
+
+      _setLists (e) {
+        let lists = e.detail.response.results;
+        if (lists) {
+          this.lists = lists;
+        }
       }
 
       _setTemplates (e) {
@@ -134,16 +163,19 @@
         if (!formelementId) {
           this.data  = {
             id: 0,
-            template_id: 1
+            template_id: 1,
+            lists_id: 1
           }
         }
       }
 
-      _isTemplatesAndDataReady (data, templates) {
-        if (data && templates) {
+      _isTemplatesListsAndDataReady (data, templates, lists) {
+        if (data && templates && lists) {
+          let _form = this.formelementModel.getForm();
           let _items = [];
           let _tobeSelected = this.data.template_id;
           let _selected;
+
           for (let i in templates) {
             if (_tobeSelected == templates[i].id) {
               _selected = i;
@@ -154,11 +186,25 @@
             })
           }
 
-          let _form = this.formelementModel.getForm();
-
           let _fields = this.shadowRoot.querySelector('dash-form')
                 .setDataToFormElement('template_id', _items, _selected, _form.fields);
-          console.log(_fields)
+
+          _items = [];
+          _tobeSelected = this.data.lists_id;
+          _selected = null;
+
+          for (let i in lists) {
+            if (_tobeSelected == lists[i].id) {
+              _selected = i;
+            }
+            _items.push({
+              key: lists[i].id,
+              label: lists[i].name
+            })
+          }
+
+          _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('lists_id', _items, _selected, _fields);
 
           this.form = {
             fields: _fields,
@@ -170,7 +216,7 @@
 
           if (data.id > 0) {
             setTimeout(function() {
-              this.shadowRoot.querySelector('dash-form').reloadData(data);
+              //this.shadowRoot.querySelector('dash-form').reloadData(data);
             }.bind(this), 1);
           }
         }
@@ -184,6 +230,14 @@
       constructor() {
         super();
         this.model = "formelement-model";
+      }
+
+      onSelectedChange(selected) {
+        if (selected) {
+          this.listModel = this.shadowRoot.querySelector('list-model');
+          this.listModel.connection = this.requestConnections[this.connection];
+          this.listModel.search();
+        }
       }
 
       /**
