@@ -161,7 +161,6 @@
       }
 
       _setData (e) {
-        console.log('updated maybe??')
         this.data = e.detail.response;
       }
 
@@ -179,7 +178,6 @@
           for (var i in this.lists) {
             let _listId = e.detail.item.value.dataset['key'];
             if (this.lists[i].id == _listId) {
-              console.log(this.data)
               //If the user change from the original save list item then the sublist will select the first element
               let _defaultListItem = (_listId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
               let _selected;
