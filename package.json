@@ -10,7 +10,8 @@
     "gulp-if": "^2.0.1",
     "gulp-replace": "^0.6.1",
     "gulp-merge-json": "^1.1.0",
-    "gulp-inline-source": "^2.1.0"
+    "gulp-inline-source": "^2.1.0",
+    "gulp-rev-all": "^0.9.7"
   },
   "scripts": {
     "lint": "npm run lint:javascript && polymer lint",
