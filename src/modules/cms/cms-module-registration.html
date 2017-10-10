@@ -1,0 +1,65 @@
+<script>
+  'use strict';
+
+  function CmsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          cms_module: {
+            type: Object,
+            value: [
+              {
+                'cms': {
+                  'inMenu': true,
+                  'menuGroup': 'Content Management',
+                  'menuItems': [
+                    {
+                      'label': 'Static Content',
+                      'action': 'list',
+                      'icon': 'my-icons:group',
+                      'name': 'cms',
+                      'restrictions': [
+                        'ROLE_CMS_BLOCKS_GUEST',
+                        'ROLE_CMS_BLOCKS_STAFF',
+                        'ROLE_CMS_BLOCKS_EDITOR',
+                        'ROLE_CMS_BLOCKS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_CMS_BLOCKS_GUEST',
+                        'ROLE_CMS_BLOCKS_STAFF',
+                        'ROLE_CMS_BLOCKS_EDITOR',
+                        'ROLE_CMS_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_CMS_BLOCKS_STAFF',
+                        'ROLE_CMS_BLOCKS_EDITOR',
+                        'ROLE_CMS_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_CMS_BLOCKS_EDITOR',
+                        'ROLE_CMS_BLOCKS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_CMS_BLOCKS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

@@ -181,6 +181,7 @@
           let key = document.createAttribute("key");
           key.value = item.key;
           this.dialog.setAttributeNode(key);
+
           document.body.appendChild(this.dialog);
 
           this.dialog.addEventListener('delete-confirmed', function (e) {
@@ -294,7 +295,7 @@
         this.successMessage = "";
         this.successMessage = _msg;
       }
-      
+
       _setData (e) {
         this.data = e.detail.response;
       }
@@ -357,7 +358,7 @@
       getList () {
         this.modelElement.search('', this.itemsPerPage, this.page, this.filterQuery, this.sortQuery);
       }
-      
+
       loadItem() {
         this.modelElement.load(this.key);
       }

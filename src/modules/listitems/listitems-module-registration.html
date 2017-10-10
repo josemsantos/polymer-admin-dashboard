@@ -1,0 +1,65 @@
+<script>
+  'use strict';
+
+  function ListItemsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          listitems_module: {
+            type: Object,
+            value: [
+              {
+                'listitems': {
+                  'inMenu': false,
+                  'menuGroup': 'Lists Management',
+                  'menuItems': [
+                    {
+                      'label': 'List',
+                      'action': 'list',
+                      'icon': 'my-icons:group',
+                      'name': 'listitems',
+                      'restrictions': [
+                        'ROLE_LISTS_GUEST',
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_LISTS_GUEST',
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

@@ -1,0 +1,134 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="listitem-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+     * `listitem-model` Description
+     *
+     * @summary List item data logic
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListItemModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'listitem-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              list_id: null,
+              name: null,
+              icon: null,
+              created_at: null,
+              updated_at: null
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/listitems';
+      }
+
+      _posUpdateCallBack (response) {
+        this.message = response.response.name + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      _responseChanged (response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+        });
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: '',
+              name: 'list_id',
+              type: 'hidden',
+              validators: []
+            },
+            {
+              label: 'Name',
+              name: 'name',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Name',
+                  required: true,
+                  stop: true
+                }
+              ]
+            },
+            {
+              label: 'Icon',
+              name: 'icon',
+              type: 'text',
+              validators: []
+            }
+          ],
+          actions: {
+            'edit' :{
+              label: 'edit',
+              event: 'update-listitem'
+            },
+            'delete': {
+              label: 'delete',
+              event: 'delete-listitem',
+            }
+          }
+        };
+      }
+
+      getCreateForm () {
+        let form = this.getForm();
+        form.actions = {
+          'create' :{
+            label: 'Create',
+            event: 'create-listitem'
+          },
+        };
+        return form;
+      }
+    }
+
+    window.customElements.define(ListItemModel.is, ListItemModel);
+  </script>
+</dom-module>

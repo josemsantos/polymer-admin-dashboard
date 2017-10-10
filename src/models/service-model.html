@@ -1,0 +1,142 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="service-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+         * `service-model` Description
+         *
+         * @summary ShortDescription.
+         * @customElement
+         * @polymer
+         * @extends {Polymer.Element}
+         */
+    class ServiceModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'service-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              id: null,
+              title: null,
+              digital_services_id: null,
+              active: null
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/services';
+      }
+
+      _posUpdateCallBack(response) {
+        this.message = response.response.title + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      _responseChanged(response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', { detail: response }));
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        Polymer.RenderStatus.afterNextRender(this, function () {
+        });
+      }
+
+      getForm() {
+        return {
+          fields: [
+            {
+              label: 'Title',
+              name: 'title',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Service title',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Service Type',
+              name: 'digital_services_id',
+              type: 'dropdown',
+              items: [],
+              selected: 0,
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^\\d{1,}$',
+                  message: 'Invalid Service Type',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Active',
+              name: 'active',
+              type: 'checkbox',
+              validatores: []
+            }
+          ],
+          actions: {
+            'edit': {
+              label: 'edit',
+              event: 'update-service'
+            },
+            'delete': {
+              label: 'delete',
+              event: 'delete-service',
+            }
+          }
+        };
+      }
+
+      getCreateForm() {
+        let form = this.getForm();
+        form.actions = {
+          'create': {
+            label: 'Create',
+            event: 'create-service'
+          },
+        };
+        return form;
+      }
+
+    }
+
+    window.customElements.define(ServiceModel.is, ServiceModel);
+  </script>
+</dom-module>
