@@ -150,6 +150,8 @@
       ready() {
         super.ready();
 
+        console.log('lists list ready');
+
         this.addEventListener('delete-list', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({
