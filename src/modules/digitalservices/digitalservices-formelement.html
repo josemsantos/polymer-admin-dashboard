@@ -13,6 +13,7 @@
       :host {
         display: block;
       }
+
       dash-form.inline-form {
         margin-top: 16px;
         --form-layout: {
@@ -48,7 +49,8 @@
     <formelement-model
       fetch-templates
       on-formelement-templates-changed="_setTemplates"
-      on-model-create-success="_notifyUser"></formelement-model>
+      on-model-create-success="_notifyUser">
+    </formelement-model>
 
     <dash-form
       class="inline-form"
@@ -116,7 +118,8 @@
             observer: '_formelementIdChanged'
           },
           templates: {
-            type: Array
+            type: Array,
+            notify: true
           },
           lists: {
             type: Array
@@ -210,13 +213,13 @@
             fields: _fields,
             actions: _form.actions
           };
-          
+
           this.actions = this.form.actions;
           this.isReady = true;
 
           if (data.id > 0) {
             setTimeout(function() {
-              //this.shadowRoot.querySelector('dash-form').reloadData(data);
+              this.shadowRoot.querySelector('dash-form').reloadData(data);
             }.bind(this), 1);
           }
         }
