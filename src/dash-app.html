@@ -288,6 +288,41 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </template>
 
   <script>
+
+    var PAGES_URL = {
+      'dashboard-home': 'modules/dashboard/dashboard-home.html',
+      'groups-list': 'modules/groups/groups-list.html',
+      'groups-create': 'modules/groups/groups-create.html',
+      'groups-edit': 'modules/groups/groups-edit.html',
+      'groups-show': 'modules/groups/groups-show.html',
+      'users-list': 'modules/users/users-list.html',
+      'users-create': 'modules/users/users-create.html',
+      'users-edit': 'modules/users/users-edit.html',
+      'users-show': 'modules/users/users-show.html',
+      'user-profile': 'modules/user/user-profile.html',
+      'authentication-login': 'modules/authentication/authentication-login.html',
+      'cms-show': 'modules/cms/cms-show.html',
+      'cms-list': 'modules/cms/cms-list.html',
+      'cms-create': 'modules/cms/cms-create.html',
+      'cms-edit': 'modules/cms/cms-edit.html',
+      'lists-list': 'modules/lists/lists-list.html',
+      'listitems-list': 'modules/listitems/listitems-list.html',
+      'lists-create': 'modules/lists/lists-create.html',
+      'listitems-create': 'modules/listitems/listitems-create.html',
+      'lists-edit': 'modules/lists/lists-edit.html',
+      'listitems-edit': 'modules/listitems/listitems-edit.html',
+      'lists-show': 'modules/lists/lists-show.html',
+      'listitems-show': 'modules/listitems/listitems-show.html',
+      'digitalservices-list': 'modules/digitalservices/digitalservices-list.html',
+      'digitalservices-create': 'modules/digitalservices/digitalservices-create.html',
+      'digitalservices-edit': 'modules/digitalservices/digitalservices-edit.html',
+      'digitalservices-show': 'modules/digitalservices/digitalservices-show.html',
+      'services-list': 'modules/services/services-list.html',
+      'services-create': 'modules/services/services-create.html',
+      'services-edit': 'modules/services/services-edit.html',
+      'services-show': 'modules/services/services-show.html'
+    };
+
     class DashApp extends Polymer.Element {
       static get is() { return 'dash-app'; }
 
@@ -400,15 +435,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _loadPage(page) {
-        // Load page import on demand. Show 404 page if fails
+        //Load page import on demand. Show 404 page if fails
         var el = page.charAt(0) === 'v' ? 'my-' + this.page : this.fragment;
         page = page.charAt(0) === 'v' ? 'my-' + this.page : 'modules/' + this.module + '/' + this.fragment;
+
 
         if (this.redirectAndPreventLoad()) {
           return;
         }
         
-        var resolvedPageUrl = this.resolveUrl(page + '.html');
+        var resolvedPageUrl = this.resolveUrl(PAGES_URL[this.fragment]);
         Polymer.importHref(
             resolvedPageUrl,
             () => {
