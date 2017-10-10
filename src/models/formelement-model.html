@@ -92,9 +92,17 @@
         this.endpoint = '/formelements';
       }
 
-      _posUpdateCallBack(response) {
+      // Let's not update the response object to avoid updating the data inside the modules 
+      // since we're probably inside a form
+      _posUpdateCallBack (response) {
         this.message = response.response.label + " updated";
-        super._posUpdateCallBack(response);
+        this.dispatchEvent(new CustomEvent('model-update-success', {
+          detail: {
+            message: this.message
+          },
+          bubbles: true, 
+          composed: true
+        }));
       }
 
       _responseChanged(response) {
@@ -155,7 +163,10 @@
                   message: 'Invalid List',
                   required: true
                 }
-              ]
+              ],
+              event: {
+                'on-selected-items-changed': 'list-items-changed'
+              }
             },
             {
               label: 'Pre-select',
@@ -170,7 +181,10 @@
                   message: 'Invalid pre-selected list item',
                   required: true
                 }
-              ]
+              ],
+              event: {
+                'on-iron-items-changed': 'sub-list-items-changed'
+              }
             }
           ],
           actions: {

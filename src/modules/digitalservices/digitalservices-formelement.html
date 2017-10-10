@@ -49,18 +49,23 @@
     <formelement-model
       fetch-templates
       on-formelement-templates-changed="_setTemplates"
-      on-model-create-success="_notifyUser">
+      on-model-response-changed="_setData"
+      on-model-create-success="_notifyCreateToUser"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyUser">
     </formelement-model>
 
     <dash-form
       class="inline-form"
       key="[[key]]"
       model="[[formelementModel.model]]"
-      fields="[[form.fields]]"
+      fields="[[fields]]"
       actions="[[_formActions]]"
       model-data="[[data]]"
       notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]"
+      on-list-items-changed="_listSelectedChanged"
+      on-sub-list-items-changed="_subListSelectedChanged"
       on-cancel="_goToList"
       on-submit="_execAction">
       <div slot="action-box">
@@ -106,10 +111,6 @@
             type: String,
             value: 'digitalservices'
           },
-          selected: {
-            type: Boolean,
-            observer: 'onSelectedChange'
-          },
           listModel: HTMLElement,
           formelementModel: HTMLElement,
           formelementId: {
@@ -119,7 +120,6 @@
           },
           templates: {
             type: Array,
-            notify: true
           },
           lists: {
             type: Array
@@ -128,8 +128,11 @@
             type: String,
             value: 'form'
           },
+          parentId: Number,
+          topLevelId: Number,
           data: Object,
           form: Object,
+          fields: Array,
           payload: {
             type: Array,
             value: [
@@ -147,8 +150,73 @@
 
       static get observers() {
         return [
-          '_isTemplatesListsAndDataReady(data, templates, lists)',
+          '_isTemplatesListsAndDataReady(data, templates, lists)'
         ];
+      }
+
+      _notifyCreateToUser (e) {
+        this.formelementId = e.detail.message.response.id;
+        e.detail.message = e.detail.message.response.label + " created";
+        super._notifyUser(e)
+      }
+
+      _setData (e) {
+        console.log('updated maybe??')
+        this.data = e.detail.response;
+      }
+
+      _setDefaultData () {
+        this.data  = {
+          id: 0,
+          template_id: 1,
+          lists_id: 1,
+          label: undefined
+        };
+      }
+
+      _listSelectedChanged (e) {
+        if (e.detail.item.value) {
+          for (var i in this.lists) {
+            let _listId = e.detail.item.value.dataset['key'];
+            if (this.lists[i].id == _listId) {
+              console.log(this.data)
+              //If the user change from the original save list item then the sublist will select the first element
+              let _defaultListItem = (_listId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
+              let _selected;
+              let _items = [];
+              _items.push({
+                  key: '0',
+                  label: 'None'
+              });
+              for (let j in this.lists[i].items) {
+                if (_defaultListItem == this.lists[i].items[j].id) {
+                  _selected = parseInt(j)+1;
+                }
+                
+                _items.push({
+                  key: this.lists[i].items[j].id,
+                  label: this.lists[i].items[j].name
+                });
+              }
+
+              let _fields = this.fields;
+              _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('lists_id', _fields[2].items, e.detail.el.selected, _fields);
+              _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('default_lists_item_id', _items, _selected, _fields);
+              this.set('fields', JSON.parse(JSON.stringify(_fields)));
+              break;
+            }
+          }
+        }
+      }
+
+      _subListSelectedChanged (e) {
+        let item = e.detail.el.querySelector('paper-item[aria-selected]');
+        if (!item) {
+          item = e.detail.el.querySelectorAll('paper-item')[0];
+        }
+        e.detail.el.parentNode._selectedItemChanged(item);
       }
 
       _setLists (e) {
@@ -162,18 +230,21 @@
         this.templates = (e.detail.length) ? e.detail : [];
       }
 
+      _getDefaultListItemId () {
+        return (this.data && this.data.default_lists_item_id) ? this.data.default_lists_item_id : 0;
+      }
+
       _formelementIdChanged (formelementId) {
         if (!formelementId) {
-          this.data  = {
-            id: 0,
-            template_id: 1,
-            lists_id: 1
-          }
+          this._setDefaultData()
+        } else {
+          //load the formelement
+          this.formelementModel.load(formelementId);
         }
       }
 
       _isTemplatesListsAndDataReady (data, templates, lists) {
-        if (data && templates && lists) {
+        if (data && templates && templates.length && lists && lists.length) {
           let _form = this.formelementModel.getForm();
           let _items = [];
           let _tobeSelected = this.data.template_id;
@@ -186,7 +257,7 @@
             _items.push({
               key: templates[i].id,
               label: templates[i].name
-            })
+            });
           }
 
           let _fields = this.shadowRoot.querySelector('dash-form')
@@ -203,7 +274,7 @@
             _items.push({
               key: lists[i].id,
               label: lists[i].name
-            })
+            });
           }
 
           _fields = this.shadowRoot.querySelector('dash-form')
@@ -213,6 +284,8 @@
             fields: _fields,
             actions: _form.actions
           };
+
+          this.fields = _fields;
 
           this.actions = this.form.actions;
           this.isReady = true;
@@ -225,6 +298,37 @@
         }
       }
 
+      _updateFormElement (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        if (payload['default_lists_item_id'] == "0") {
+          delete payload['default_lists_item_id'];
+        }
+        if (!this.parentId) {
+          delete payload['parent_id'];
+        }
+        if (!this.topLevelId) {
+          delete payload['top_level_id'];
+        }
+        
+        if (this.formelementId) {
+          this.formelementModel.update(null, this.formelementId, JSON.stringify(payload));
+        } else {
+          this.formelementModel.create(null, JSON.stringify(payload));
+        }
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+        this._setDefaultData();
+      }
+
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -235,8 +339,8 @@
         this.model = "formelement-model";
       }
 
-      onSelectedChange(selected) {
-        if (selected) {
+      onSelectedChange(selected, oSelected) {
+        if (selected && !oSelected) {
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
           this.listModel.search();
@@ -252,8 +356,8 @@
 
         this.addEventListener('delete-formelement', function (e) {
           this._alert({
-            'key': this.key,
-            'message': this.data.name
+            'key': this.formelementId,
+            'message': this.data.label
           });
         }.bind(this));
 
