@@ -12,6 +12,7 @@
       :host {
         display: block;
       }
+
       dash-form.inline-form {
         margin-top: 16px;
         --form-layout: {
@@ -31,10 +32,15 @@
         }
       }
     </style>
+
     <formelement-model
       fetch-templates
+      fetch-lists
       on-formelement-templates-changed="_setTemplates"
-      on-model-create-success="_notifyUser"></formelement-model>
+      on-formelement-lists-changed="_setLists"
+      on-formelement-listid-changed="_setPreselect"
+      on-model-create-success="_notifyUser">
+    </formelement-model>
 
     <dash-form
       class="inline-form"
@@ -97,7 +103,12 @@
             observer: '_formelementIdChanged'
           },
           templates: {
-            type: Array
+            type: Array,
+            notify: true
+          },
+          lists: {
+            type: Array,
+            notify: true
           },
           pageType: {
             type: String,
@@ -123,11 +134,16 @@
       static get observers() {
         return [
           '_isTemplatesAndDataReady(data, templates)',
+          '_isListsAndDataReady(data, lists)'
         ];
       }
 
       _setTemplates (e) {
         this.templates = (e.detail.length) ? e.detail : [];
+      }
+
+      _setLists (e) {
+        this.lists = (e.detail.length) ? e.detail : [];
       }
 
       _formelementIdChanged (formelementId) {
@@ -158,13 +174,48 @@
 
           let _fields = this.shadowRoot.querySelector('dash-form')
                 .setDataToFormElement('template_id', _items, _selected, _form.fields);
-          console.log(_fields)
 
           this.form = {
             fields: _fields,
             actions: _form.actions
           };
-          
+
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          if (data.id > 0) {
+            setTimeout(function() {
+              this.shadowRoot.querySelector('dash-form').reloadData(data);
+            }.bind(this), 1);
+          }
+        }
+      }
+
+      _isListsAndDataReady (data, lists) {
+        if (data && lists) {
+          let _items = [];
+          let _tobeSelected = this.data.lists_id;
+          let _selected;
+          for (let i in lists) {
+            if (_tobeSelected == lists[i].id) {
+              _selected = i;
+            }
+            _items.push({
+              key: lists[i].id,
+              label: lists[i].name
+            })
+          }
+
+          let _form = this.formelementModel.getForm();
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('lists_id', _items, _selected, _form.fields);
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+
           this.actions = this.form.actions;
           this.isReady = true;
 

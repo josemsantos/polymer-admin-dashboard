@@ -37,6 +37,11 @@
             type: Array,
             value: []
           },
+          fetchLists: Boolean,
+          lists: {
+              type: Array,
+              value: []
+          },
           model: {
             type: Object,
             value: {
@@ -54,12 +59,19 @@
       static get observers() {
         return [
           '_onFetchTemplatesRequired(fetchTemplates, connection)',
+          '_onFetchListsRequired(fetchLists, connection)'
         ];
       }
 
       _onFetchTemplatesRequired (fetchTemplates, connection) {
         if (fetchTemplates && connection) {
           this._getTemplates();
+        }
+      }
+
+      _onFetchListsRequired (fetchLists, connection) {
+        if (fetchLists && connection) {
+          this._getLists();
         }
       }
 
@@ -74,6 +86,25 @@
               detail: _self.templates,
               bubbles: true,
               composed: true
+            }));
+          },
+          onError(e) {
+            _self._setFailure(true);
+          }
+        });
+      }
+
+      _getLists () {
+        var _self = this;
+        this.connection.request({
+          url: '/lists',
+          verb: 'GET',
+          onLoad(e) {
+          _self.set('lists', JSON.parse(e.target.responseText).response.results);
+          _self.dispatchEvent(new CustomEvent('formelement-lists-changed', {
+            detail: _self.lists,
+            bubbles: true,
+            composed: true
             }));
           },
           onError(e) {
