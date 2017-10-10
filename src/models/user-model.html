@@ -73,7 +73,7 @@
 
       static get observers() {
         return [
-          '_onFetchGroupsRequired(fetchGroups, connection)',
+          '_onFetchGroupsRequired(fetchGroups, connection, model.id)',
           '_modelChanged(model)',
         ];
       }
@@ -125,17 +125,19 @@
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 
-      _onFetchGroupsRequired (fetchGroups, connection) {
-        if (fetchGroups && connection) {
+      _onFetchGroupsRequired (fetchGroups, connection, modelId) {
+        if (fetchGroups && connection && modelId) {
           this._getGroups();
         }
       }
 
       _getGroups () {
         var _self = this;
+        var data = 'per_page=1000'; //By default the Api returns 20, but we want them all (1000 was a random number, just needs to be high)
         this.connection.request({
           url: '/authorization/groups',
           verb: 'GET',
+          data: data,
           onLoad(e) {
             _self.set('groups', JSON.parse(e.target.responseText).response.groups);
             _self.dispatchEvent(new CustomEvent('users-groups-changed', {
