@@ -168,7 +168,82 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               fallback-selection="view404"
               role="main">
             <dashboard-home name="dashboard-home"></dashboard-home>
-            <groups-list 
+            <cms-show 
+              permissions="[[permissions]]" 
+              name="cms-show"
+              route="[[subroute]]"></cms-show>
+            <cms-list 
+              permissions="[[permissions]]" 
+              name="cms-list"></cms-list>
+            <cms-create 
+              permissions="[[permissions]]" 
+              name="cms-create"
+              route="[[subroute]]"></cms-create>
+            <cms-edit 
+              permissions="[[permissions]]" 
+              name="cms-edit"
+              route="[[subroute]]"></cms-edit>
+			<lists-list
+              permissions="[[permissions]]"
+              name="lists-list"></lists-list>
+            <listitems-list
+              permissions="[[permissions]]"
+              name="listitems-list"
+              route="[[subroute]]"></listitems-list>
+            <lists-create
+              permissions="[[permissions]]"
+              name="lists-create"></lists-create>
+            <listitems-create
+              permissions="[[permissions]]"
+              name="listitems-create"
+              route="[[subroute]]"></listitems-create>
+            <lists-edit
+              permissions="[[permissions]]"
+              name="lists-edit"
+              route="[[subroute]]"></lists-edit>
+            <listitems-edit
+              permissions="[[permissions]]"
+              name="listitems-edit"
+              route="[[subroute]]"></listitems-edit>
+            <lists-show
+              permissions="[[permissions]]"
+              name="lists-show"
+              route="[[subroute]]"></lists-show>
+            <listitems-show
+              permissions="[[permissions]]"
+              name="listitems-show"
+              route="[[subroute]]"></listitems-show>
+            <digitalservices-list
+              permissions="[[permissions]]"
+              name="digitalservices-list"
+              route="[[subroute]]"></digitalservices-list>
+            <digitalservices-create
+              permissions="[[permissions]]"
+              name="digitalservices-create"
+              route="[[subroute]]"></digitalservices-create>
+            <digitalservices-edit
+              permissions="[[permissions]]"
+              name="digitalservices-edit"
+              route="[[subroute]]"></digitalservices-edit>
+            <digitalservices-show
+              permissions="[[permissions]]"
+              name="digitalservices-show"
+              route="[[subroute]]"></digitalservices-show>
+            <services-list
+              permissions="[[permissions]]"
+              name="services-list"></services-list>
+            <services-create
+              permissions="[[permissions]]"
+              name="services-create"></services-create>
+            <services-edit
+              permissions="[[permissions]]"
+              name="services-edit"
+              route="[[subroute]]"></services-edit>
+            <services-show
+              permissions="[[permissions]]"
+              name="services-show"
+              route="[[subroute]]"></services-show>
+            <groups-list
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
             <groups-create 
@@ -201,7 +276,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="user-profile"
               storage="[[fireStorage]]"
-              real-db="[[fireDB]]"></user-profile >
+              real-db="[[fireDB]]"></user-profile>
             <authentication-login
               name$="[[loginPage]]" 
               on-dash-user-logged="_setUser"></authentication-login>
@@ -225,7 +300,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'users-edit': 'modules/users/users-edit.html',
       'users-show': 'modules/users/users-show.html',
       'user-profile': 'modules/user/user-profile.html',
-      'authentication-login': 'modules/authentication/authentication-login.html'
+      'authentication-login': 'modules/authentication/authentication-login.html',
+      'cms-show': 'modules/cms/cms-show.html',
+      'cms-list': 'modules/cms/cms-list.html',
+      'cms-create': 'modules/cms/cms-create.html',
+      'cms-edit': 'modules/cms/cms-edit.html',
+      'lists-list': 'modules/lists/lists-list.html',
+      'listitems-list': 'modules/listitems/listitems-list.html',
+      'lists-create': 'modules/lists/lists-create.html',
+      'listitems-create': 'modules/listitems/listitems-create.html',
+      'lists-edit': 'modules/lists/lists-edit.html',
+      'listitems-edit': 'modules/listitems/listitems-edit.html',
+      'lists-show': 'modules/lists/lists-show.html',
+      'listitems-show': 'modules/listitems/listitems-show.html',
+      'digitalservices-list': 'modules/digitalservices/digitalservices-list.html',
+      'digitalservices-create': 'modules/digitalservices/digitalservices-create.html',
+      'digitalservices-edit': 'modules/digitalservices/digitalservices-edit.html',
+      'digitalservices-show': 'modules/digitalservices/digitalservices-show.html',
+      'services-list': 'modules/services/services-list.html',
+      'services-create': 'modules/services/services-create.html',
+      'services-edit': 'modules/services/services-edit.html',
+      'services-show': 'modules/services/services-show.html'
     };
 
     class DashApp extends Polymer.Element {

@@ -1,0 +1,72 @@
+<script>
+  'use strict';
+
+  function ListsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          lists_module: {
+            type: Object,
+            value: [
+              {
+                'lists': {
+                  'inMenu': true,
+                  'menuGroup': 'Lists Management',
+                  'menuItems': [
+                    {
+                      'label': 'List',
+                      'action': 'list',
+                      'icon': 'my-icons:menu',
+                      'name': 'lists',
+                      'restrictions': [
+                        'ROLE_LISTS_GUEST',
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_LISTS_GUEST',
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'items': {
+                      'restrictions': [
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_LISTS_STAFF',
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_LISTS_EDITOR',
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_LISTS_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

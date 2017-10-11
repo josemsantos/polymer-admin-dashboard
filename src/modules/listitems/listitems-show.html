@@ -1,0 +1,133 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/listitem-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="listitems-show">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+
+    <listitem-model
+      on-model-response-changed="_setData"></listitem-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[listItemModel.model]]"
+        fields="[[form.fields]]"
+        model-data="[[data]]"
+        on-cancel="_goToList"
+        show-only>
+        <div class="title title-header"><h2><iron-icon icon="my-icons:menu"></iron-icon>Show List Item</h2></div>
+
+
+
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `listitems-show` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class ListItemsShow extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'listitems-show';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          listId: {
+            value: null
+          },
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          listItemModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+          '_dataChanged(data, isReady)'
+        ];
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      _dataChanged (data, isReady) {
+        if (data && isReady) {
+          this.listId = data.list_id;
+        }
+      }
+
+      _goToList (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: this.getModuleName() + '/list/' + this.listId},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'listitem-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.listItemModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.listItemModel.getForm();
+
+        this.isReady = true;
+      }
+    }
+
+    window.customElements.define(ListItemsShow.is, ListItemsShow);
+  </script>
+</dom-module>

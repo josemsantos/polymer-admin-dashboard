@@ -1,0 +1,122 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cms-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cms-show">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+    <cms-model
+      fetch="[[key]]"
+      endpoint="/api/v1/blocks"
+      on-model-response-changed="_setData"></cms-model>
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[cmsModel.model]]"
+        fields="[[form.fields]]"
+        model-data="[[data]]"
+        external-sources="[[externalData]]"
+        on-cancel="_goToList"
+        show-only>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>CMS Block Content [[data.name]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `cms-show` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class CmsShow extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'cms-show';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'mouse'
+          },
+          cmsModel: HTMLElement,
+          externalData: {
+            type: Array,
+            value: []
+          },
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+        console.log(id)
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'cms-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.cmsModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cmsModel.getForm();
+
+        this.isReady = true;
+      }
+
+    }
+
+    window.customElements.define(CmsShow.is, CmsShow);
+  </script>
+</dom-module>

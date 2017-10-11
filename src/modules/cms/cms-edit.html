@@ -1,0 +1,174 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cms-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cms-edit">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+      
+    <cms-model
+      fetch="[[key]]"
+      endpoint="[[modelEndpoint]]"
+      on-model-response-changed="_setData"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyAndNavigate"></cms-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[cmsModel.model]]"
+        fields="[[form.fields]]"
+        actions="[[_formActions]]"
+        model-data="[[data]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-cancel="_goToList"
+        on-submit="_execAction">
+          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>CMS Block Content [[cmsModel.name]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `cms-edit` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class CmsEdit extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'cms-edit';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          possibleEndpoints: {
+            type: Object,
+            value: {
+              fetch: '/api/v1/blocks',
+              update: '/api/v1/blocks/edit',
+              delete: '/api/v1/blocks/remove'
+            }
+          },
+          modelEndpoint: String,
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'mouse'
+          },
+          cmsModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'key',
+              'name',
+              'content'
+            ]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      _updateCms (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.modelEndpoint = this.possibleEndpoints.update;
+        this.cmsModel.update(null, this.key, JSON.stringify(payload));
+
+        this.modelEndpoint = this.possibleEndpoints.fetch;
+      }
+
+      _deleteConfirmed (key) {
+        this.modelEndpoint = this.possibleEndpoints.delete;
+        this.shadowRoot.querySelector(this.model).delete(key);
+        this.modelEndpoint = this.possibleEndpoints.fetch;
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'cms-model';
+        this.modelEndpoint = this.possibleEndpoints.fetch;
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.cmsModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cmsModel.getForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('delete-cms', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-cms', function (e) {
+          this._updateCms(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(CmsEdit.is, CmsEdit);
+  </script>
+</dom-module>
