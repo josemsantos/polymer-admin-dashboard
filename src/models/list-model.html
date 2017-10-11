@@ -61,6 +61,7 @@
       }
 
       _responseChanged (response) {
+        console.log('third test');
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 

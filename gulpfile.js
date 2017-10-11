@@ -12,19 +12,21 @@ var params = require('./parameters.json');
 //const precacheParams = require('./sw-precache-config.js');
 
 // Keep the global.config above any of the gulp-tasks that depend on it
-//global.config = {
-//    polymerJsonPath: path.join(process.cwd(), 'polymer.json'),
-//    build: {
-//      rootDirectory: 'build',
-//      bundledDirectory: 'es5-bundled'
-//    },
-//    params: params,
-//    // Path to your service worker, relative to the build root directory
-//    serviceWorkerPath: 'service-worker.js',
-//    // Service Worker precache options based on
-//    // https://github.com/GoogleChrome/sw-precache#options-parameter
-//    swPrecacheConfig: precacheParams
-//};
+global.config = {
+    polymerJsonPath: path.join(process.cwd(), 'polymer.json'),
+    build: {
+      rootDirectory: 'build',
+      bundledDirectory: 'es5-bundled',
+      bundledDirectoryName: 'es5-bundled-server',
+      dist: 'dist'
+    },
+    params: params,
+    // Path to your service worker, relative to the build root directory
+    //serviceWorkerPath: 'service-worker.js',
+    // Service Worker precache options based on
+    // https://github.com/GoogleChrome/sw-precache#options-parameter
+    //swPrecacheConfig: precacheParams
+};
   
 // Build paths
 //global.config.bundledPath = path.join(global.config.build.rootDirectory, global.config.build.bundledDirectory);
@@ -57,11 +59,14 @@ var revisionConfig = {
   dontUpdateReference: ['index.html', 'service-worker.js', 'robots.txt', 'favicon.ico', 'bower.json', /\/images\/.*/, /\/src\/_locales\/.*/]
 };
 
+var bundledDirectoryServer = global.config.build.rootDirectory + '/' + global.config.build.bundledDirectoryName,
+    bundledDistDirectory = global.config.build.rootDirectory + '/' + global.config.build.dist;
+
 gulp.task('revision', function() {
-  return gulp.src('build/es5-bundled-server' + '/**')
+  return gulp.src(bundledDirectoryServer + '/**')
     .pipe(revAll.revision(revisionConfig))
-    .pipe(gulp.dest('build/es5-bundled-server'))
-    .pipe(gulp.dest('build/dist'));
+    .pipe(gulp.dest(bundledDirectoryServer))
+    .pipe(gulp.dest(bundledDistDirectory));
 });
 
 gulp.task('default', ['parameters', 'env']);

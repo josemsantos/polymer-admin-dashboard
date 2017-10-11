@@ -149,9 +149,6 @@
        */
       ready() {
         super.ready();
-
-        console.log('second test');
-
         this.addEventListener('delete-list', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({

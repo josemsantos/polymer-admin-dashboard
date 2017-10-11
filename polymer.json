@@ -35,7 +35,8 @@
     {
       "name": "es5-bundled-server",
       "basePath": "admina",
-      "preset": "es5-bundled"
+      "preset": "es5-bundled",
+      "addServiceWorker": false
     }
   ]
 }
