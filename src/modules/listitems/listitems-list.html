@@ -154,6 +154,14 @@
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
+      onSelectedChange (selected, oSelected) {
+        // Is leaving the page
+        if (!selected && oSelected) {
+          this.shadowRoot.querySelector('dash-list').resetFilters();
+        }
+        super.onSelectedChange (selected, oSelected);
+      }
+
       _routeIdChanged (id, isReady) {
         if (id && isReady) {
           this.heading = 'List Items of list #' + id;
@@ -174,7 +182,9 @@
           filterQuery += queryParam;
         }
         this.filterQuery = filterQuery + '&list_id=' + this.listId;
-        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery);
+
+
+        this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery);
         this.filterSortRequest = false;
       }
 
@@ -185,6 +195,25 @@
         this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + direction;
         this.modelElement.search('', this.itemsPerPage, 1, 'list_id=' + this.listId + '&', this.sortQuery);
         this.filterSortRequest = false;
+      }
+
+      _pageChanged (e) {
+        if (!this.filterSortRequest) {
+          if (this.sortQuery === undefined) {
+            this.sortQuery = "sort=id&order=reverse";
+          }
+
+          let filterQuery = '';
+          let queryParam = '';
+          let propertyName = '';
+          for (let i=0; i<this.filters.length; i++) {
+            propertyName = this.filters[i].name;
+            queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+            filterQuery += queryParam;
+          }
+          this.filterQuery = filterQuery + '&list_id=' + this.listId;
+          this.modelElement.search('', this.itemsPerPage, e.detail.page, this.filterQuery, '&' + this.sortQuery);
+        }
       }
 
       getList () {
@@ -210,7 +239,6 @@
       }
 
       onResponseChanged (e) {
-        let list = this.shadowRoot.querySelector('dash-list');
         this.totalItems = e.detail.response.total;
         this.items = this._setActionsKey(e.detail.response.results);
       }
