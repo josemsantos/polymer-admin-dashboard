@@ -130,7 +130,7 @@
               <template>
                 <template is="dom-if" if="[[!_isActions(column.type)]]">
                   <dash-list-cell-content
-                    column="[[column]]">[[value]]</dash-list-cell-content>
+                    column="[[column]]">[[_getValueByType(value, column.type)]]</dash-list-cell-content>
                 </template>
                 <template is="dom-if" if="[[_isActions(column.type)]]">
                   <template is="dom-if" if="[[!otherValues.disabled]]">
@@ -184,7 +184,7 @@
       static get properties() {
         return {
           _hasFooter: {
-            computed: '_hasFooterComputed(customPagination, showListOnly)'
+            computed: '_hasFooterComputed(customPagination, showListOnly, totalItems)'
           },
           _columnActions: {
             type: Array,
@@ -242,6 +242,14 @@
         };
       }
 
+      _getValueByType (value, type) {
+        if( type === 'data-yesno') {
+          return value ? 'Yes' : 'No';
+        }
+
+        return value;
+      }
+
       _handleSort (e) {
         this.dispatchEvent(new CustomEvent('dash-list-sort', {
           detail: e.detail,
@@ -270,12 +278,12 @@
         }));
       }
 
-      _hasFooterComputed(customPagination, showListOnly) {
-        return customPagination && !showListOnly;
+      _hasFooterComputed(customPagination, showListOnly, totalItems) {
+        return customPagination && !showListOnly && totalItems > 0;
       }
 
       _isDraggable(column) {
-        return this._isData(column.type) ;
+        return this._isData(column.type);
       }
 
       _actionsChanged (actions) {
@@ -306,6 +314,10 @@
             type: 'create',
             key: null
         });
+      }
+
+      resetFilters() {
+        this.shadowRoot.querySelector('dash-form').formReset();
       }
 
       /**
