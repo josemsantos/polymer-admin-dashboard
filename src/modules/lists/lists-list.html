@@ -29,9 +29,11 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]"></dash-list>
 
     <list-model
+      on-model-delete-error="_deleteError"
       on-model-delete-success="_updateList"></list-model>
   </template>
 
@@ -133,6 +135,12 @@
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
+      _deleteError (e) {
+        // Force error message change to show the notification
+        this.errorMessage = '';
+        this.errorMessage = e.detail.message;
+      }
+
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -156,11 +164,19 @@
         super.ready();
         this.addEventListener('delete-list', function (e) {
           let item = this.getItem(this.items, e.detail.key);
+
+          let message = item.items.length > 0 ? 'List ' + '"' + item.name + '" has ' + item.items.length + ' Items, should be all deleted? ': item.name;
+
           this._alert({
             'key': item.id,
-            'message': item.name
+            'message': message
           });
         }.bind(this));
+
+        this.addEventListener('delete-list-error', function (e) {
+          this._deleteError(e);
+        }.bind(this));
+
       }
     }
 

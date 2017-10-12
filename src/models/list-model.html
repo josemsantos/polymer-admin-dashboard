@@ -61,7 +61,27 @@
       }
 
       _responseChanged (response) {
-        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+        this.dispatchEvent(new CustomEvent('model-response-changed', {
+          detail: response,
+          composed: true,
+          bubbles: true
+        }));
+      }
+
+      delete(key, method) {
+        var _self = this;
+        method = method || 'DELETE';
+        this.connection.request({
+          url: this.endpoint + '/' +  key,
+          verb: method,
+          onLoad(e) {
+            _self._posDeleteCallBack.call(_self, {id: key});
+          },
+          onError(e) {
+            _self._setFailure(true);
+            _self.dispatchEvent(new CustomEvent('model-delete-error', {detail: JSON.parse(e.target.response)}));
+          }
+        });
       }
 
       /**
