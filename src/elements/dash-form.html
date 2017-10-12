@@ -66,10 +66,12 @@
       .edit {
         background-color:  var(--paper-green-500);
         color: #FFF;
+        @apply --dash-form-button-edit;
       }
       .delete {
         background-color:  var(--paper-red-500);
         color: #FFF;
+        @apply --dash-form-button-delete;
       }
       paper-input[type=hidden] {
         display: none;
@@ -105,8 +107,12 @@
                   <paper-dropdown-menu
                     label="[[field.label]]"
                     name$="[[field.name]]"
-                    disabled="[[_isReadonly(field.attributes, showOnly)]]">
-                    <paper-listbox slot="dropdown-content" selected="[[field.selected]]">
+                    disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                    on-selected-item-changed="_onSelectedItemChanged">
+                    <paper-listbox 
+                      slot="dropdown-content" 
+                      selected$="[[field.selected]]"
+                      on-iron-items-changed="_onIronItemsChanged">
                       <template is="dom-repeat" items="[[field.items]]" as="item">
                         <paper-item data-key$="[[item.key]]">[[item.label]]</paper-item>
                       </template>
@@ -199,7 +205,6 @@
           },
           fields: {
             type: Array,
-            value: []
           },
           actions: {
             type: Array,
@@ -219,6 +224,34 @@
           '_externalSourcesChanged(modelReady, externalSources)',
           '_externalDataSourcesChanged(modelReady, modelData, _allExternalReady)'
         ];
+      }
+
+      _fireFieldEvent (event, eventName) {
+        if (!event.model.field.event || !event.model.field.event[eventName]) {
+          return;
+        }
+        for (let i in this.fields) {
+          if (this.fields[i].name == event.model.field.name) {
+            this.dispatchEvent(new CustomEvent(event.model.field.event[eventName], {
+              detail: {
+                el: event.currentTarget,
+                item: event.detail,
+                model: event.model
+              },
+              composed: true
+            }));
+            break;
+          }
+        }
+
+      }
+
+      _onIronItemsChanged (e) {
+        this._fireFieldEvent(e, 'on-iron-items-changed');
+      }
+
+      _onSelectedItemChanged (e) {
+        this._fireFieldEvent(e, 'on-selected-items-changed');
       }
 
       _modelDataChanged (data) {
@@ -344,6 +377,8 @@
             fields[i].items = items;
             if (selected) {
               fields[i].selected = selected;
+            } else {
+              fields[i].selected = 0;
             }
           }
         }
