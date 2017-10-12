@@ -68,6 +68,14 @@
         }));
       }
 
+      _posDeleteErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-delete-error', {
+          detail: response,
+          bubbles: true,
+          composed: true
+        }));
+      }
+
       search(method, itemsPerPage, page, filterQuery, sortQuery) {
         let queryParams = "";
         if (itemsPerPage) {
@@ -151,7 +159,7 @@
             _self._posDeleteCallBack.call(_self, {id: key});
           },
           onError(e) {
-            _self._setFailure(true);
+            _self._posDeleteErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
