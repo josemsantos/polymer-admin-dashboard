@@ -6,6 +6,7 @@
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="digitalservices-formelement.html">
+<link rel="import" href="digitalservices-formelement-button.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -44,17 +45,19 @@
           <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Digital Service - [[data.name]]</h2></div>
           <div slot="footer">
             <div class="text-centered">
-              <paper-button raised>
-                <iron-icon icon="my-icons:add"></iron-icon>
-                ADD FORM ELEMENT
-              </paper-button>
+              <template is="dom-if" if="[[_isFormElementHidden]]">
+                <digitalservices-formelement-button
+                  formelement="[[data.formelement]]"></digitalservices-formelement-button>
+              </template>
             </div>
-            <digitalservices-formelement
-              selected="[[selected]]"
-              formelement-id="[[data.formelement_id]]"
-              digital-service-id="[[data.id]]"
-              access-control="[[accessControl]]"
-              permissions="[[permissions]]"></digitalservices-formelement>
+            <template is="dom-if" if="[[!_isFormElementHidden]]">
+              <digitalservices-formelement
+                selected="[[selected]]"
+                digital-service-id="[[data.id]]"
+                formelement="[[data.formelement]]"
+                access-control="[[accessControl]]"
+                permissions="[[permissions]]"></digitalservices-formelement>
+            </template>
           </div>
       </dash-form>
     </paper-material>
@@ -82,6 +85,10 @@
        */
       static get properties() {
         return {
+          _isFormElementHidden: {
+            type: Boolean,
+            value: true
+          },
           isReady: Boolean,
           connection: {
             type: String,
@@ -125,7 +132,6 @@
 
       _setData (e) {
         this.data = e.detail.response;
-        this.set('data.formelement_id', 3);
       }
 
       _routeIdChanged (id) {
@@ -146,6 +152,16 @@
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      /**
+       * Close the form element if the user leaves the page
+       */
+      onSelectedChange(selected, oSelected) {
+        if (!selected && oSelected) {
+          this._isFormElementHidden = true;
+        }
+        super.onSelectedChange(selected, oSelected);
       }
 
       /**
@@ -178,6 +194,10 @@
 
         this.addEventListener('update-digitalservice', function (e) {
           this._updateDigitalService(e);
+        });
+
+        this.addEventListener('digitalservices-formelement-request', (e) => {
+          this._isFormElementHidden = false;
         });
       }
 

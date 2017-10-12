@@ -1,0 +1,78 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="digitalservices-formelement-button">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+      .btn-add iron-icon,
+      .btn-edit iron-icon {
+        padding-right: 16px;
+      }
+    </style>
+      <paper-button class$="btn-[[_icon]]" on-tap="_requestFormElementForm" raised>
+        <iron-icon icon$="my-icons:[[_icon]]"></iron-icon>
+        [[_label]]
+      </paper-button>
+  </template>
+
+  <script>
+    /**
+     * `digitalservices-formelement-button` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DigitalservicesFormelementButton extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'digitalservices-formelement-button';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          _icon: String,
+          _label: String,
+          formelement: {
+            type: Object,
+            observer: '_setButtonProperties'
+          }
+        };
+      }
+
+      _setButtonProperties (formelement) {
+        if (formelement && formelement.id) {
+          this._icon = "edit";
+          this._label = formelement.label;
+        } else {
+          this._icon = "add";
+          this._label = "ADD FORM ELEMENT";
+        }
+      }
+
+      _requestFormElementForm(e) {
+        this.dispatchEvent(new CustomEvent('digitalservices-formelement-request', {
+          detail: {
+            element: this.formelement
+          },
+          composed: true
+        }));
+      }
+
+    }
+
+    window.customElements.define(DigitalservicesFormelementButton.is, DigitalservicesFormelementButton);
+  </script>
+</dom-module>

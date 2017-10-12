@@ -138,7 +138,7 @@
             {
               label: 'Template',
               name: 'template_id',
-              type: 'dropdown',
+              type: 'dash-dropdown',
               items: [],
               selected: 0,
               validators: [
@@ -153,7 +153,7 @@
             {
               label: 'List',
               name: 'lists_id',
-              type: 'dropdown',
+              type: 'dash-dropdown',
               items: [],
               selected: 0,
               validators: [
@@ -171,7 +171,7 @@
             {
               label: 'Pre-select',
               name: 'default_lists_item_id',
-              type: 'dropdown',
+              type: 'dash-dropdown',
               items: [],
               selected: 0,
               validators: [
@@ -190,11 +190,19 @@
           actions: {
             'edit': {
               label: 'save',
-              event: 'update-formelement'
+              event: 'update-formelement',
+              event_prop: {
+                bubbles: false,
+                composed: false
+              }
             },
             'delete': {
               label: 'remove',
               event: 'delete-formelement',
+              event_prop: {
+                bubbles: false,
+                composed: false
+              }
             }
           }
         };

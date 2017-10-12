@@ -12,6 +12,7 @@
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
+<link rel="import" href="dash-form-dropdown.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
@@ -121,6 +122,19 @@
                 </div>
               </template>
 
+              <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
+                  <div class="checkbox-container">
+                    <dash-form-dropdown
+                      label="[[field.label]]"
+                      name$="[[field.name]]"
+                      options="[[field.items]]"
+                      disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                      selected$="[[field.selected]]"
+                      on-dash-form-dropdown-changed="_onSelectedItemChanged">
+                    </dash-form-dropdown>
+                  </div>
+                </template>
+
               <template is="dom-if" if="[[_isCollection(field.type)]]">
                 <paper-chip-input-autocomplete
                   id="[[field.name]]"
@@ -154,6 +168,7 @@
               </template>
             </div>
           </div>
+          <slot name="before-end"></slot>
         </form>
       </iron-form>
     </div>

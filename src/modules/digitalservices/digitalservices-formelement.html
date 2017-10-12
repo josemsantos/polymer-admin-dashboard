@@ -4,6 +4,7 @@
 <link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../models/formelement-model.html">
 <link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="digitalservices-formelement-button.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -12,6 +13,10 @@
     <style include="shared-styles">
       :host {
         display: block;
+      }
+
+      :host([hidden]) {
+        display: none;
       }
 
       dash-form.inline-form {
@@ -47,6 +52,7 @@
       on-model-response-changed="_setLists"></list-model>
 
     <formelement-model
+      fetch="[[formelementId]]"
       fetch-templates
       on-formelement-templates-changed="_setTemplates"
       on-model-response-changed="_setData"
@@ -70,11 +76,22 @@
       on-submit="_execAction">
       <div slot="action-box">
         <div class="text-centered">
-          <paper-button raised>
-            <iron-icon icon="my-icons:add"></iron-icon>
-            ADD FORM ELEMENT
-          </paper-button>
+          <template is="dom-if" if="[[!_isFormElementButtonHidden]]">
+            <digitalservices-formelement-button
+              formelement="[[formelement.formelement]]"></digitalservices-formelement-button>
+          </template>
         </div>
+      </div>
+      <div slot="before-end">
+        <template is="dom-if" if="[[_isFormElementButtonHidden]]">
+          <digitalservices-formelement
+            selected="[[selected]]"
+            digital-service-id="[[digitalServiceId]]"
+            formelement="[[formelement.formelement]]"
+            parent-id="[[data.id]]"
+            access-control="[[accessControl]]"
+            permissions="[[permissions]]"></digitalservices-formelement>
+        </template>
       </div>
     </dash-form>
 
@@ -82,6 +99,9 @@
 
   <script>
     /**
+     * @TODO - when closed all forms needs to close!!!!!!!!!!!!!!!!!!!!
+     * @TODO - when adding new element it should save the previous
+     * 
      * `digitalservices-formelement` Description
      *
      * @summary ShortDescription.
@@ -102,6 +122,10 @@
        */
       static get properties() {
         return {
+          _isFormElementButtonHidden: {
+            type: Boolean,
+            value: false
+          },
           isReady: Boolean,
           connection: {
             type: String,
@@ -118,6 +142,12 @@
             refelectToAttribute: true,
             observer: '_formelementIdChanged'
           },
+          digitalServiceId: Number,
+          parentId: Number,
+          formelement: {
+            type: Object,
+            observer: '_formelementChanged'
+          },
           templates: {
             type: Array,
           },
@@ -128,8 +158,6 @@
             type: String,
             value: 'form'
           },
-          parentId: Number,
-          digitalServiceId: Number,
           data: Object,
           form: Object,
           fields: Array,
@@ -150,7 +178,7 @@
 
       static get observers() {
         return [
-          '_isTemplatesListsAndDataReady(data, templates, lists)'
+          '_isTemplatesListsAndDataReady(data, templates, lists)',
         ];
       }
 
@@ -160,8 +188,25 @@
         super._notifyUser(e)
       }
 
+      _formelementChanged (formelement) {
+        if (formelement.id) {
+          this.formelementId = formelement.id;
+        } else {
+          this.formelementId = 0;
+          this.formelement.formelement = [];
+        }
+      }
+
+      _formelementIdChanged (formelementId) {
+        if (!formelementId) {
+          this._setDefaultData();
+        }
+      }
+
       _setData (e) {
-        this.data = e.detail.response;
+        if (e.detail.response) {
+          this.data = e.detail.response;
+        }
       }
 
       _setDefaultData () {
@@ -169,39 +214,38 @@
           id: 0,
           template_id: 1,
           lists_id: 1,
-          label: undefined
+          label: undefined,
+          formelement: []
         };
+        //Small trick to show the add form element button
+        this.set('formelement.formelement', []);
+        this.formelementId = 0;
       }
 
       _listSelectedChanged (e) {
-        if (e.detail.item.value) {
+        let selectedId = e.detail.item.selected;
+        if (selectedId) {
           for (var i in this.lists) {
-            let _listId = e.detail.item.value.dataset['key'];
-            if (this.lists[i].id == _listId) {
-              //If the user change from the original save list item then the sublist will select the first element
-              let _defaultListItem = (_listId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
-              let _selected;
-              let _items = [];
-              _items.push({
-                  key: '0',
-                  label: 'None'
+            
+            if (this.lists[i].id == selectedId) {
+              let _subItems = [];
+              _subItems.push({
+                key: '0',
+                label: 'None'
               });
               for (let j in this.lists[i].items) {
-                if (_defaultListItem == this.lists[i].items[j].id) {
-                  _selected = parseInt(j)+1;
-                }
-                
-                _items.push({
+                _subItems.push({
                   key: this.lists[i].items[j].id,
                   label: this.lists[i].items[j].name
                 });
               }
 
+              //If the user change from the original save list item then the sublist will select the first element
+              let _defaultListItem = (selectedId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
+
               let _fields = this.fields;
               _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('lists_id', _fields[2].items, e.detail.el.selected, _fields);
-              _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('default_lists_item_id', _items, _selected, _fields);
+                .setDataToFormElement('default_lists_item_id', _subItems, _defaultListItem, _fields);
               this.set('fields', JSON.parse(JSON.stringify(_fields)));
               break;
             }
@@ -232,26 +276,12 @@
         return (this.data && this.data.default_lists_item_id) ? this.data.default_lists_item_id : 0;
       }
 
-      _formelementIdChanged (formelementId) {
-        if (!formelementId) {
-          this._setDefaultData()
-        } else {
-          //load the formelement
-          this.formelementModel.load(formelementId);
-        }
-      }
-
       _isTemplatesListsAndDataReady (data, templates, lists) {
         if (data && templates && templates.length && lists && lists.length) {
           let _form = this.formelementModel.getForm();
           let _items = [];
-          let _tobeSelected = this.data.template_id;
-          let _selected;
 
           for (let i in templates) {
-            if (_tobeSelected == templates[i].id) {
-              _selected = i;
-            }
             _items.push({
               key: templates[i].id,
               label: templates[i].name
@@ -259,24 +289,35 @@
           }
 
           let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('template_id', _items, _selected, _form.fields);
+                .setDataToFormElement('template_id', _items, this.data.template_id, _form.fields);
 
           _items = [];
-          _tobeSelected = this.data.lists_id;
-          _selected = null;
-
+          let _subItems = [];
           for (let i in lists) {
-            if (_tobeSelected == lists[i].id) {
-              _selected = i;
-            }
             _items.push({
               key: lists[i].id,
               label: lists[i].name
             });
+
+            if (lists[i].id === this.data.lists_id) {
+              _subItems.push({
+                key: '0',
+                label: 'None'
+              });
+              for (let j in lists[i].items) {
+                _subItems.push({
+                  key: lists[i].items[j].id,
+                  label: lists[i].items[j].name
+                });
+              }
+            }
           }
 
           _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('lists_id', _items, _selected, _fields);
+                .setDataToFormElement('lists_id', _items, this.data.lists_id, _fields);
+
+          _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('default_lists_item_id', _subItems, this.data.default_lists_item_id, _fields);
 
           this.form = {
             fields: _fields,
@@ -330,6 +371,7 @@
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
         this._setDefaultData();
+        this._isFormElementButtonHidden = false;
       }
 
       /**
@@ -366,6 +408,11 @@
 
         this.addEventListener('update-formelement', function (e) {
           this._updateFormElement(e);
+        });
+
+
+        this.addEventListener('digitalservices-formelement-request', (e) => {
+          this._isFormElementButtonHidden = true;
         });
       }
 
