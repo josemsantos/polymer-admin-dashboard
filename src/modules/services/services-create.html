@@ -3,6 +3,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../models/service-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -34,7 +35,7 @@
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
-        <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Service list item</h2></div>
+        <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Service</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -109,6 +110,9 @@
           };
           
           this.actions = this.form.actions;
+
+          this._loadMdc();
+
           this.isReady = true;
         }
       }
@@ -137,6 +141,30 @@
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
         payload.digital_services_id = parseInt(payload.digital_services_id);
         this.serviceModel.create(null, JSON.stringify(payload));
+      }
+
+      _loadMdc(listIds) {
+        console.log(this.form);
+
+        this.form.fields.push({
+          label: "Contract Type",
+          name: "contract_type",
+          type: "dropdown",
+          items: [
+            {key: '1', label: 'Prepaid'},
+            {key: '2', label: 'Pospaid'}
+          ]
+        });
+
+        this.form.fields.push({
+          label: "Operators",
+          name: "operators",
+          type: "dropdown",
+          items: [
+            {key: '3', label: 'Vodafone'},
+            {key: '4', label: 'Meo'}
+          ]
+        });
       }
 
       /**
