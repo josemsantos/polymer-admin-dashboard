@@ -99,7 +99,6 @@
 
   <script>
     /**
-     * @TODO - when closed all forms needs to close!!!!!!!!!!!!!!!!!!!!
      * @TODO - when adding new element it should save the previous
      * 
      * `digitalservices-formelement` Description
@@ -172,7 +171,6 @@
               'default_lists_item_id'
             ]
           }
-
         };
       }
 
@@ -189,11 +187,10 @@
       }
 
       _formelementChanged (formelement) {
-        if (formelement.id) {
+        if (formelement && formelement.id) {
           this.formelementId = formelement.id;
         } else {
           this.formelementId = 0;
-          this.formelement.formelement = [];
         }
       }
 
@@ -389,6 +386,10 @@
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
           this.listModel.search();
+
+        //Close the element if the user exits
+        } else if (!selected && oSelected) {
+          this._isFormElementButtonHidden = false;
         }
       }
 
