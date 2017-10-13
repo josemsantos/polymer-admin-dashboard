@@ -128,9 +128,13 @@
             data: this._parsePath(action.path, identifier)
           };
         } else if (action.event) {
+          let prop = action.event_prop || {
+            bubbles: true,
+            composed: true
+          };
           return {
             action: '_firEvent',
-            data: this._parseEvent(action.event, identifier)
+            data: this._parseEvent(action.event, identifier, prop)
           };
         } else {
           return {
@@ -140,9 +144,11 @@
         }
       }
 
-      _parseEvent (event, identifier) {
+      _parseEvent (event, identifier, properties) {
         return {
           name: event,
+          bubbles: properties.bubbles,
+          composed: properties.composed,
           data: {
             key: identifier
           }
@@ -157,8 +163,8 @@
 
       _firEvent (event) {
         this.dispatchEvent(new CustomEvent(event.name, {
-          bubbles: true,
-          composed: true,
+          bubbles: (event.bubbles !== undefined) ? event.bubbles : true,
+          composed: (event.composed !== undefined) ? event.composed : true,
           detail: event.data
         }));
       }

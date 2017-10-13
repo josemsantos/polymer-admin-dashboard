@@ -1,9 +1,12 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="digitalservices-formelement.html">
+<link rel="import" href="digitalservices-formelement-button.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -12,6 +15,9 @@
     <style include="shared-styles">
        :host {
         display: block
+      }
+      .extra-padding {
+        padding: 32px;
       }
     </style>
     <app-route
@@ -39,7 +45,25 @@
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Digital Service - [[data.name]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Digital Service - [[data.name]]</h2></div>
+          <div class="extra-padding" slot="before-end">
+            <hr>
+            <div class="text-centered">
+              <template is="dom-if" if="[[_isFormElementHidden]]">
+                <digitalservices-formelement-button  class="extra-padding"
+                  on-digitalservices-formelement-request="_openFirstFormElement"
+                  formelement="[[data.formelement]]"></digitalservices-formelement-button>
+              </template>
+            </div>
+            <template is="dom-if" if="[[!_isFormElementHidden]]">
+              <digitalservices-formelement
+                selected="[[selected]]"
+                digital-service-id="[[data.id]]"
+                formelement="[[data.formelement]]"
+                access-control="[[accessControl]]"
+                permissions="[[permissions]]"></digitalservices-formelement>
+            </template>
+          </div>
       </dash-form>
     </paper-material>
   </template>
@@ -66,6 +90,10 @@
        */
       static get properties() {
         return {
+          _isFormElementHidden: {
+            type: Boolean,
+            value: true
+          },
           isReady: Boolean,
           connection: {
             type: String,
@@ -129,6 +157,20 @@
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _openFirstFormElement (e) {
+        this._isFormElementHidden = false;
+      }
+
+      /**
+       * Close the form element if the user leaves the page
+       */
+      onSelectedChange(selected, oSelected) {
+        if (!selected && oSelected) {
+          this._isFormElementHidden = true;
+        }
+        super.onSelectedChange(selected, oSelected);
       }
 
       /**
