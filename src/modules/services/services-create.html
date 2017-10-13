@@ -19,6 +19,7 @@
       on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
 
     <service-model
+      on-model-create-error="_notifyUserError"
       on-model-create-success="_notifyUser"></service-model>
 
     <paper-material elevation="2">

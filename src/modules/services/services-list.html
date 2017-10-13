@@ -28,6 +28,8 @@
       notify-success="[[successMessage]]"></dash-list>
 
     <service-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></service-model>
   </template>
 

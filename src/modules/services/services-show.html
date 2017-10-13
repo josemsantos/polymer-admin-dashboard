@@ -22,6 +22,7 @@
     <digitalservice-model
       on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
     <service-model
+      on-model-load-error="_notifyUserError"
       on-model-response-changed="_setData"></service-model>
     <paper-material elevation="2">
       <dash-form
@@ -32,6 +33,7 @@
         fields="[[form.fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
+        notify-error="[[errorMessage]]"
         show-only>
           <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Services List Item [[data.title]]</h2></div>
       </dash-form>
