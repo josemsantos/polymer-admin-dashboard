@@ -12,6 +12,7 @@
       paper-icon-button {
         @apply --dash-list-cell-content-actions-custom;
         border-radius: 2px;
+        margin: 2px;
       }
       paper-icon-button.create,
       paper-icon-button.show {
@@ -33,6 +34,8 @@
     <slot></slot>
     <template is="dom-repeat" items="[[actions]]">
       <paper-icon-button 
+        title$="[[item.type]]"
+        alt$="[[item.type]]"
         data-key$="[[key]]"
         data-action-type$="[[item.type]]"
         class$="[[item.type]]" 
