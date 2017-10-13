@@ -1,18 +1,17 @@
 {
     "connections": {
         "seraph": {
-            "url": "http://seraph.jumiaone.local/api/v1",
+            "url": "http://seraph.jone:8090/api/v1",
+            "headers": {}
+        },
+        "dozer": {
+            "url": "http://dozer.jone:8090/api/v1",
             "headers": {}
         },
         "mouse": {
           "url": "http://localhost:3333",
           "headers": {
             "Access-Control-Allow-Origin": true
-          }
-        },
-        "dozer": {
-          "url": "http://dozer.jumiaone:8090/api/v1",
-          "headers": {
           }
         }
     },

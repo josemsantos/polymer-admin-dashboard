@@ -4,14 +4,15 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
+<link rel="import" href="dash-form-dropdown.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
@@ -121,6 +122,19 @@
                 </div>
               </template>
 
+              <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
+                  <div class="checkbox-container">
+                    <dash-form-dropdown
+                      label="[[field.label]]"
+                      name$="[[field.name]]"
+                      options="[[field.items]]"
+                      disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                      selected$="[[field.selected]]"
+                      on-dash-form-dropdown-changed="_onSelectedItemChanged">
+                    </dash-form-dropdown>
+                  </div>
+                </template>
+
               <template is="dom-if" if="[[_isCollection(field.type)]]">
                 <paper-chip-input-autocomplete
                   id="[[field.name]]"
@@ -142,7 +156,7 @@
                 <paper-button
                   data-action="cancel"
                   on-tap="executeMe"
-                  class="cancel">Cancel</paper-button>
+                  class="cancel">Back</paper-button>
               </div>
             </template>
             <div class="right">
@@ -154,6 +168,7 @@
               </template>
             </div>
           </div>
+          <slot name="before-end"></slot>
         </form>
       </iron-form>
     </div>
@@ -319,14 +334,14 @@
         for (let i in modelFields) {
           let validators = modelFields[i].validators;
           for (let j in validators) {
-            let required = validators[j].required !== false;
+            let required = (validators[j].required === true);
             switch (validators[j].type) {
               case 'regex':
                 let fieldValue = request[modelFields[i].name];
                 var reg = new RegExp(validators[j].regex);
                 if ((null === fieldValue || undefined === fieldValue) && required) {
                   errors.push(validators[j].message);
-                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && (false === reg.test(fieldValue))) {
+                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && false === reg.test(fieldValue)) {
                   errors.push(validators[j].message);
                 }
               break;

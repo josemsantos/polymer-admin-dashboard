@@ -477,7 +477,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       _getModuleFromName (name) {
         if (name) {
-          return (name.indexOf('-') > -1) ? name.split('-')[0] : '';
+          let _name = name.split('-');
+          _name.pop();
+          _name = _name.join('-');
+          return _name;
         }
         return '';
       }
