@@ -40,8 +40,8 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]">
-
       <div slot="after-list">
         <div class="card-content">
           <paper-button
@@ -52,6 +52,8 @@
     </dash-list>
 
     <listitem-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></listitem-model>
   </template>
 
@@ -117,6 +119,12 @@
             type: Array,
             value: [
               {
+                label: 'List Id',
+                name: 'list_id',
+                type: 'hidden',
+                validators: []
+              },
+              {
                 label: 'Name',
                 name: 'name',
                 type: 'text',
@@ -154,6 +162,16 @@
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
+      onSelectedChange (selected, oSelected) {
+        // Is leaving the page
+        if (!selected && oSelected) {
+          this.page = 1;
+          this.shadowRoot.querySelector('dash-list').resetFilters();
+        }
+
+        super.onSelectedChange(selected, oSelected);
+      }
+
       _routeIdChanged (id, isReady) {
         if (id && isReady) {
           this.heading = 'List Items of list #' + id;
@@ -163,28 +181,22 @@
       }
 
       _filter (e) {
-        this.filterSortRequest = true;
-        this.page = 1; //reset pagination element
-        let filterQuery = '';
-        let queryParam = '';
-        let propertyName = '';
-        for (let i=0; i<this.filters.length; i++) {
-          propertyName = this.filters[i].name;
-          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
-          filterQuery += queryParam;
-        }
-        this.filterQuery = filterQuery + '&list_id=' + this.listId;
-        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery);
-        this.filterSortRequest = false;
+        e.detail.list_id = this.listId;
+        super._filter(e);
       }
 
       _sort (e) {
-        this.filterSortRequest = true;
-        this.page = 1; //reset pagination element
-        let direction = e.detail.sort.direction == 'desc' ? 'normal' : 'reverse';
-        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + direction;
-        this.modelElement.search('', this.itemsPerPage, 1, 'list_id=' + this.listId + '&', this.sortQuery);
-        this.filterSortRequest = false;
+        if (this.filterQuery === undefined) {
+          this.filterQuery = 'list_id=' + this.listId + '&';
+        }
+        super._sort(e);
+      }
+
+      _pageChanged (e) {
+        if (this.filterQuery === undefined) {
+          this.filterQuery = 'list_id=' + this.listId + '&';
+        }
+        super._pageChanged(e);
       }
 
       getList () {
@@ -210,7 +222,6 @@
       }
 
       onResponseChanged (e) {
-        let list = this.shadowRoot.querySelector('dash-list');
         this.totalItems = e.detail.response.total;
         this.items = this._setActionsKey(e.detail.response.results);
       }

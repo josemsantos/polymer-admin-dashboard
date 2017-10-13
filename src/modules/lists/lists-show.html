@@ -41,6 +41,7 @@
       data="{{routeData}}"></app-route>
 
     <list-model
+      on-model-load-error="_notifyUserError"
       on-model-response-changed="_setData"></list-model>
 
     <paper-material elevation="2">
@@ -52,6 +53,7 @@
         fields="[[form.fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
+        notify-error="[[errorMessage]]"
         show-only>
         <div class="title title-header"><h2><iron-icon icon="my-icons:menu"></iron-icon>Show List</h2></div>
         <div slot="footer">

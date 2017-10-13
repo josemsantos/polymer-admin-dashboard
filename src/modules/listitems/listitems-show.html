@@ -21,6 +21,7 @@
       data="{{routeData}}"></app-route>
 
     <listitem-model
+      on-model-load-error="_notifyUserError"
       on-model-response-changed="_setData"></listitem-model>
 
     <paper-material elevation="2">
@@ -32,11 +33,9 @@
         fields="[[form.fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
+        notify-error="[[errorMessage]]"
         show-only>
         <div class="title title-header"><h2><iron-icon icon="my-icons:menu"></iron-icon>Show List Item</h2></div>
-
-
-
       </dash-form>
     </paper-material>
   </template>
