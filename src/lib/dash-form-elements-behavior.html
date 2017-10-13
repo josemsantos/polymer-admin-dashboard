@@ -24,6 +24,10 @@
         return type === 'dropdown';
       }
 
+      _isDashDropdown(type) {
+        return type === 'dash-dropdown';
+      }
+
       _isReadonly(attributes, showOnly) {
         return (attributes && attributes.readonly || showOnly);
       }
@@ -66,10 +70,12 @@
             /** This is for collections **/
             value = this._getValuesFromSelectedColletion(formField.id, formField.items);
           } else if (formField.tagName == "PAPER-CHECKBOX") {
-            value = formField.checked;
+            value = Boolean(formField.checked);
           } else if (formField.tagName == "PAPER-DROPDOWN-MENU") {
             let item = formField.selectedItem;
-            value = item.dataset.key;
+            value = (item) ? item.dataset.key : 0;
+          } else if (formField.tagName == "DASH-FORM-DROPDOWN") {
+            value = formField.value;
           } else {
             value = formField.value;
           }
