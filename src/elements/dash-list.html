@@ -101,17 +101,19 @@
               <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
             </template>
           </div>
-          <div class="filter">
-            <h2>
-              <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
-            </h2>
-            <iron-collapse>
-              <dash-form
-                fields="[[filters]]"
-                actions="[[_filterActions]]"
-                on-filter="_filterRequest"></dash-form>
-            </iron-collapse>
-          </div>
+          <template is="dom-if" if="[[filters]]">
+            <div class="filter">
+              <h2>
+                <paper-button on-tap="_toggleFilters"><iron-icon icon="my-icons:search"></iron-icon> Filters</paper-button>
+              </h2>
+              <iron-collapse>
+                <dash-form
+                  fields="[[filters]]"
+                  actions="[[_filterActions]]"
+                  on-filter="_filterRequest"></dash-form>
+              </iron-collapse>
+            </div>
+          </template>
         </template>
         <paper-datatable-api
           data="[[items]]"
@@ -123,7 +125,7 @@
             <paper-datatable-api-column
               header="[[column.header]]"
               draggable-column="[[_isDraggable(column)]]"
-              sortable="[[_isData(column.type)]]"
+              sortable="[[_isSortable(column.type, column.sort)]]"
               td-custom-style="[[!_isDraggable(column)]]"
               property="[[column.index]]"
               other-properties='["disabled"]'>

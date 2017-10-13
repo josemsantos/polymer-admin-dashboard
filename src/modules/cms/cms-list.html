@@ -56,8 +56,8 @@
           possibleEndpoints: {
             type: Object,
             value: {
-              fetch: '/api/v1/blocks/list',
-              delete: '/api/v1/blocks/remove'
+              fetch: '/blocks/list',
+              delete: '/blocks/remove'
             }
           },
           modelEndpoint: String,
@@ -80,12 +80,14 @@
               {
                 header: 'Name',
                 index: 'name',
-                type: 'data'
+                type: 'data',
+                sort: false
               },
               {
                 header: 'Last updated',
                 index: 'updated_at',
-                type: 'data'
+                type: 'data',
+                sort: false
               },
               {
                 header: 'Actions',
@@ -96,20 +98,7 @@
           },
           filters: {
             type: Array,
-            value: [
-              {
-                label: 'Key',
-                name: 'key',
-                type: 'text',
-                validators: []
-              },
-              {
-                label: 'Name',
-                name: 'name',
-                type: 'text',
-                validators: []
-              }
-            ]
+            value: false
           },
           actions: {
             type: Object,

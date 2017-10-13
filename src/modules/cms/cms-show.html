@@ -20,7 +20,7 @@
       data="{{routeData}}"></app-route>
     <cms-model
       fetch="[[key]]"
-      endpoint="/api/v1/blocks"
+      endpoint="/blocks"
       on-model-response-changed="_setData"></cms-model>
     <paper-material elevation="2">
       <dash-form
@@ -91,7 +91,6 @@
 
       _routeIdChanged (id) {
         this.key = id;
-        console.log(id)
       }
 
       /**
