@@ -302,6 +302,11 @@
         this.successMessage = _msg;
       }
 
+      _notifyUserError (e) {
+        this.errorMessage = "";
+        this.errorMessage = e.detail.message.message;
+      }
+
       _setData (e) {
         this.data = e.detail.response;
       }
