@@ -162,11 +162,6 @@
       }
 
       _firEvent (event) {
-        console.log({
-          bubbles: (event.bubbles !== undefined) ? event.bubbles : true,
-          composed: (event.composed !== undefined) ? event.composed : true,
-          detail: event.data
-        })
         this.dispatchEvent(new CustomEvent(event.name, {
           bubbles: (event.bubbles !== undefined) ? event.bubbles : true,
           composed: (event.composed !== undefined) ? event.composed : true,

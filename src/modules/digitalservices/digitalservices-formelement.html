@@ -78,6 +78,7 @@
         <div class="text-centered">
           <template is="dom-if" if="[[!_isFormElementButtonHidden]]">
             <digitalservices-formelement-button
+              on-digitalservices-formelement-request="_openChildFormElement"
               formelement="[[formelement.formelement]]"></digitalservices-formelement-button>
           </template>
         </div>
@@ -98,9 +99,7 @@
   </template>
 
   <script>
-    /**
-     * @TODO - when adding new element it should save the previous
-     * 
+    /** 
      * `digitalservices-formelement` Description
      *
      * @summary ShortDescription.
@@ -121,6 +120,10 @@
        */
       static get properties() {
         return {
+          _requestedNewForm: {
+            type: Boolean,
+            value: false
+          },
           _isFormElementButtonHidden: {
             type: Boolean,
             value: false
@@ -183,7 +186,21 @@
       _notifyCreateToUser (e) {
         this.formelementId = e.detail.message.response.id;
         e.detail.message = e.detail.message.response.label + " created";
+        if (this._requestedNewForm) {
+          this._requestedNewForm = false;
+          this._isFormElementButtonHidden = true;
+        }
         super._notifyUser(e)
+      }
+
+      _notifyUser(e) {
+        // IF the updates came from a request new form element then
+        // if success the form is presented
+        if (this._requestedNewForm) {
+          this._requestedNewForm = false;
+          this._isFormElementButtonHidden = true;
+        }
+        super._notifyUser(e);
       }
 
       _formelementChanged (formelement) {
@@ -371,6 +388,17 @@
         this._isFormElementButtonHidden = false;
       }
 
+      _openChildFormElement(e) {
+        this._requestedNewForm = true;
+        this._execAction({
+          detail: {
+            key: this.formelementId,
+            type: 'edit',
+            payload: this.shadowRoot.querySelector('dash-form')._generateModelPayLoad(this.formelementModel.model)
+          }
+        });
+      }
+
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -409,11 +437,6 @@
 
         this.addEventListener('update-formelement', function (e) {
           this._updateFormElement(e);
-        });
-
-
-        this.addEventListener('digitalservices-formelement-request', (e) => {
-          this._isFormElementButtonHidden = true;
         });
       }
 

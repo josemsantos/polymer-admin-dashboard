@@ -177,9 +177,8 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^\\d{1,}$',
+                  regex: '[0-9]+|null',
                   message: 'Invalid pre-selected list item',
-                  required: true
                 }
               ],
               event: {

@@ -334,14 +334,14 @@
         for (let i in modelFields) {
           let validators = modelFields[i].validators;
           for (let j in validators) {
-            let required = validators[j].required !== false;
+            let required = (validators[j].required === true);
             switch (validators[j].type) {
               case 'regex':
                 let fieldValue = request[modelFields[i].name];
                 var reg = new RegExp(validators[j].regex);
                 if ((null === fieldValue || undefined === fieldValue) && required) {
                   errors.push(validators[j].message);
-                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && (false === reg.test(fieldValue))) {
+                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && false === reg.test(fieldValue)) {
                   errors.push(validators[j].message);
                 }
               break;

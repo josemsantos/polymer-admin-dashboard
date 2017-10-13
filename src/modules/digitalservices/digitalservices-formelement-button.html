@@ -14,6 +14,11 @@
       .btn-edit iron-icon {
         padding-right: 16px;
       }
+      paper-button {
+        background-color: var(--paper-blue-500);
+        color: #FFF;
+        @apply --digitalservices-formelement-button;
+      }
     </style>
       <paper-button class$="btn-[[_icon]]" on-tap="_requestFormElementForm" raised>
         <iron-icon icon$="my-icons:[[_icon]]"></iron-icon>
@@ -67,7 +72,8 @@
           detail: {
             element: this.formelement
           },
-          composed: true
+          composed: true,
+          bubbles: true
         }));
       }
 
