@@ -166,6 +166,8 @@
         // Is leaving the page
         if (!selected && oSelected) {
           this.page = 1;
+          this.filterQuery = undefined;
+          this.sortQuery = undefined;
           this.shadowRoot.querySelector('dash-list').resetFilters();
         }
 
@@ -196,6 +198,11 @@
         if (this.filterQuery === undefined) {
           this.filterQuery = 'list_id=' + this.listId + '&';
         }
+
+        if (this.sortQuery === undefined) {
+          this.sortQuery = 'sort=id&order=normal';
+        }
+
         super._pageChanged(e);
       }
 
