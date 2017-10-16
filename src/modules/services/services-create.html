@@ -85,8 +85,13 @@
               'title',
               'digital_services_id',
               'active',
+              'mcds'
             ]
-          }
+          },
+          mcdKeys: {
+            type: Array,
+            value: []
+          },
         };
       }
 
@@ -138,6 +143,12 @@
           this.errorMessage = valid;
           return;
         }
+
+        e.detail.payload.mcds = [];
+        this.mcdKeys.forEach(item => {
+          e.detail.payload.mcds.push(e.detail.payload[item]);
+        });
+
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
         payload.digital_services_id = parseInt(payload.digital_services_id);
@@ -145,12 +156,15 @@
       }
 
       _loadMdc(listIds) {
-        console.log(this.form);
+
+        let model = this.shadowRoot.querySelector('service-model').model;
+
+        console.log(this.form, model);
 
         this.form.fields.push({
           label: "Contract Type",
-          name: "contract_type",
-          type: "dropdown",
+          name: "contracttype",
+          type: "dash-dropdown",
           items: [
             {key: '1', label: 'Prepaid'},
             {key: '2', label: 'Pospaid'}
@@ -160,12 +174,18 @@
         this.form.fields.push({
           label: "Operators",
           name: "operators",
-          type: "dropdown",
+          type: "dash-dropdown",
           items: [
             {key: '3', label: 'Vodafone'},
             {key: '4', label: 'Meo'}
           ]
         });
+
+        model['contracttype'] = null;
+        model['operators'] = null;
+
+        this.mcdKeys.push('contracttype');
+        this.mcdKeys.push('operators');
       }
 
       /**
