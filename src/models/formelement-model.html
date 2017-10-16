@@ -210,10 +210,14 @@
       getCreateForm() {
         let form = this.getForm();
         form.actions = {
-          'create': {
-            label: 'Create',
-            event: 'create-formelement'
-          },
+          'edit': {
+            label: 'save',
+            event: 'update-formelement',
+            event_prop: {
+              bubbles: false,
+              composed: false
+            }
+          }
         };
         return form;
       }

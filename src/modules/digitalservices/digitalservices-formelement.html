@@ -292,7 +292,7 @@
 
       _isTemplatesListsAndDataReady (data, templates, lists) {
         if (data && templates && templates.length && lists && lists.length) {
-          let _form = this.formelementModel.getForm();
+          let _form = (data.id) ? this.formelementModel.getForm() : this.formelementModel.getCreateForm();
           let _items = [];
 
           for (let i in templates) {
@@ -361,7 +361,7 @@
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
         if (payload['default_lists_item_id'] == "0") {
-          delete payload['default_lists_item_id'];
+          payload['default_lists_item_id'] = false;
         }
         if (!this.parentId) {
           delete payload['parent_id'];
