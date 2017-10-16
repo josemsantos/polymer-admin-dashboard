@@ -132,6 +132,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <dash-firebase
       real-db="{{fireDB}}"
       storage="{{fireStorage}}"></dash-firebase>
+      
+    <dash-notifications></dash-notifications>
 
     <!-- Main content -->
     <app-header-layout fullbleed>
@@ -201,7 +203,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="user-profile"
               storage="[[fireStorage]]"
-              real-db="[[fireDB]]"></user-profile >
+              real-db="[[fireDB]]"></user-profile>
             <authentication-login
               name$="[[loginPage]]" 
               on-dash-user-logged="_setUser"></authentication-login>

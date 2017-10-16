@@ -1,0 +1,141 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="dash-form-dropdown">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+      .select-style {
+        border-bottom: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+        width: 100%;
+        border-radius: 0px;
+        overflow: hidden;
+      }
+      
+      .select-style select {
+        padding: 5px 0 8px;
+        width: 100%;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        background-image: none;
+        font-size: 16px;
+      }
+
+      .select-style select:focus {
+        outline: none;
+      }
+      .floated-label-placeholder {
+        color: var(--paper-input-container-color, var(--secondary-text-color));
+        @apply --paper-font-caption;
+      }
+    </style>
+    <label class="floated-label-placeholder" for="">[[label]]</label>
+    <div class="select-style">
+      <select name$="[[name]]" disabled="[[disabled]]">
+        <template is="dom-repeat" items="[[options]]" as="option">
+          <option selected$="[[_isSelected(selected, option)]]" value$="[[option.key]]">[[option.label]]</option>
+        </template>
+      </select>
+    </div>
+
+
+  </template>
+
+  <script>
+    /**
+     * `dash-form-dropdown` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashFormDropdown extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-form-dropdown';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          label: String,
+          name: String,
+          disabled: {
+            type: Boolean,
+            value: false
+          },
+          selected: Object,
+          options: {
+            type: Array,
+            observer: '_optionsChanged'
+          },
+          value: Object
+        };
+      }
+
+      static get observers() {
+        return [
+          '_setInitialValue(selected)'
+        ];
+      }
+
+      _setInitialValue(selected) {
+        this.value = selected;
+      }
+
+      _optionsChanged(options) {
+        this.dispatchEvent(new CustomEvent('dash-form-dropdown-options-changed', {
+          details: this.options,
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _isSelected(selected, option) {
+        return option.key == selected;
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+
+        let select = this.shadowRoot.querySelector('select');
+        select.addEventListener('change', (e) => {
+
+          this.dispatchEvent(new CustomEvent('dash-form-dropdown-changed', {
+            detail: {
+              el: select,
+              options: this.options,
+              selected: select.value
+            },
+            bubbles: true,
+            composed: true
+          }));
+
+          this.value = this.shadowRoot.querySelector('select').value;
+        });
+      }
+
+    }
+
+    window.customElements.define(DashFormDropdown.is, DashFormDropdown);
+  </script>
+</dom-module>
