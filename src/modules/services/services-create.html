@@ -3,7 +3,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../models/service-model.html">
-<link rel="import" href="../../models/service-model.html">
+<link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -16,7 +16,12 @@
       }
     </style>
 
+    <list-model
+      fetch="[[_listId]]"
+      on-model-response-changed="_setListItems"></list-model>
+
     <digitalservice-model
+      fetch="[[_serviceTypeId]]"
       on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
 
     <service-model
@@ -29,10 +34,11 @@
         has-cancel
         key="[[key]]"
         model="[[serviceModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
+        on-service-types-changed="_getServiceType"
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
@@ -63,6 +69,8 @@
         */
       static get properties() {
         return {
+          _listId: Number,
+          _serviceTypeId: Number,
           isReady: Boolean,
           connection: {
             type: String,
@@ -73,19 +81,23 @@
             value: 'services'
           },
           serviceModel: HTMLElement,
+          listModel: HTMLElement,
+          digitalServiceModel: HTMLElement,
+          listModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
           },
           data: Object,
           form: Object,
+          fields: Array,
           payload: {
             type: Array,
             value: [
               'title',
               'digital_services_id',
               'active',
-              'mcds'
+              'mcds',
             ]
           },
           mcdKeys: {
@@ -95,31 +107,94 @@
         };
       }
 
+      _getServiceType (e) {
+        this._removeDynamicFieldsInForm();
+        this._listId = undefined;
+        this._serviceTypeId = Number.parseInt(e.detail.item.selected);
+      }
+
+      _setServiceTypeField (e) {
+        this.digitalServiceData = e.detail.response.results;
+        let _items = [];
+        _items.push({
+          key: 0,
+          label: 'None'
+        });
+        for (let i in this.digitalServiceData) {
+          _items.push({
+            key: this.digitalServiceData[i].id,
+            label: this.digitalServiceData[i].name
+          })
+        }
+
+        let _form = this.serviceModel.getCreateForm();
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                        .setDataToFormElement('digital_services_id', _items, null, _form.fields);
+
+        this.fields = _fields;
+        this.form = {
+          fields: _fields,
+          actions: _form.actions
+        };
+        
+        this.actions = this.form.actions;
+        this.isReady = true;
+      }
+
+      _setListItems (e) {
+        let _items = [];
+        for (let i in e.detail.response.items) {
+          _items.push({
+            key: e.detail.response.items[i].id, 
+            label: e.detail.response.items[i].name
+          });
+        }
+        
+        let _listId = e.detail.response.id;
+        for (let i in this.form.fields) {
+          if (this.form.fields[i].list_id && this.form.fields[i].list_id == _listId) {
+            this.form.fields[i].label = e.detail.response.name;
+            this.form.fields[i].items = _items;
+          }
+        }
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
+      _setFormElementTypeField (formelement) {
+        let _formElement = formelement;
+        //require list items
+        this._listId = _formElement.lists_id;
+        
+        this.form.fields.push({
+          label: "",
+          name: "mcds[]",
+          type: "dash-dropdown",
+          list_id: formelement.lists_id,
+          items: []
+        })
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                        .setDataToFormElement('list_id', [], null, this.form.fields);
+        this.set('fields', JSON.parse(JSON.stringify(_fields)));
+
+        if (_formElement.formelement && _formElement.formelement.id) {
+          this._setFormElementTypeField (_formElement.formelement)
+        }
+      }
+
+      _removeDynamicFieldsInForm () {
+        for (let i in this.form.fields) {
+          if (this.form.fields[i].name == 'mcds[]') {
+            delete this.form.fields[i];
+          }
+        }
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
       _setDigitalServiceData(e) {
         if (e.detail.response && e.detail.response.results) {
-          this.digitalServiceData = e.detail.response.results;
-          let _items = [];
-          for (let i in this.digitalServiceData) {
-            _items.push({
-              key: this.digitalServiceData[i].id,
-              label: this.digitalServiceData[i].name
-            })
-          }
-
-          let _form = this.serviceModel.getCreateForm();
-          let _fields = this.shadowRoot.querySelector('dash-form')
-                          .setDataToFormElement('digital_services_id', _items, null, _form.fields);
-
-          this.form = {
-            fields: _fields,
-            actions: _form.actions
-          };
-          
-          this.actions = this.form.actions;
-
-          this._loadMdc();
-
-          this.isReady = true;
+          this._setServiceTypeField(e);
+        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id) {
+          this._setFormElementTypeField(e.detail.response.formelement);
         }
       }
 
@@ -137,6 +212,15 @@
       }
 
       _createService(e) {
+
+        /**
+         * model['contracttype'] = null;
+        model['operators'] = null;
+
+        this.mcdKeys.push('contracttype');
+        this.mcdKeys.push('operators');
+        */
+        
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -155,39 +239,6 @@
         this.serviceModel.create(null, JSON.stringify(payload));
       }
 
-      _loadMdc(listIds) {
-
-        let model = this.shadowRoot.querySelector('service-model').model;
-
-        console.log(this.form, model);
-
-        this.form.fields.push({
-          label: "Contract Type",
-          name: "contracttype",
-          type: "dash-dropdown",
-          items: [
-            {key: '1', label: 'Prepaid'},
-            {key: '2', label: 'Pospaid'}
-          ]
-        });
-
-        this.form.fields.push({
-          label: "Operators",
-          name: "operators",
-          type: "dash-dropdown",
-          items: [
-            {key: '3', label: 'Vodafone'},
-            {key: '4', label: 'Meo'}
-          ]
-        });
-
-        model['contracttype'] = null;
-        model['operators'] = null;
-
-        this.mcdKeys.push('contracttype');
-        this.mcdKeys.push('operators');
-      }
-
       /**
         * Instance of the element is created/upgraded. Use: initializing state,
         * set up event listeners, create shadow dom.
@@ -198,12 +249,28 @@
         this.model = 'service-model';
       }
 
-      onSelectedChange(selected) {
+      onSelectedChange(selected, oSelected) {
         super.onSelectedChange(selected);
         if (selected) {
           this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
           this.digitalServiceModel.connection = this.requestConnections[this.connection];
           this.digitalServiceModel.search();
+
+          this.listModel = this.shadowRoot.querySelector('list-model');
+          this.listModel.connection = this.requestConnections[this.connection];
+        }
+
+        if (!selected && oSelected) {
+          this._listId = undefined;
+          this._serviceTypeId = undefined;
+          this._removeDynamicFieldsInForm();
+          for (let i in this.form.fields) {
+            if (this.form.fields[i].name == 'digital_services_id') {
+              this.form.fields[i].selected = false;
+              this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+              break;
+            }
+          }
         }
       }
 
