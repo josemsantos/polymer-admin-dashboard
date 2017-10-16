@@ -7,12 +7,16 @@
 <dom-module id="dash-notifications">
   <template>
     <style>
-       :host {
-        display: block
+      :host {
+        display: flex;
+        justify-content: center;
+        align-content: center;
       }
       paper-toast {
         display: flex;
         align-items: center;
+        border-radius: 4px;
+        box-shadow: 0px 8px 28px 0px rgba(0,0,0,0.5);
       }
       .paper-toast-message-container {
         flex: 1;
@@ -29,11 +33,14 @@
       }
 
       #container {
-        position:absolute;
+        flex: 1;
+        position:fixed;
         top: 0;
         display: block;
-        width: 100%;
+        width: 75%;
         height: 250px;
+        z-index: 9000;
+        margin-top: 48px;
       }
       pre {
         white-space: pre-wrap;       /* Since CSS 2.1 */
@@ -44,7 +51,7 @@
       }
     </style>
     <div id="container">
-      <paper-toast vertical-align="top" duration="5000" id="toastSuccess" class="fit-bottom success">
+      <paper-toast vertical-align="top" duration="3000" id="toastSuccess" class="fit-bottom success">
         <div class="paper-toast-message-container">
           <slot name="success">[[notifySuccess]]</slot>
         </div>
