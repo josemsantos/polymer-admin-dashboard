@@ -21,6 +21,9 @@
       data="{{routeData}}"></app-route>
       
     <listitem-model
+      on-model-load-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
+      on-model-update-error="_notifyUserError"
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate"></listitem-model>

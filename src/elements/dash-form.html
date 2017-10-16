@@ -4,14 +4,15 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
+<link rel="import" href="dash-form-dropdown.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
@@ -66,10 +67,12 @@
       .edit {
         background-color:  var(--paper-green-500);
         color: #FFF;
+        @apply --dash-form-button-edit;
       }
       .delete {
         background-color:  var(--paper-red-500);
         color: #FFF;
+        @apply --dash-form-button-delete;
       }
       paper-input[type=hidden] {
         display: none;
@@ -105,8 +108,12 @@
                   <paper-dropdown-menu
                     label="[[field.label]]"
                     name$="[[field.name]]"
-                    disabled="[[_isReadonly(field.attributes, showOnly)]]">
-                    <paper-listbox slot="dropdown-content" selected="[[field.selected]]">
+                    disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                    on-selected-item-changed="_onSelectedItemChanged">
+                    <paper-listbox 
+                      slot="dropdown-content" 
+                      selected$="[[field.selected]]"
+                      on-iron-items-changed="_onIronItemsChanged">
                       <template is="dom-repeat" items="[[field.items]]" as="item">
                         <paper-item data-key$="[[item.key]]">[[item.label]]</paper-item>
                       </template>
@@ -114,6 +121,19 @@
                   </paper-dropdown-menu>
                 </div>
               </template>
+
+              <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
+                  <div class="checkbox-container">
+                    <dash-form-dropdown
+                      label="[[field.label]]"
+                      name$="[[field.name]]"
+                      options="[[field.items]]"
+                      disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                      selected$="[[field.selected]]"
+                      on-dash-form-dropdown-changed="_onSelectedItemChanged">
+                    </dash-form-dropdown>
+                  </div>
+                </template>
 
               <template is="dom-if" if="[[_isCollection(field.type)]]">
                 <paper-chip-input-autocomplete
@@ -136,7 +156,7 @@
                 <paper-button
                   data-action="cancel"
                   on-tap="executeMe"
-                  class="cancel">Cancel</paper-button>
+                  class="cancel">Back</paper-button>
               </div>
             </template>
             <div class="right">
@@ -148,6 +168,7 @@
               </template>
             </div>
           </div>
+          <slot name="before-end"></slot>
         </form>
       </iron-form>
     </div>
@@ -199,7 +220,6 @@
           },
           fields: {
             type: Array,
-            value: []
           },
           actions: {
             type: Array,
@@ -219,6 +239,34 @@
           '_externalSourcesChanged(modelReady, externalSources)',
           '_externalDataSourcesChanged(modelReady, modelData, _allExternalReady)'
         ];
+      }
+
+      _fireFieldEvent (event, eventName) {
+        if (!event.model.field.event || !event.model.field.event[eventName]) {
+          return;
+        }
+        for (let i in this.fields) {
+          if (this.fields[i].name == event.model.field.name) {
+            this.dispatchEvent(new CustomEvent(event.model.field.event[eventName], {
+              detail: {
+                el: event.currentTarget,
+                item: event.detail,
+                model: event.model
+              },
+              composed: true
+            }));
+            break;
+          }
+        }
+
+      }
+
+      _onIronItemsChanged (e) {
+        this._fireFieldEvent(e, 'on-iron-items-changed');
+      }
+
+      _onSelectedItemChanged (e) {
+        this._fireFieldEvent(e, 'on-selected-items-changed');
       }
 
       _modelDataChanged (data) {
@@ -286,14 +334,14 @@
         for (let i in modelFields) {
           let validators = modelFields[i].validators;
           for (let j in validators) {
-            let required = validators[j].required !== false;
+            let required = (validators[j].required === true);
             switch (validators[j].type) {
               case 'regex':
                 let fieldValue = request[modelFields[i].name];
                 var reg = new RegExp(validators[j].regex);
                 if ((null === fieldValue || undefined === fieldValue) && required) {
                   errors.push(validators[j].message);
-                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && (false === reg.test(fieldValue))) {
+                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && false === reg.test(fieldValue)) {
                   errors.push(validators[j].message);
                 }
               break;
@@ -344,6 +392,8 @@
             fields[i].items = items;
             if (selected) {
               fields[i].selected = selected;
+            } else {
+              fields[i].selected = 0;
             }
           }
         }

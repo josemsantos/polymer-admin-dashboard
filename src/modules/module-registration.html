@@ -10,11 +10,11 @@
     'use strict';
   
     function ModuleRegistration(superClass) {
-      return class extends CmsModuleRegistration(
+      return class extends ServicesModuleRegistration(
                             ListsModuleRegistration(
                             ListItemsModuleRegistration(
+                            CmsModuleRegistration(
                             DigitalServicesModuleRegistration(
-                            ServicesModuleRegistration(
                             UserModuleRegistration(
                             UsersModuleRegistration(
                             GroupsModuleRegistration(superClass)))))))) {

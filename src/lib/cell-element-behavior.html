@@ -9,7 +9,11 @@
       }
 
       _isData(type) {
-        return type === 'data';
+        return type === 'data' || type === 'data-yesno';
+      }
+
+      _isSortable(type, sort) {
+        return (type === 'data' || type === 'data-yesno') && sort !== false;
       }
 
       _isActions(type) {

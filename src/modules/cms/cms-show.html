@@ -20,7 +20,7 @@
       data="{{routeData}}"></app-route>
     <cms-model
       fetch="[[key]]"
-      endpoint="/api/v1/blocks"
+      endpoint="/blocks"
       on-model-response-changed="_setData"></cms-model>
     <paper-material elevation="2">
       <dash-form
@@ -33,7 +33,7 @@
         external-sources="[[externalData]]"
         on-cancel="_goToList"
         show-only>
-          <div class="header title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>CMS Block Content [[data.name]]</h2></div>
+          <div class="header title-header"><h2><iron-icon icon="my-icons:insert-comment"></iron-icon>CMS Block Content [[data.name]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -91,7 +91,6 @@
 
       _routeIdChanged (id) {
         this.key = id;
-        console.log(id)
       }
 
       /**

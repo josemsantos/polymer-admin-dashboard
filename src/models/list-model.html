@@ -61,7 +61,11 @@
       }
 
       _responseChanged (response) {
-        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+        this.dispatchEvent(new CustomEvent('model-response-changed', {
+          detail: response,
+          composed: true,
+          bubbles: true
+        }));
       }
 
       /**
@@ -105,7 +109,7 @@
           ],
           actions: {
             'edit' :{
-              label: 'edit',
+              label: 'save',
               event: 'update-list'
             },
             'delete': {

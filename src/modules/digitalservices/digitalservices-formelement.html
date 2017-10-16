@@ -1,0 +1,447 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/list-model.html">
+<link rel="import" href="../../models/formelement-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="digitalservices-formelement-button.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="digitalservices-formelement">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+
+      :host([hidden]) {
+        display: none;
+      }
+
+      dash-form.inline-form {
+        margin-top: 16px;
+        --form-layout: {
+          background-color: #FFF;
+        }
+        --form-body: {
+          padding: 32px 0;
+        }
+        --form-title: {
+          border:none;
+        }
+        --form-wrapper: {
+          border:none;
+        }
+        --form-action-box: {
+          padding: 0;
+        }
+        --dash-form-button-edit: {
+          background-color: #FFF;
+          border: solid 1px var(--paper-green-500);
+          color: var(--paper-green-500);
+        }
+        --dash-form-button-delete: {
+          background-color: #FFF;
+          border: solid 1px var(--paper-red-500);
+          color: var(--paper-red-500);
+        }
+      }
+    </style>
+    <list-model
+      on-model-response-changed="_setLists"></list-model>
+
+    <formelement-model
+      fetch="[[formelementId]]"
+      fetch-templates
+      on-formelement-templates-changed="_setTemplates"
+      on-model-response-changed="_setData"
+      on-model-create-success="_notifyCreateToUser"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyUser">
+    </formelement-model>
+
+    <dash-form
+      class="inline-form"
+      key="[[key]]"
+      model="[[formelementModel.model]]"
+      fields="[[fields]]"
+      actions="[[_formActions]]"
+      model-data="[[data]]"
+      notify-error="[[errorMessage]]"
+      notify-success="[[successMessage]]"
+      on-list-items-changed="_listSelectedChanged"
+      on-sub-list-items-changed="_subListSelectedChanged"
+      on-cancel="_goToList"
+      on-submit="_execAction">
+      <div slot="action-box">
+        <div class="text-centered">
+          <template is="dom-if" if="[[!_isFormElementButtonHidden]]">
+            <digitalservices-formelement-button
+              on-digitalservices-formelement-request="_openChildFormElement"
+              formelement="[[formelement.formelement]]"></digitalservices-formelement-button>
+          </template>
+        </div>
+      </div>
+      <div slot="before-end">
+        <template is="dom-if" if="[[_isFormElementButtonHidden]]">
+          <digitalservices-formelement
+            selected="[[selected]]"
+            digital-service-id="[[digitalServiceId]]"
+            formelement="[[formelement.formelement]]"
+            parent-id="[[data.id]]"
+            access-control="[[accessControl]]"
+            permissions="[[permissions]]"></digitalservices-formelement>
+        </template>
+      </div>
+    </dash-form>
+
+  </template>
+
+  <script>
+    /** 
+     * `digitalservices-formelement` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DigitalservicesFormelement extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'digitalservices-formelement';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          _requestedNewForm: {
+            type: Boolean,
+            value: false
+          },
+          _isFormElementButtonHidden: {
+            type: Boolean,
+            value: false
+          },
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          module: {
+            type: String,
+            value: 'digitalservices'
+          },
+          listModel: HTMLElement,
+          formelementModel: HTMLElement,
+          formelementId: {
+            type: Number,
+            refelectToAttribute: true,
+            observer: '_formelementIdChanged'
+          },
+          digitalServiceId: Number,
+          parentId: Number,
+          formelement: {
+            type: Object,
+            observer: '_formelementChanged'
+          },
+          templates: {
+            type: Array,
+          },
+          lists: {
+            type: Array
+          },
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          fields: Array,
+          payload: {
+            type: Array,
+            value: [
+              'digital_service_id',
+              'parent_id',
+              'label',
+              'template_id',
+              'lists_id',
+              'default_lists_item_id'
+            ]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_isTemplatesListsAndDataReady(data, templates, lists)',
+        ];
+      }
+
+      _notifyCreateToUser (e) {
+        this.formelementId = e.detail.message.response.id;
+        e.detail.message = e.detail.message.response.label + " created";
+        if (this._requestedNewForm) {
+          this._requestedNewForm = false;
+          this._isFormElementButtonHidden = true;
+        }
+        super._notifyUser(e)
+      }
+
+      _notifyUser(e) {
+        // IF the updates came from a request new form element then
+        // if success the form is presented
+        if (this._requestedNewForm) {
+          this._requestedNewForm = false;
+          this._isFormElementButtonHidden = true;
+        }
+        super._notifyUser(e);
+      }
+
+      _formelementChanged (formelement) {
+        if (formelement && formelement.id) {
+          this.formelementId = formelement.id;
+        } else {
+          this.formelementId = 0;
+        }
+      }
+
+      _formelementIdChanged (formelementId) {
+        if (!formelementId) {
+          this._setDefaultData();
+        }
+      }
+
+      _setData (e) {
+        if (e.detail.response) {
+          this.data = e.detail.response;
+        }
+      }
+
+      _setDefaultData () {
+        this.data  = {
+          id: 0,
+          template_id: 1,
+          lists_id: 1,
+          label: undefined,
+          formelement: []
+        };
+        //Small trick to show the add form element button
+        this.set('formelement.formelement', []);
+        this.formelementId = 0;
+      }
+
+      _listSelectedChanged (e) {
+        let selectedId = e.detail.item.selected;
+        if (selectedId) {
+          for (var i in this.lists) {
+            
+            if (this.lists[i].id == selectedId) {
+              let _subItems = [];
+              _subItems.push({
+                key: '0',
+                label: 'None'
+              });
+              for (let j in this.lists[i].items) {
+                _subItems.push({
+                  key: this.lists[i].items[j].id,
+                  label: this.lists[i].items[j].name
+                });
+              }
+
+              //If the user change from the original save list item then the sublist will select the first element
+              let _defaultListItem = (selectedId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
+
+              let _fields = this.fields;
+              _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('default_lists_item_id', _subItems, _defaultListItem, _fields);
+              this.set('fields', JSON.parse(JSON.stringify(_fields)));
+              break;
+            }
+          }
+        }
+      }
+
+      _subListSelectedChanged (e) {
+        let item = e.detail.el.querySelector('paper-item[aria-selected]');
+        if (!item) {
+          item = e.detail.el.querySelectorAll('paper-item')[0];
+        }
+        e.detail.el.parentNode._selectedItemChanged(item);
+      }
+
+      _setLists (e) {
+        let lists = e.detail.response.results;
+        if (lists) {
+          this.lists = lists;
+        }
+      }
+
+      _setTemplates (e) {
+        this.templates = (e.detail.length) ? e.detail : [];
+      }
+
+      _getDefaultListItemId () {
+        return (this.data && this.data.default_lists_item_id) ? this.data.default_lists_item_id : 0;
+      }
+
+      _isTemplatesListsAndDataReady (data, templates, lists) {
+        if (data && templates && templates.length && lists && lists.length) {
+          let _form = this.formelementModel.getForm();
+          let _items = [];
+
+          for (let i in templates) {
+            _items.push({
+              key: templates[i].id,
+              label: templates[i].name
+            });
+          }
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('template_id', _items, this.data.template_id, _form.fields);
+
+          _items = [];
+          let _subItems = [];
+          for (let i in lists) {
+            _items.push({
+              key: lists[i].id,
+              label: lists[i].name
+            });
+
+            if (lists[i].id === this.data.lists_id) {
+              _subItems.push({
+                key: '0',
+                label: 'None'
+              });
+              for (let j in lists[i].items) {
+                _subItems.push({
+                  key: lists[i].items[j].id,
+                  label: lists[i].items[j].name
+                });
+              }
+            }
+          }
+
+          _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('lists_id', _items, this.data.lists_id, _fields);
+
+          _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('default_lists_item_id', _subItems, this.data.default_lists_item_id, _fields);
+
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+
+          this.fields = _fields;
+
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          if (data.id > 0) {
+            setTimeout(function() {
+              this.shadowRoot.querySelector('dash-form').reloadData(data);
+            }.bind(this), 1);
+          }
+        }
+      }
+
+      _updateFormElement (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        if (payload['default_lists_item_id'] == "0") {
+          delete payload['default_lists_item_id'];
+        }
+        if (!this.parentId) {
+          delete payload['parent_id'];
+        } else {
+          payload['parent_id'] = this.parentId;
+        }
+        
+        if (!this.digitalServiceId) {
+          delete payload['digital_service_id'];
+        } else {
+          payload['digital_service_id'] = this.digitalServiceId;
+        }
+        
+        if (this.formelementId) {
+          this.formelementModel.update(null, this.formelementId, JSON.stringify(payload));
+        } else {
+          this.formelementModel.create(null, JSON.stringify(payload));
+        }
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+        this._setDefaultData();
+        this._isFormElementButtonHidden = false;
+      }
+
+      _openChildFormElement(e) {
+        this._requestedNewForm = true;
+        this._execAction({
+          detail: {
+            key: this.formelementId,
+            type: 'edit',
+            payload: this.shadowRoot.querySelector('dash-form')._generateModelPayLoad(this.formelementModel.model)
+          }
+        });
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = "formelement-model";
+      }
+
+      onSelectedChange(selected, oSelected) {
+        if (selected && !oSelected) {
+          this.listModel = this.shadowRoot.querySelector('list-model');
+          this.listModel.connection = this.requestConnections[this.connection];
+          this.listModel.search();
+
+        //Close the element if the user exits
+        } else if (!selected && oSelected) {
+          this._isFormElementButtonHidden = false;
+        }
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.formelementModel = this.shadowRoot.querySelector(this.model);
+
+        this.addEventListener('delete-formelement', function (e) {
+          this._alert({
+            'key': this.formelementId,
+            'message': this.data.label
+          });
+        }.bind(this));
+
+        this.addEventListener('update-formelement', function (e) {
+          this._updateFormElement(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(DigitalservicesFormelement.is, DigitalservicesFormelement);
+  </script>
+</dom-module>

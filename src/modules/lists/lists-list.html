@@ -29,9 +29,12 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]"></dash-list>
 
     <list-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></list-model>
   </template>
 
@@ -82,6 +85,11 @@
                 header: 'Name',
                 index: 'name',
                 type: 'data'
+              },
+              {
+                header: 'Active',
+                index: 'active',
+                type: 'data-yesno'
               },
               {
                 header: 'Actions',
@@ -151,11 +159,19 @@
         super.ready();
         this.addEventListener('delete-list', function (e) {
           let item = this.getItem(this.items, e.detail.key);
+
+          let message = item.items.length > 0 ? 'List ' + '"' + item.name + '" has ' + item.items.length + ' Items, should be all deleted? ': item.name;
+
           this._alert({
             'key': item.id,
-            'message': item.name
+            'message': message
           });
         }.bind(this));
+
+        this.addEventListener('delete-list-error', function (e) {
+          this._deleteError(e);
+        }.bind(this));
+
       }
     }
 

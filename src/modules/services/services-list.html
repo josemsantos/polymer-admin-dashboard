@@ -17,7 +17,7 @@
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
-      icon="my-icons:group"
+      icon="my-icons:phone-android"
       key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"
@@ -28,6 +28,8 @@
       notify-success="[[successMessage]]"></dash-list>
 
     <service-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></service-model>
   </template>
 

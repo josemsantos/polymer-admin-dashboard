@@ -68,6 +68,56 @@
         }));
       }
 
+      _posSearchErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-search-error', {
+          detail: {
+            message: response
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _posLoadErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-load-error', {
+          detail: {
+            message: response
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _posCreateErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-create-error', {
+          detail: {
+            message: response
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _posUpdateErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-update-error', {
+          detail: {
+            message: response
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      _posDeleteErrorCallBack (response) {
+        this.dispatchEvent(new CustomEvent('model-delete-error', {
+          detail: {
+            message: response
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
       search(method, itemsPerPage, page, filterQuery, sortQuery) {
         let queryParams = "";
         if (itemsPerPage) {
@@ -90,6 +140,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self._posSearchErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
@@ -105,6 +156,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self._posLoadErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
@@ -121,6 +173,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self._posCreateErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
@@ -137,6 +190,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self._posUpdateErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
@@ -152,6 +206,7 @@
           },
           onError(e) {
             _self._setFailure(true);
+            _self._posDeleteErrorCallBack.call(_self, JSON.parse(e.target.responseText));
           }
         });
       }
