@@ -413,7 +413,7 @@
         if (selected && !oSelected) {
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
-          this.listModel.search();
+          this.listModel.search(null, 1000);
 
         //Close the element if the user exits
         } else if (!selected && oSelected) {
