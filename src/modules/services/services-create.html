@@ -83,7 +83,6 @@
           serviceModel: HTMLElement,
           listModel: HTMLElement,
           digitalServiceModel: HTMLElement,
-          listModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -97,13 +96,9 @@
               'title',
               'digital_services_id',
               'active',
-              'mcds',
+              'common_denominator'
             ]
-          },
-          mcdKeys: {
-            type: Array,
-            value: []
-          },
+          }
         };
       }
 
@@ -160,31 +155,35 @@
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
-      _setFormElementTypeField (formelement) {
+      _setFormElementTypeField (formelement, level) {
         let _formElement = formelement;
+        let name = "dynamicMcd" + (level);
         //require list items
         this._listId = _formElement.lists_id;
-        
+
         this.form.fields.push({
           label: "",
-          name: "mcds[]",
+          name: name,
           type: "dash-dropdown",
           list_id: formelement.lists_id,
           items: []
         })
+
+        this.serviceModel.model[name] = null;
+
         let _fields = this.shadowRoot.querySelector('dash-form')
                         .setDataToFormElement('list_id', [], null, this.form.fields);
         this.set('fields', JSON.parse(JSON.stringify(_fields)));
 
         if (_formElement.formelement && _formElement.formelement.id) {
-          this._setFormElementTypeField (_formElement.formelement)
+          this._setFormElementTypeField (_formElement.formelement, level+1)
         }
       }
 
       _removeDynamicFieldsInForm () {
         for (let i in this.form.fields) {
-          if (this.form.fields[i].name == 'mcds[]') {
-            delete this.form.fields[i];
+          if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
+            this.form.fields.splice(i, 1);
           }
         }
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
@@ -194,7 +193,7 @@
         if (e.detail.response && e.detail.response.results) {
           this._setServiceTypeField(e);
         } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id) {
-          this._setFormElementTypeField(e.detail.response.formelement);
+          this._setFormElementTypeField(e.detail.response.formelement, 0);
         }
       }
 
@@ -211,16 +210,7 @@
         super._notifyUser(e)
       }
 
-      _createService(e) {
-
-        /**
-         * model['contracttype'] = null;
-        model['operators'] = null;
-
-        this.mcdKeys.push('contracttype');
-        this.mcdKeys.push('operators');
-        */
-        
+      _createService (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -228,10 +218,15 @@
           return;
         }
 
-        e.detail.payload.mcds = [];
-        this.mcdKeys.forEach(item => {
-          e.detail.payload.mcds.push(e.detail.payload[item]);
+        let mcds = [];
+        Object.keys(e.detail.payload).forEach(function(key) {
+          console.log(key);
+          if (key.indexOf('dynamicMcd') === 0) {
+            mcds.push(e.detail.payload[key]);
+          }
         });
+
+        e.detail.payload['common_denominator'] = mcds;
 
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
@@ -254,7 +249,7 @@
         if (selected) {
           this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
           this.digitalServiceModel.connection = this.requestConnections[this.connection];
-          this.digitalServiceModel.search();
+          this.digitalServiceModel.search(null, 1000);
 
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
