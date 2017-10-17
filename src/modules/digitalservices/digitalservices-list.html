@@ -25,8 +25,11 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]"></dash-list>
     <digitalservice-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></digitalservice-model>
   </template>
 
