@@ -111,7 +111,8 @@
               label: 'Active',
               name: 'active',
               type: 'checkbox',
-              validatores: []
+              validators: [],
+              checked: false
             }
           ],
           actions: {
@@ -137,7 +138,6 @@
         };
         return form;
       }
-
     }
 
     window.customElements.define(ServiceModel.is, ServiceModel);

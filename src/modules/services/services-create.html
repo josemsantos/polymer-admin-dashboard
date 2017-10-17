@@ -137,12 +137,17 @@
       }
 
       _setListItems (e) {
+        let _selected = 0;
         let _items = [];
         for (let i in e.detail.response.items) {
           _items.push({
             key: e.detail.response.items[i].id, 
             label: e.detail.response.items[i].name
           });
+
+          if (_selected === 0) {
+            _selected = e.detail.response.items[i].id;
+          }
         }
         
         let _listId = e.detail.response.id;
@@ -150,6 +155,7 @@
           if (this.form.fields[i].list_id && this.form.fields[i].list_id == _listId) {
             this.form.fields[i].label = e.detail.response.name;
             this.form.fields[i].items = _items;
+            this.form.fields[i].selected = _selected
           }
         }
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
@@ -181,11 +187,13 @@
       }
 
       _removeDynamicFieldsInForm () {
-        for (let i in this.form.fields) {
+        let i = this.form.fields.length
+        while (i--) {
           if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
             this.form.fields.splice(i, 1);
           }
         }
+
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
@@ -211,6 +219,11 @@
       }
 
       _createService (e) {
+        // force required validation on service type
+        if (e.detail.payload.digital_services_id == 0) {
+          e.detail.payload.digital_services_id = null;
+        }
+
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -220,7 +233,6 @@
 
         let mcds = [];
         Object.keys(e.detail.payload).forEach(function(key) {
-          console.log(key);
           if (key.indexOf('dynamicMcd') === 0) {
             mcds.push(e.detail.payload[key]);
           }
@@ -245,7 +257,6 @@
       }
 
       onSelectedChange(selected, oSelected) {
-        super.onSelectedChange(selected);
         if (selected) {
           this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
           this.digitalServiceModel.connection = this.requestConnections[this.connection];
@@ -266,7 +277,11 @@
               break;
             }
           }
+
+          this.shadowRoot.querySelector('dash-form').formReset();
         }
+
+        super.onSelectedChange(selected);
       }
 
       /**

@@ -128,7 +128,7 @@
         if (selected) {
           this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
           this.digitalServiceModel.connection = this.requestConnections[this.connection];
-          this.digitalServiceModel.search();
+          this.digitalServiceModel.search(null, 1000);
         }
       }
 
