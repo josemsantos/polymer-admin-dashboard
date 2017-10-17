@@ -1,7 +1,8 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="service-module-element-behavior.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="services-module-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../models/list-model.html">
@@ -59,7 +60,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class ServicesShow extends ServiceModuleElementBehavior(Polymer.Element) {
+    class ServicesShow extends ServicesModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */

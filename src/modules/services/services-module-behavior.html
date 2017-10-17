@@ -1,10 +1,8 @@
-<link rel="import" href="../../lib/module-element-behavior.html">
-
 <script>
   'use strict';
 
-  function ServiceModuleElementBehavior(superClass) {
-    return class extends ModuleElementBehavior(superClass) {
+  function ServicesModuleBehavior(superClass) {
+    return class extends superClass {
 
       _isDigitalServiceAndDataReady (data, digitalServiceData) {
         if (data && digitalServiceData) {
