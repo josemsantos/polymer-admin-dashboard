@@ -2,8 +2,10 @@
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="services-module-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
 <link rel="import" href="../../models/service-model.html">
+<link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -20,7 +22,12 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
 
+    <list-model
+      fetch="[[_listId]]"
+      on-model-response-changed="_setListItems"></list-model>
+
     <digitalservice-model
+      fetch="[[_serviceTypeId]]"
       on-model-response-changed="_setDigitalServiceData"></digitalservice-model>
       
     <service-model
@@ -38,13 +45,14 @@
         key="[[key]]"
         model="[[serviceModel.model]]"
         model-data="[[data]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
+        on-service-types-changed="_getServiceType"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Service list item [[data.title]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Service - [[data.title]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -58,7 +66,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class ServicesEdit extends ModuleElementBehavior(Polymer.Element) {
+    class ServicesEdit extends ServicesModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -71,6 +79,8 @@
        */
       static get properties() {
         return {
+          _listId: Number,
+          _serviceTypeId: Number,
           digitalServiceData: Object,
           isReady: Boolean,
           connection: {
@@ -84,12 +94,14 @@
           },
           data: Object,
           form: Object,
+          fields: Array,
           payload: {
             type: Array,
             value: [
               'title',
               'digital_services_id',
-              'active'
+              'active',
+              'common_denominator'
             ]
           }
         };
@@ -102,78 +114,45 @@
         ];
       }
 
-      _setDigitalServiceData (e) {
-        if (e.detail.response && e.detail.response.results) {
-          this.digitalServiceData = e.detail.response.results;
+      _updateservice (e) {
+        // force required validation on service type
+        if (e.detail.payload.digital_services_id == 0) {
+          e.detail.payload.digital_services_id = null;
         }
-      }
 
-      _isDigitalServiceAndDataReady (data, digitalServiceData) {
-        if (data && digitalServiceData) {
-          let _items = [];
-          let _tobeSelected = this.data.digital_service.id;
-          let _selected;
-          for (let i in digitalServiceData) {
-            if (_tobeSelected == digitalServiceData[i].id) {
-              _selected = i;
-            }
-            _items.push({
-              key: digitalServiceData[i].id,
-              label: digitalServiceData[i].name
-            })
-          }
-
-          let _form = this.serviceModel.getForm();
-
-          let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('digital_services_id', _items, _selected, _form.fields);
-
-          this.form = {
-            fields: _fields,
-            actions: _form.actions
-          };
-          
-          this.actions = this.form.actions;
-          this.isReady = true;
-
-          setTimeout(function() {
-            this.shadowRoot.querySelector('dash-form').reloadData(data);
-          }.bind(this), 1);
-        }
-      }
-
-      _setData (e) {
-        this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
-      _updateservice (e) {        
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;
         }
+
+        let mcds = [];
+        Object.keys(e.detail.payload).forEach(function(key) {
+          if (key.indexOf('dynamicMcd') === 0 && e.detail.payload[key] > 0) {
+            mcds.push(e.detail.payload[key]);
+          }
+        });
+
+        e.detail.payload['common_denominator'] = mcds;
+
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
         payload.digital_services_id = parseInt(payload.digital_services_id);
         this.serviceModel.update(null, this.key, JSON.stringify(payload));
       }
 
-      _deleteConfirmed (key) {
-        this.shadowRoot.querySelector(this.model).delete(key);
-      }
+      _notifyUser(e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/list'
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
 
-      onSelectedChange(selected) {
-        super.onSelectedChange(selected);
-        if (selected) {
-          this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
-          this.digitalServiceModel.connection = this.requestConnections[this.connection];
-          this.digitalServiceModel.search();
-        }
+        super._notifyUser(e);
       }
 
       /**
@@ -204,7 +183,6 @@
           this._updateservice(e);
         });
       }
-
     }
 
     window.customElements.define(ServicesEdit.is, ServicesEdit);
