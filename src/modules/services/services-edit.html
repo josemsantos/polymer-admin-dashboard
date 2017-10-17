@@ -183,6 +183,7 @@
 
         let _fields = this.shadowRoot.querySelector('dash-form')
                 .setDataToFormElement('list_id', [], null, this.form.fields);
+        _fields = this._setCheckStatusFromData(_fields, this.data);
         this.set('fields', JSON.parse(JSON.stringify(_fields)));
 
         if (_formElement.formelement && _formElement.formelement.id) {
