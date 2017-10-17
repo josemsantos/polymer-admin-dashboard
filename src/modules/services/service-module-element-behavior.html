@@ -1,0 +1,168 @@
+<link rel="import" href="../../lib/module-element-behavior.html">
+
+<script>
+  'use strict';
+
+  function ServiceModuleElementBehavior(superClass) {
+    return class extends ModuleElementBehavior(superClass) {
+
+      _isDigitalServiceAndDataReady (data, digitalServiceData) {
+        if (data && digitalServiceData) {
+          let _items = [];
+          _items.push({
+            key: 0,
+            label: 'None'
+          });
+
+          for (let i in digitalServiceData) {
+            _items.push({
+              key: digitalServiceData[i].id,
+              label: digitalServiceData[i].name
+            })
+          }
+
+          let _form = this.serviceModel.getForm();
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                  .setDataToFormElement('digital_services_id', _items, this.data.digital_service.id, _form.fields);
+
+          this.fields = _fields;
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+
+          this.actions = this.form.actions;
+          this.isReady = true;
+
+          setTimeout(function() {
+            this.shadowRoot.querySelector('dash-form').reloadData(data);
+          }.bind(this), 1);
+
+          this._serviceTypeId = this.data.digital_service.id;
+        }
+      }
+
+      _setDigitalServiceData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.digitalServiceData = e.detail.response.results;
+        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id) {
+          this._setFormElementTypeField(e.detail.response.formelement, 0);
+        }
+      }
+
+      _getServiceType (e) {
+        this._removeDynamicFieldsInForm();
+        this._listId = undefined;
+        this._serviceTypeId = Number.parseInt(e.detail.item.selected);
+      }
+
+      _setFormElementTypeField (formelement, level) {
+        let _formElement = formelement;
+        let name = "dynamicMcd" + (level);
+        //require list items
+        this._listId = _formElement.lists_id;
+
+        this.form.fields.push({
+          label: "",
+          name: name,
+          type: "dash-dropdown",
+          list_id: formelement.lists_id,
+          items: []
+        })
+
+        this.serviceModel.model[name] = null;
+
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('list_id', [], null, this.form.fields);
+        _fields = this._setCheckStatusFromData(_fields, this.data);
+        this.set('fields', JSON.parse(JSON.stringify(_fields)));
+
+        if (_formElement.formelement && _formElement.formelement.id) {
+          this._setFormElementTypeField (_formElement.formelement, level+1)
+        }
+      }
+
+      _setListItems (e) {
+        let _selected = 0;
+        let _items = [];
+        for (let i in e.detail.response.items) {
+          _items.push({
+            key: e.detail.response.items[i].id,
+            label: e.detail.response.items[i].name
+          });
+
+          for (let j in this.data.common_denominator) {
+            if (this.data.common_denominator[j].id === e.detail.response.items[i].id) {
+              _selected = e.detail.response.items[i].id;
+            }
+          }
+        }
+
+        let _listId = e.detail.response.id;
+        for (let i in this.form.fields) {
+          if (this.form.fields[i].list_id && this.form.fields[i].list_id == _listId) {
+            this.form.fields[i].label = e.detail.response.name;
+            this.form.fields[i].items = _items;
+            this.form.fields[i].selected = _selected
+          }
+        }
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
+      _removeDynamicFieldsInForm () {
+        let i = this.form.fields.length;
+        while (i--) {
+          if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
+            this.form.fields.splice(i, 1);
+          }
+        }
+
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      onSelectedChange(selected, oSelected) {
+        if (selected) {
+          this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');
+          this.digitalServiceModel.connection = this.requestConnections[this.connection];
+          this.digitalServiceModel.search(null, 1000);
+
+          this.listModel = this.shadowRoot.querySelector('list-model');
+          this.listModel.connection = this.requestConnections[this.connection];
+        }
+
+        if (!selected && oSelected) {
+          this._listId = undefined;
+          this._serviceTypeId = undefined;
+          this.data = null;
+          this.digitalServiceData = null;
+          this._removeDynamicFieldsInForm();
+          for (let i in this.form.fields) {
+            if (this.form.fields[i].name == 'digital_services_id') {
+              this.form.fields[i].selected = false;
+              this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+              break;
+            }
+          }
+
+          this.shadowRoot.querySelector('dash-form').formReset();
+        }
+
+        super.onSelectedChange(selected);
+      }
+
+      constructor () {
+        super();
+      }
+    }
+  }
+
+</script>
