@@ -22,8 +22,8 @@
       data="{{routeData}}"></app-route>
 
     <list-model
-    fetch="[[_listId]]"
-    on-model-response-changed="_setListItems"></list-model>
+      fetch="[[_listId]]"
+      on-model-response-changed="_setListItems"></list-model>
 
     <digitalservice-model
       fetch="[[_serviceTypeId]]"
@@ -51,7 +51,7 @@
         on-service-types-changed="_getServiceType"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>Service - [[data.title]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Service - [[data.title]]</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -219,12 +219,13 @@
       }
 
       _removeDynamicFieldsInForm () {
-        let i = this.form.fields.length
+        let i = this.form.fields.length;
         while (i--) {
           if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
             this.form.fields.splice(i, 1);
           }
         }
+
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
@@ -251,7 +252,7 @@
 
         let mcds = [];
         Object.keys(e.detail.payload).forEach(function(key) {
-          if (key.indexOf('dynamicMcd') === 0) {
+          if (key.indexOf('dynamicMcd') === 0 && e.detail.payload[key] > 0) {
             mcds.push(e.detail.payload[key]);
           }
         });
@@ -290,6 +291,8 @@
         if (!selected && oSelected) {
           this._listId = undefined;
           this._serviceTypeId = undefined;
+          this.data = null;
+          this.digitalServiceData = null;
           this._removeDynamicFieldsInForm();
           for (let i in this.form.fields) {
             if (this.form.fields[i].name == 'digital_services_id') {

@@ -42,7 +42,7 @@
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
-        <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Service</h2></div>
+        <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>New Service</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -233,7 +233,7 @@
 
         let mcds = [];
         Object.keys(e.detail.payload).forEach(function(key) {
-          if (key.indexOf('dynamicMcd') === 0) {
+          if (key.indexOf('dynamicMcd') === 0 && e.detail.payload[key] > 0) {
             mcds.push(e.detail.payload[key]);
           }
         });
