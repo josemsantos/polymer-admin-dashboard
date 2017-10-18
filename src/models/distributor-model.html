@@ -1,0 +1,171 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="distributor-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+  </template>
+
+  <script>
+    /**
+     * `distributor-model` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DistributorModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'distributor-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              id: null,
+              name: null,
+              version: null,
+              credential_uid: null,
+              credential_secret: null,
+              last_update: null,
+              endpoint: null,
+              active: null,
+              services: []
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/distributors';
+      }
+
+      _posUpdateCallBack (response) {
+        this.message = response.response.name + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      _responseChanged (response) {
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: 'Active',
+              name: 'active',
+              type: 'checkbox',
+              validators: [
+              ],
+              checked: true
+            },
+            {
+              label: 'Name',
+              name: 'name',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){1,}$',
+                  message: 'Invalid Distributor name',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Version',
+              name: 'version',
+              type: 'text',
+              validators: [
+              ]
+            },
+            {
+              label: 'Credential UID',
+              name: 'credential_uid',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){3,}$',
+                  message: 'Invalid credential UID',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Credential Secret',
+              name: 'credential_secret',
+              type: 'text',
+              validators: [
+              ]
+            },
+            {
+              label: 'Endpoint',
+              name: 'endpoint',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^(.){3,}$',
+                  message: 'Invalid endpoint',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Last update',
+              name: 'last_update',
+              type: 'text',
+              validators: [
+              ]
+            }
+          ],
+          actions: {
+            'edit' :{
+              label: 'save',
+              event: 'update-distributor'
+            },
+            'delete': {
+              label: 'delete',
+              event: 'delete-distributor',
+            }
+          }
+        };
+      }
+
+      getCreateForm () {
+        let form = this.getForm();
+        form.actions = {
+          'create' :{
+            label: 'Create',
+            event: 'create-distributor'
+          },
+        };
+        return form;
+      }
+
+    }
+
+    window.customElements.define(DistributorModel.is, DistributorModel);
+  </script>
+</dom-module>

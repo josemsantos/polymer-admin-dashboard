@@ -1,0 +1,156 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/distributor-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="distributors-edit">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+      
+    <distributor-model
+      on-model-response-changed="_setData"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyAndNavigate"></distributor-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[distributorModel.model]]"
+        fields="[[form.fields]]"
+        actions="[[_formActions]]"
+        model-data="[[data]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-cancel="_goToList"
+        on-submit="_execAction">
+          <div class="title title-header"><h2><iron-icon icon="my-icons:business"></iron-icon>Distributor [[distributorModel.name]]</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `distributors-edit` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DistributorsEdit extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'distributors-edit';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          distributorModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          externalData: {
+            type: Object,
+          },
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'version',
+              'credential_uid',
+              'credential_secret',
+              'endpoint',
+              'last_update',
+              'active'
+            ]
+          }
+        };
+      }
+
+      static get observers() {
+        return [
+          '_routeIdChanged(routeData.id, isReady)',
+        ];
+      }
+
+      _routeIdChanged (id) {
+        this.key = id;
+      }
+
+      _updateDistributor (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.distributorModel.update(null, this.key, JSON.stringify(payload));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'distributor-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.distributorModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.distributorModel.getForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('delete-distributor', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-distributor', function (e) {
+          this._updateDistributor(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(DistributorsEdit.is, DistributorsEdit);
+  </script>
+</dom-module>

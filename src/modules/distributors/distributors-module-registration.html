@@ -1,0 +1,65 @@
+<script>
+  'use strict';
+
+  function DistributorsModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+          distributors_module: {
+            type: Object,
+            value: [
+              {
+                'distributors': {
+                  'inMenu': true,
+                  'menuGroup': 'Digital Services',
+                  'menuItems': [
+                    {
+                      'label': 'Distributors',
+                      'action': 'list',
+                      'icon': 'my-icons:business',
+                      'name': 'distributors',
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_GUEST',
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_GUEST',
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_STAFF',
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_EDITOR',
+                        'ROLE_DIGITALSERVICES_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_DIGITALSERVICES_ADMIN'
+                      ]
+                    },
+                  }
+                }
+              },
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>

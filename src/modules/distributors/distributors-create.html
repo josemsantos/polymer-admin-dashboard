@@ -1,0 +1,146 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/distributor-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="distributors-create">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+    </style>
+        
+      <distributor-model
+        on-model-create-success="_notifyUser"></distributor-model>
+  
+      <paper-material elevation="2">
+        <dash-form
+          class="default"
+          has-cancel
+          key="[[key]]"
+          model="[[distributorModel.model]]"
+          fields="[[form.fields]]"
+          actions="[[_formActions]]"
+          external-sources="[[externalData]]"
+          notify-error="[[errorMessage]]"
+          notify-success="[[successMessage]]"
+          on-cancel="_goToList"
+          on-submit="_execAction"
+          model-ready>
+            <div class="title title-header"><h2><iron-icon icon="my-icons:business"></iron-icon>New Distributor</h2></div>
+        </dash-form>
+      </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `distributors-create` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DistributorsCreate extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'distributors-create';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          distributorModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          externalData: {
+            type: Object,
+          },
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'version',
+              'credential_uid',
+              'credential_secret',
+              'endpoint',
+              'last_update',
+              'active'
+            ]
+          }
+        };
+      }
+
+      _notifyUser (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/edit/' + e.detail.message.response.id
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();;
+        e.detail.message = e.detail.message.response.name + " created";
+        super._notifyUser(e)
+      }
+
+      _createDistributor (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.distributorModel.create(null, JSON.stringify(payload));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'distributor-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.distributorModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.distributorModel.getCreateForm();
+
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('create-distributor', function (e) {
+          this._createDistributor(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(DistributorsCreate.is, DistributorsCreate);
+  </script>
+</dom-module>
