@@ -260,6 +260,7 @@
               let _fields = this.fields;
               _fields = this.shadowRoot.querySelector('dash-form')
                 .setDataToFormElement('default_lists_item_id', _subItems, _defaultListItem, _fields);
+              _fields = this._setCheckStatusFromData(_fields, this.data)
               this.set('fields', JSON.parse(JSON.stringify(_fields)));
               break;
             }
@@ -418,6 +419,7 @@
         //Close the element if the user exits
         } else if (!selected && oSelected) {
           this._isFormElementButtonHidden = false;
+          this.lists = undefined;
         }
       }
 

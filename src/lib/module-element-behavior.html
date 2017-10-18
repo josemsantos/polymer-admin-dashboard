@@ -315,6 +315,8 @@
         for (let i in fields) {
           if (fields[i].type == 'checkbox') {
             fields[i].checked = data[fields[i].name];
+          } else if (fields[i].type == 'dash-dropdown') {
+            fields[i].selected = data[fields[i].name];
           }
         }
         return fields;
