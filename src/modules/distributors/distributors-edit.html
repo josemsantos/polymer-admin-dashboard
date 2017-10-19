@@ -4,6 +4,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/distributor-model.html">
 <link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -11,7 +12,26 @@
   <template>
     <style include="shared-styles">
        :host {
-        display: block
+        display: block;
+        --dash-list-card-content: {
+          border: none;
+        };
+        --dash-list-paper-material: {
+          margin: 0;
+        };
+        --paper-datatable-api-custom-td_-_text-align: left;
+      }
+
+      dash-list {
+        margin: 16px 0 0 0;
+      }
+
+      .services-items {
+        margin-top: 32px;
+       }
+
+      .services-items h2 {
+        color: var(--paper-blue-800);
       }
     </style>
     <app-route
@@ -37,7 +57,16 @@
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:business"></iron-icon>Distributor [[distributorModel.name]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:business"></iron-icon>Distributor [[data.name]]</h2></div>
+          <div slot="footer">
+            <div class="services-items"><h2></iron-icon>Available services</h2></div>
+            <dash-list
+              elevation="0"
+              show-list-only
+              items="[[data.services]]"
+              columns="[[columns]]">
+            </dash-list>
+          </div>
       </dash-form>
     </paper-material>
   </template>
@@ -79,6 +108,23 @@
             type: Object,
           },
           form: Object,
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Label',
+                index: 'label',
+                type: 'data',
+                sort: false
+              },
+              {
+                header: 'Service Key',
+                index: 'service_key',
+                type: 'data',
+                sort: false
+              }
+            ]
+          },
           payload: {
             type: Array,
             value: [
