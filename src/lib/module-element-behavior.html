@@ -313,6 +313,9 @@
       
       _setCheckStatusFromData(fields, data) {
         for (let i in fields) {
+          if (data[fields[i].name] === undefined) {
+              continue;
+          }
           if (fields[i].type == 'checkbox') {
             fields[i].checked = data[fields[i].name];
           } else if (fields[i].type == 'dash-dropdown') {
