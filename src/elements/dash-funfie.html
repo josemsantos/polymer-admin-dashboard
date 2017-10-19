@@ -366,11 +366,15 @@
 
         let _uid = this.removeInvalidChars(user.id + '_' + user.username);
         this.realDb.ref("funfies/funfie-" + _uid).on("value", (snapshot) => {
-          this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
-            this._addRecordingFromUrl(file);
-          }).catch(function(e) {
-            console.log(e)
-          });
+          if (snapshot.val()) {
+            this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
+              this._addRecordingFromUrl(file);
+            }).catch(function(e) {
+              console.log(e)
+            });
+          } else {
+            this._addRecordingFromUrl(false);
+          }
         });
       }
 

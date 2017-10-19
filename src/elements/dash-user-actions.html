@@ -154,13 +154,18 @@
         if (!user || !storage || !realDb) {
           return;
         }
+        
         let _uid = this.removeInvalidChars(user.id + '_' + user.username);
         this.realDb.ref("funfies/funfie-" + _uid).on("value", (snapshot) => {
-          this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
-            this._funfie = file;
-          }).catch(function(e) {
-            console.log(e)
-          });
+          if (snapshot.val()) {
+            this.storage.ref('/funfies/' + snapshot.val()).getDownloadURL().then((file) => {
+              this._funfie = file;
+            }).catch(function(e) {
+              console.log(e)
+            });
+          } else {
+            this._funfie = false;
+          }
         });
       }
 
