@@ -1,0 +1,175 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/distributor-model.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="distributors-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+      }
+      paper-fab.blue {
+        right: 96px;
+        background-color: var(--paper-yellow-500);
+        color: var(--paper-blue-grey-800);
+      }
+    </style>
+
+    <dash-list
+      heading="Distributors"
+      items="[[items]]"
+      heading-style="title-header"
+      filters="[[filters]]"
+      icon="my-icons:business"
+      key="[[key]]"
+      columns="[[columns]]"
+      actions="[[userActions]]"
+      total-items="[[totalItems]]"
+      page="{{page}}"
+      custom-pagination
+      items-per-page="[[itemsPerPage]]"
+      notify-success="[[successMessage]]">
+        <paper-fab slot="top-actions" on-tap="_gotoUpload" class="blue" icon="my-icons:file-upload"></paper-fab>
+    </dash-list>
+    <distributor-model
+      on-model-delete-success="_updateList"></distributor-model>
+  </template>
+
+  <script>
+    /**
+     * `distributors-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DistributorsList extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'distributors-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          key: {
+            type: String,
+            value: 'id'
+          },
+          module: {
+            type: String,
+            value: 'distributors'
+          },
+          model: String,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Id',
+                index: 'id',
+                type: 'data'
+              },
+              {
+                header: 'Name',
+                index: 'name',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'key',
+                type: 'actions'
+              },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Name',
+                name: 'name',
+                type: 'text',
+                validators: []
+              }
+            ]
+          },
+          actions: {
+            type: Object,
+            value: {
+              'create': {
+              },
+              'show': {
+                'path': ':module/show/:key',
+              },
+              'edit': {
+                'path': ':module/edit/:key',
+              },
+              'delete': {
+                'event': 'delete-distributor',
+              }
+            }
+          }
+        };
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _gotoUpload (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.module + '/upload'
+          },
+          bubbles: true,
+          composed: true
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'distributor-model';
+      }
+
+      onResponseChanged (e) {
+        let list = this.shadowRoot.querySelector('dash-list');
+        this.totalItems = e.detail.response.total;
+        this.items = this._setActionsKey(e.detail.response.results);
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        this.addEventListener('delete-distributor', function (e) {
+          let item = this.getItem(this.items, e.detail.key);
+          this._alert({
+            'key': item.id,
+            'message': item.name
+          });
+        }.bind(this));
+      }
+
+    }
+
+    window.customElements.define(DistributorsList.is, DistributorsList);
+  </script>
+</dom-module>

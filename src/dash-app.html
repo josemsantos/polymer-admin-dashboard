@@ -184,7 +184,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]" 
               name="cms-edit"
               route="[[subroute]]"></cms-edit>
-			<lists-list
+			      <lists-list
               permissions="[[permissions]]"
               name="lists-list"></lists-list>
             <listitems-list
@@ -244,6 +244,24 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]"
               name="services-show"
               route="[[subroute]]"></services-show>
+            <distributors-list
+              permissions="[[permissions]]"
+              name="distributors-list"></distributors-list>
+            <distributors-create
+              permissions="[[permissions]]"
+              name="distributors-create"></distributors-create>
+            <distributors-edit
+              permissions="[[permissions]]"
+              name="distributors-edit"
+              route="[[subroute]]"></distributors-edit>
+            <distributors-show
+              permissions="[[permissions]]"
+              name="distributors-show"
+              route="[[subroute]]"></distributors-show>
+            <distributors-upload
+              permissions="[[permissions]]"
+              name="distributors-upload"
+              route="[[subroute]]"></distributors-upload>
             <groups-list
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
@@ -321,7 +339,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'services-list': 'modules/services/services-list.html',
       'services-create': 'modules/services/services-create.html',
       'services-edit': 'modules/services/services-edit.html',
-      'services-show': 'modules/services/services-show.html'
+      'services-show': 'modules/services/services-show.html',
+      'distributors-list': 'modules/distributors/distributors-list.html',
+      'distributors-create': 'modules/distributors/distributors-create.html',
+      'distributors-edit': 'modules/distributors/distributors-edit.html',
+      'distributors-show': 'modules/distributors/distributors-show.html',
+      'distributors-upload': 'modules/distributors/distributors-upload.html'
     };
 
     class DashApp extends Polymer.Element {
