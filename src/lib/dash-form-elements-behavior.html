@@ -28,6 +28,10 @@
         return type === 'dash-dropdown';
       }
 
+      _isUploadFile(type) {
+        return type === 'upload-file';
+      }
+
       _isReadonly(attributes, showOnly) {
         return (attributes && attributes.readonly || showOnly);
       }

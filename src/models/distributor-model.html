@@ -164,6 +164,24 @@
         return form;
       }
 
+      getUploadForm () {
+        return {
+          fields: [
+            {
+              label: 'Manifest',
+              name: 'manifest',
+              type: 'upload-file',
+              acceptType: '.xml',
+              target: '/distributors/upload',
+              timeout: 300000,
+              headers: null,
+              validators: [
+              ]
+            }
+          ]
+        };
+      }
+
     }
 
     window.customElements.define(DistributorModel.is, DistributorModel);

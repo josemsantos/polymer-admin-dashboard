@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-fab/paper-fab.html">
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/distributor-model.html">
@@ -7,8 +8,13 @@
 <dom-module id="distributors-list">
   <template>
     <style include="shared-styles">
-       :host {
+      :host {
         display: block;
+      }
+      paper-fab.blue {
+        right: 96px;
+        background-color: var(--paper-yellow-500);
+        color: var(--paper-blue-grey-800);
       }
     </style>
 
@@ -25,7 +31,9 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
-      notify-success="[[successMessage]]"></dash-list>
+      notify-success="[[successMessage]]">
+        <paper-fab slot="top-actions" on-tap="_gotoUpload" class="blue" icon="my-icons:file-upload"></paper-fab>
+    </dash-list>
     <distributor-model
       on-model-delete-success="_updateList"></distributor-model>
   </template>
@@ -117,6 +125,16 @@
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _gotoUpload (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.module + '/upload'
+          },
+          bubbles: true,
+          composed: true
+        }));
       }
 
       /**
