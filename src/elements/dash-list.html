@@ -19,77 +19,78 @@
 <dom-module id="dash-list">
   <template>
     <style include="shared-styles">
-       :host {
-          display: block;
-          --paper-datatable-api-custom-td: {
-            text-align:right;
-          }
-          --paper-datatable-api-header: {
-            font-weight: 400;
-            font-size: 14px;
-          }
-       }
-       paper-material {
-         @apply --dash-list-paper-material;
-       }
-        paper-datatable-api {
-          --paper-datatable-api-checked-checkbox-color: var(--primary-color);
-          --paper-datatable-api-tr-hover-background-color: var(--paper-grey-200);
-          --paper-datatable-api-tr-odd-background-color: var(--paper-grey-100);
+      :host {
+        display: block;
+        --paper-datatable-api-custom-td: {
+          text-align:right;
         }
-        .header {
-          padding: 35px 16px 16px;
-          border-bottom: solid 1px var(--paper-blue-grey-200);
-          position: relative;
-        }
-
-        .card-content {
-          background-color: #FFF;
-          color: #000;
-          border-left: solid 4px var(--paper-blue-800);
-          @apply --dash-list-card-content;
-        }
-
-        h2 {
-          margin: 0;
+        --paper-datatable-api-header: {
           font-weight: 400;
+          font-size: 14px;
         }
-        .header > h2 iron-icon {
-          --iron-icon-width: 48px;
-          --iron-icon-height: 48px;
-          padding-right: 16px;
-        }
-        paper-fab.blue {
-          --paper-fab-background: var(--paper-blue-500);
-          --paper-fab-keyboard-focus-background: var(--paper-blue-900);
-          position: absolute;
-          top: -32px;
-          right: 32px;
-        }
-        .filter {
-          padding: 16px;
-          @apply --dash-list-filters-container;
-        }
-        .filter > h2 {
-          text-align: right;
-        }
-        .filter > h2 > paper-button {
-          font-size: 16px;
-          font-weight: 300;
-          background-color: var(--paper-blue-500);
-          padding: 8px 16px;
-          color: #FFF;
-          display: inline-block;
-          border-radius: 4px;
-        }
-        .filter > h2 iron-icon {
-          --iron-icon-width: 24px;
-          --iron-icon-height: 24px;
-          padding-right: 16px;
-        }
-        .footer-pagination {
-          padding: 8px;
-        }
+      }
+      paper-material {
+        @apply --dash-list-paper-material;
+      }
+      paper-datatable-api {
+        --paper-datatable-api-checked-checkbox-color: var(--primary-color);
+        --paper-datatable-api-tr-hover-background-color: var(--paper-grey-200);
+        --paper-datatable-api-tr-odd-background-color: var(--paper-grey-100);
+      }
+      .header {
+        padding: 35px 16px 16px;
+        border-bottom: solid 1px var(--paper-blue-grey-200);
+        position: relative;
+      }
+
+      .card-content {
+        background-color: #FFF;
+        color: #000;
+        border-left: solid 4px var(--paper-blue-800);
+        @apply --dash-list-card-content;
+      }
+
+      h2 {
+        margin: 0;
+        font-weight: 400;
+      }
+      .header > h2 iron-icon {
+        --iron-icon-width: 48px;
+        --iron-icon-height: 48px;
+        padding-right: 16px;
+      }
+      [name="top-actions"]::slotted(.blue),
+      paper-fab.blue {
+        --paper-fab-background: var(--paper-blue-500);
+        --paper-fab-keyboard-focus-background: var(--paper-blue-900);
+        position: absolute;
+        top: -32px;
+        right: 32px;
+      }
+      .filter {
+        padding: 16px;
+        @apply --dash-list-filters-container;
+      }
+      .filter > h2 {
+        text-align: right;
+      }
+      .filter > h2 > paper-button {
+        font-size: 16px;
+        font-weight: 300;
+        background-color: var(--paper-blue-500);
+        padding: 8px 16px;
+        color: #FFF;
+        display: inline-block;
+        border-radius: 4px;
+      }
+      .filter > h2 iron-icon {
+        --iron-icon-width: 24px;
+        --iron-icon-height: 24px;
+        padding-right: 16px;
+      }
+      .footer-pagination {
+        padding: 8px;
+      }
     </style>
 
     <paper-material elevation="[[elevation]]">
@@ -100,6 +101,7 @@
             <template is="dom-if" if="[[actions.create]]">
               <paper-fab on-tap="_notifyGoToCreate" class="blue" icon="my-icons:playlist-add"></paper-fab>
             </template>
+            <slot name="top-actions"></slot>
           </div>
           <template is="dom-if" if="[[filters]]">
             <div class="filter">

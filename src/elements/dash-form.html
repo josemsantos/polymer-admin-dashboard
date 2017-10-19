@@ -9,6 +9,7 @@
 <link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
@@ -123,17 +124,30 @@
               </template>
 
               <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
-                  <div class="checkbox-container">
-                    <dash-form-dropdown
-                      label="[[field.label]]"
-                      name$="[[field.name]]"
-                      options="[[field.items]]"
-                      disabled="[[_isReadonly(field.attributes, showOnly)]]"
-                      selected$="[[field.selected]]"
-                      on-dash-form-dropdown-changed="_onSelectedItemChanged">
-                    </dash-form-dropdown>
-                  </div>
-                </template>
+                <div class="checkbox-container">
+                  <dash-form-dropdown
+                    label="[[field.label]]"
+                    name$="[[field.name]]"
+                    options="[[field.items]]"
+                    disabled="[[_isReadonly(field.attributes, showOnly)]]"
+                    selected$="[[field.selected]]"
+                    on-dash-form-dropdown-changed="_onSelectedItemChanged">
+                  </dash-form-dropdown>
+                </div>
+              </template>
+
+              <template is="dom-if" if="[[_isUploadFile(field.type)]]">
+                <div class="checkbox-container">
+                  <vaadin-upload 
+                    accept$="[[field.acceptType]]"
+                    target$="[[field.target]]"  
+                    method="POST" 
+                    timeout$="[[field.timeout]]" 
+                    headers$="[[field.headers]]" 
+                    form-data-name$="[[field.name]]">
+                  </vaadin-upload>
+                </div>
+              </template>
 
               <template is="dom-if" if="[[_isCollection(field.type)]]">
                 <paper-chip-input-autocomplete
