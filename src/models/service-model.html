@@ -38,6 +38,8 @@
               id: null,
               title: null,
               digital_services_id: null,
+              distributor_id: null,
+              distributor_service_id: null,
               active: null
             }
           }
@@ -77,6 +79,13 @@
         return {
           fields: [
             {
+              label: 'Active',
+              name: 'active',
+              type: 'checkbox',
+              validators: [],
+              checked: true
+            },
+            {
               label: 'Title',
               name: 'title',
               type: 'text',
@@ -88,6 +97,39 @@
                   required: true,
                 }
               ]
+            },
+            {
+              label: 'Distributor',
+              name: 'distributor_id',
+              type: 'dash-dropdown',
+              items: [],
+              selected: 0,
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^\\d{1,}$',
+                  message: 'Invalid Distributor',
+                  required: true,
+                }
+              ],
+              event: {
+                'on-selected-items-changed': 'distributor-changed'
+              }
+            },
+            {
+              label: 'Distributor Service Key',
+              name: 'distributor_service_id',
+              type: 'dash-dropdown',
+              items: [],
+              selected: 0,
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^\\d{1,}$',
+                  message: 'Invalid Distributor Service Key',
+                  required: true,
+                }
+              ],
             },
             {
               label: 'Service Type',
@@ -106,13 +148,6 @@
               event: {
                 'on-selected-items-changed': 'service-types-changed'
               }
-            },
-            {
-              label: 'Active',
-              name: 'active',
-              type: 'checkbox',
-              validators: [],
-              checked: true
             }
           ],
           actions: {

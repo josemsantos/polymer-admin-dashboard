@@ -119,6 +119,66 @@
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
+      _setDistributorData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.distributors = e.detail.response.results;
+        } else if (e.detail.response && e.detail.response.services) {
+          this._setDistributorsServiceKeysItems(e.detail.response.services);
+        }
+      }
+
+      _setDistributorItems (data, distributors, form) {
+        if (data && distributors && form) {
+          let _items = [];
+          _items.push({
+            key: 0,
+            label: 'None'
+          });
+          for (let i in distributors) {
+            _items.push({
+              key: distributors[i].id,
+              label: distributors[i].name,
+            })
+          }
+
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                  .setDataToFormElement('distributor_id', _items, data.distributor_id, this.form.fields);
+
+          this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+
+          this._distributorId = data.distributor_id;
+        }
+      }
+
+      _getDistributorsServiceKeys (e) {
+        this._distributorId = Number.parseInt(e.detail.item.selected);
+
+        //clear distributor services if no distributor selected
+        if (e.detail.item.selected == 0) {
+          this._setDistributorsServiceKeysItems([]);
+          this.data.distributor_service_id = 0;
+        }
+      }
+
+      _setDistributorsServiceKeysItems (services) {
+        let _items = [];
+        _items.push({
+          key: 0,
+          label: 'None'
+        });
+        for (let i in services) {
+          _items.push({
+            key: services[i].id,
+            label: services[i].label  + ' - ' + services[i].service_key
+          })
+        }
+
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('distributor_service_id', _items, _items.length > 2 ? this.data.distributor_service_id : 0, this.form.fields);
+
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
       _setData (e) {
         this.data = e.detail.response;
       }
@@ -135,6 +195,10 @@
 
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
+
+          this.distributorModel = this.shadowRoot.querySelector('distributor-model');
+          this.distributorModel.connection = this.requestConnections[this.connection];
+          this.distributorModel.search(null, 1000);
         }
 
         if (!selected && oSelected) {
@@ -142,6 +206,7 @@
           this._serviceTypeId = undefined;
           this.data = null;
           this.digitalServiceData = null;
+          this._distributorId = null;
           this._removeDynamicFieldsInForm();
           for (let i in this.form.fields) {
             if (this.form.fields[i].name == 'digital_services_id') {

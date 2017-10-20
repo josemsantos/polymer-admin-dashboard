@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/distributor-model.html">
 <link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../elements/dash-form.html">
@@ -15,6 +16,10 @@
         display: block
       }
     </style>
+
+    <distributor-model
+      fetch="[[_distributorId]]"
+      on-model-response-changed="_setDistributorData"></distributor-model>
 
     <list-model
       fetch="[[_listId]]"
@@ -38,6 +43,7 @@
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
+        on-distributor-changed="_getDistributorsServiceKeys"
         on-service-types-changed="_getServiceType"
         on-submit="_execAction"
         on-cancel="_goToList"
@@ -71,6 +77,7 @@
         return {
           _listId: Number,
           _serviceTypeId: Number,
+          _distributorId: Number,
           isReady: Boolean,
           connection: {
             type: String,
@@ -83,6 +90,7 @@
           serviceModel: HTMLElement,
           listModel: HTMLElement,
           digitalServiceModel: HTMLElement,
+          distributorModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -93,9 +101,11 @@
           payload: {
             type: Array,
             value: [
-              'title',
-              'digital_services_id',
               'active',
+              'title',
+              'distributor_id',
+              'distributor_service_id',
+              'digital_services_id',
               'common_denominator'
             ]
           }
@@ -106,6 +116,61 @@
         this._removeDynamicFieldsInForm();
         this._listId = undefined;
         this._serviceTypeId = Number.parseInt(e.detail.item.selected);
+      }
+
+      _setDistributorData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this._setDistributorItems(e);
+        } else if (e.detail.response && e.detail.response.services) {
+          this._setDistributorsServiceKeysItems(e.detail.response.services);
+        }
+      }
+
+      _setDistributorItems (e) {
+        let distributors = e.detail.response.results;
+        let _items = [];
+        _items.push({
+          key: 0,
+          label: 'None'
+        });
+        for (let i in distributors) {
+          _items.push({
+            key: distributors[i].id,
+            label: distributors[i].name
+          })
+        }
+
+        if (!this.form) {
+          this.form = this.serviceModel.getCreateForm();
+        }
+
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('distributor_id', _items, null, this.form.fields);
+
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
+      _setDistributorsServiceKeysItems (services) {
+        let _items = [];
+        _items.push({
+          key: 0,
+          label: 'None'
+        });
+        for (let i in services) {
+          _items.push({
+            key: services[i].id,
+            label: services[i].label  + ' - ' + services[i].service_key
+          })
+        }
+
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('distributor_service_id', _items, null, this.form.fields);
+
+        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+      }
+
+      _getDistributorsServiceKeys (e) {
+        this._distributorId = Number.parseInt(e.detail.item.selected);
       }
 
       _setServiceTypeField (e) {
@@ -219,10 +284,10 @@
       }
 
       _createService (e) {
-        // force required validation on service type
-        if (e.detail.payload.digital_services_id == 0) {
-          e.detail.payload.digital_services_id = null;
-        }
+        // force required validation on service type, distributor_id and distributor_service_id
+        e.detail.payload.digital_services_id = e.detail.payload.digital_services_id == 0 ? null : e.detail.payload.digital_services_id;
+        e.detail.payload.distributor_id = e.detail.payload.distributor_id == 0 ? null : e.detail.payload.distributor_id;
+        e.detail.payload.distributor_service_id = e.detail.payload.distributor_service_id == 0 ? null : e.detail.payload.distributor_service_id;
 
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
@@ -264,6 +329,10 @@
 
           this.listModel = this.shadowRoot.querySelector('list-model');
           this.listModel.connection = this.requestConnections[this.connection];
+
+          this.distributorModel = this.shadowRoot.querySelector('distributor-model');
+          this.distributorModel.connection = this.requestConnections[this.connection];
+          this.distributorModel.search(null, 1000);
         }
 
         if (!selected && oSelected) {
@@ -271,7 +340,9 @@
           this._serviceTypeId = undefined;
           this._removeDynamicFieldsInForm();
           for (let i in this.form.fields) {
-            if (this.form.fields[i].name == 'digital_services_id') {
+            if (this.form.fields[i].name == 'digital_services_id'
+              || this.form.fields[i].name == 'distributor_id'
+              || this.form.fields[i].name == 'distributor_service_id') {
               this.form.fields[i].selected = false;
               this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
               break;

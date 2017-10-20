@@ -4,6 +4,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="services-module-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/distributor-model.html">
 <link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../elements/dash-form.html">
@@ -21,6 +22,10 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
+
+    <distributor-model
+      fetch="[[_distributorId]]"
+      on-model-response-changed="_setDistributorData"></distributor-model>
 
     <list-model
       fetch="[[_listId]]"
@@ -50,6 +55,7 @@
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
         on-service-types-changed="_getServiceType"
+        on-distributor-changed="_getDistributorsServiceKeys"
         on-cancel="_goToList"
         on-submit="_execAction">
           <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Service - [[data.title]]</h2></div>
@@ -81,7 +87,10 @@
         return {
           _listId: Number,
           _serviceTypeId: Number,
+          _distributorId: Number,
           digitalServiceData: Object,
+          distributors: Object,
+          distributorModel: HTMLElement,
           isReady: Boolean,
           connection: {
             type: String,
@@ -98,9 +107,11 @@
           payload: {
             type: Array,
             value: [
-              'title',
-              'digital_services_id',
               'active',
+              'title',
+              'distributor_id',
+              'distributor_service_id',
+              'digital_services_id',
               'common_denominator'
             ]
           }
@@ -111,14 +122,15 @@
         return [
           '_routeIdChanged(routeData.id, isReady)',
           '_isDigitalServiceAndDataReady(data, digitalServiceData)',
+          '_setDistributorItems(data, distributors, form)',
         ];
       }
 
       _updateservice (e) {
-        // force required validation on service type
-        if (e.detail.payload.digital_services_id == 0) {
-          e.detail.payload.digital_services_id = null;
-        }
+        // force required validation on service type, distributor_id and distributor_service_id
+        e.detail.payload.digital_services_id = e.detail.payload.digital_services_id == 0 ? null : e.detail.payload.digital_services_id;
+        e.detail.payload.distributor_id = e.detail.payload.distributor_id == 0 ? null : e.detail.payload.distributor_id;
+        e.detail.payload.distributor_service_id = e.detail.payload.distributor_service_id == 0 ? null : e.detail.payload.distributor_service_id;
 
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
         this.errorMessage = "";
