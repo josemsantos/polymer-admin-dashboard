@@ -4,8 +4,8 @@
   function ServicesModuleBehavior(superClass) {
     return class extends superClass {
 
-      _isDigitalServiceAndDataReady (data, digitalServiceData) {
-        if (data && digitalServiceData) {
+      _isDigitalServiceAndDataReady (data, digitalServiceData, distributors) {
+        if (data && digitalServiceData && distributors) {
           let _items = [];
           _items.push({
             key: 0,
@@ -23,6 +23,8 @@
 
           let _fields = this.shadowRoot.querySelector('dash-form')
                   .setDataToFormElement('digital_services_id', _items, this.data.digital_service.id, _form.fields);
+
+          _fields = this._setDistributorItems(distributors, _fields);
 
           this.fields = _fields;
           this.form = {
@@ -127,8 +129,7 @@
         }
       }
 
-      _setDistributorItems (data, distributors, form) {
-        if (data && distributors && form) {
+      _setDistributorItems (distributors, _fields) {
           let _items = [];
           _items.push({
             key: 0,
@@ -141,17 +142,14 @@
             })
           }
 
-          let _fields = this.shadowRoot.querySelector('dash-form')
-                  .setDataToFormElement('distributor_id', _items, data.distributor.id, this.form.fields);
-
-          this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
-
-          this._distributorId = data.distributor.id;
+          this._distributorId = this.data.distributor.id;
           this._distributorServiceId = 0;
           if (this.data.distributor && this.data.distributor.services && this.data.distributor.services[0].id) {
             this._distributorServiceId = this.data.distributor.services[0].id;
           }
-        }
+
+          return this.shadowRoot.querySelector('dash-form')
+                  .setDataToFormElement('distributor_id', _items, this.data.distributor.id, _fields);
       }
 
       _getDistributorsServiceKeys (e) {
