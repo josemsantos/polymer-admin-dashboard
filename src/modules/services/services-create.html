@@ -78,6 +78,8 @@
           _listId: Number,
           _serviceTypeId: Number,
           _distributorId: Number,
+          _distributors: Array,
+          _serviceTypes: Array,
           isReady: Boolean,
           connection: {
             type: String,
@@ -112,6 +114,12 @@
         };
       }
 
+      static get observers() {
+        return [
+          '_distributorsAndServicesChanged(_distributors, _serviceTypes)',
+        ];
+      }
+
       _getServiceType (e) {
         this._removeDynamicFieldsInForm();
         this._listId = undefined;
@@ -123,6 +131,26 @@
           this._setDistributorItems(e);
         } else if (e.detail.response && e.detail.response.services) {
           this._setDistributorsServiceKeysItems(e.detail.response.services);
+        }
+      }
+
+      _distributorsAndServicesChanged(_distributors, _serviceTypes) {
+        if (_distributors && _serviceTypes) {
+          let _form = this.serviceModel.getCreateForm();
+          let _fields = this.shadowRoot.querySelector('dash-form')
+                          .setDataToFormElement('digital_services_id', _serviceTypes, null, _form.fields);
+
+          _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('distributor_id', _distributors, null, _form.fields);
+
+          this.fields = _fields;
+          this.form = {
+            fields: _fields,
+            actions: _form.actions
+          };
+          
+          this.actions = this.form.actions;
+          this.isReady = true;
         }
       }
 
@@ -140,14 +168,7 @@
           })
         }
 
-        if (!this.form) {
-          this.form = this.serviceModel.getCreateForm();
-        }
-
-        let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('distributor_id', _items, null, this.form.fields);
-
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this._distributors = _items;
       }
 
       _setDistributorsServiceKeysItems (services) {
@@ -187,18 +208,7 @@
           })
         }
 
-        let _form = this.serviceModel.getCreateForm();
-        let _fields = this.shadowRoot.querySelector('dash-form')
-                        .setDataToFormElement('digital_services_id', _items, null, _form.fields);
-
-        this.fields = _fields;
-        this.form = {
-          fields: _fields,
-          actions: _form.actions
-        };
-        
-        this.actions = this.form.actions;
-        this.isReady = true;
+        this._serviceTypes = _items;
       }
 
       _setListItems (e) {

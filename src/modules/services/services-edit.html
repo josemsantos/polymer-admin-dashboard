@@ -122,8 +122,7 @@
       static get observers() {
         return [
           '_routeIdChanged(routeData.id, isReady)',
-          '_isDigitalServiceAndDataReady(data, digitalServiceData)',
-          '_setDistributorItems(data, distributors, form)',
+          '_isDigitalServiceAndDataReady(data, digitalServiceData, distributors)',
         ];
       }
 
