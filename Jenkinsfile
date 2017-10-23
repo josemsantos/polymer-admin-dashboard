@@ -36,7 +36,7 @@ node {
             checkoutRepository('staging', 'configsone', '3ac58edd-bba3-47b2-9f7b-87eafd5c458c')
 
             echo 'Checking out Niobe lastest code...'
-            checkoutRepository('master', 'niobe', 'b08cddab-b668-416c-a65a-7141fe0d4d7b')
+            checkoutRepository('development', 'niobe', 'b08cddab-b668-416c-a65a-7141fe0d4d7b')
 
             echo 'Load staging One configuration...'
             sh 'cp -f configsone/niobe.json niobe/parameters.json'
@@ -54,6 +54,7 @@ node {
             sh "docker tag niobe:latest 151812620214.dkr.ecr.eu-west-1.amazonaws.com/niobe:staging-${env.COMMIT_HASH}"
             sh '$(aws ecr get-login --no-include-email --region eu-west-1)'
             sh "docker push 151812620214.dkr.ecr.eu-west-1.amazonaws.com/niobe:staging-${env.COMMIT_HASH}"
+            sh 'docker rmi -f $(docker images | grep ^niobe\\  | awk \'{print $3}\')'
 
             echo 'Deploying One in staging...'
             kubernetesDeploy('one', 'staging', 'niobe', 'nginx')
