@@ -209,7 +209,9 @@
           this._distributorId = null;
           this._removeDynamicFieldsInForm();
           for (let i in this.form.fields) {
-            if (this.form.fields[i].name == 'digital_services_id') {
+            if (this.form.fields[i].name == 'digital_services_id'
+                || this.form.fields[i].name == 'distributor_id'
+                || this.form.fields[i].name == 'distributor_service_id') {
               this.form.fields[i].selected = false;
               this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
               break;
