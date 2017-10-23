@@ -4,6 +4,7 @@
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="services-module-behavior.html">
 <link rel="import" href="../../models/digitalservice-model.html">
+<link rel="import" href="../../models/distributor-model.html">
 <link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../models/list-model.html">
 <link rel="import" href="../../elements/dash-form.html">
@@ -21,6 +22,10 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
+
+    <distributor-model
+      fetch="[[_distributorId]]"
+      on-model-response-changed="_setDistributorData"></distributor-model>
 
     <list-model
       fetch="[[_listId]]"
@@ -73,6 +78,12 @@
        */
       static get properties() {
         return {
+          _listId: Number,
+          _serviceTypeId: Number,
+          _distributorId: Number,
+          digitalServiceData: Object,
+          distributors: Object,
+          distributorModel: HTMLElement,
           isReady: Boolean,
           connection: {
             type: String,
@@ -92,6 +103,7 @@
         return [
           '_routeIdChanged(routeData.id, isReady)',
           '_isDigitalServiceAndDataReady(data, digitalServiceData)',
+          '_setDistributorItems(data, distributors, form)'
         ];
       }
 
