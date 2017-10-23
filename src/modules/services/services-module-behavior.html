@@ -147,17 +147,18 @@
           this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
 
           this._distributorId = data.distributor.id;
+          this._distributorServiceId = 0;
+          if (this.data.distributor && this.data.distributor.services && this.data.distributor.services[0].id) {
+            this._distributorServiceId = this.data.distributor.services[0].id;
+          }
         }
       }
 
       _getDistributorsServiceKeys (e) {
         this._distributorId = Number.parseInt(e.detail.item.selected);
-
-        //clear distributor services if no distributor selected
-        if (e.detail.item.selected == 0) {
-          this._setDistributorsServiceKeysItems([]);
-          this.data.distributor_service_id = 0;
-        }
+        //clear all distributor services definitions on distributor change to force use to choose one
+        this._distributorServiceId = 0;
+        this._setDistributorsServiceKeysItems([]);
       }
 
       _setDistributorsServiceKeysItems (services) {
@@ -166,7 +167,12 @@
           key: 0,
           label: 'None'
         });
+
+        let _selected = 0;
         for (let i in services) {
+          if (this._distributorServiceId == services[i].id) {
+            _selected = services[i].id;
+          }
           _items.push({
             key: services[i].id,
             label: services[i].label  + ' - ' + services[i].service_key
@@ -176,7 +182,8 @@
         let _fields = this.shadowRoot.querySelector('dash-form').setDataToFormElement(
             'distributor_service_id',
             _items,
-            _items.length > 2 && this.data.distributor && this.data.distributor.services ? this.data.distributor.services[0].id : 0, this.form.fields
+            _selected,
+            this.form.fields
           );
 
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
