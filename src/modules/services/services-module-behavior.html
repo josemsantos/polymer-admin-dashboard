@@ -142,11 +142,11 @@
           }
 
           let _fields = this.shadowRoot.querySelector('dash-form')
-                  .setDataToFormElement('distributor_id', _items, data.distributor_id, this.form.fields);
+                  .setDataToFormElement('distributor_id', _items, data.distributor.id, this.form.fields);
 
           this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
 
-          this._distributorId = data.distributor_id;
+          this._distributorId = data.distributor.id;
         }
       }
 
@@ -173,8 +173,11 @@
           })
         }
 
-        let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('distributor_service_id', _items, _items.length > 2 ? this.data.distributor_service_id : 0, this.form.fields);
+        let _fields = this.shadowRoot.querySelector('dash-form').setDataToFormElement(
+            'distributor_service_id',
+            _items,
+            _items.length > 2 && this.data.distributor && this.data.distributor.services ? this.data.distributor.services[0].id : 0, this.form.fields
+          );
 
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
