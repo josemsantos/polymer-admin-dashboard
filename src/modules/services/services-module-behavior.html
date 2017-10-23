@@ -32,8 +32,6 @@
             actions: _form.actions
           };
 
-          console.log('overall load', JSON.stringify(this.form.fields))
-
           this.actions = this.form.actions;
           this.isReady = true;
 
@@ -80,8 +78,6 @@
         _fields = this._setCheckStatusFromData(_fields, this.data);
         this.set('fields', JSON.parse(JSON.stringify(_fields)));
 
-        console.log('dynamic form fields', JSON.stringify(_fields))
-
         if (_formElement.formelement && _formElement.formelement.id) {
           this._setFormElementTypeField (_formElement.formelement, level+1)
         }
@@ -111,7 +107,7 @@
             this.form.fields[i].selected = _selected
           }
         }
-        console.log('list items update', JSON.stringify(this.form.fields))
+        
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
@@ -188,8 +184,7 @@
             _selected,
             this.form.fields
           );
-
-        console.log('update dist services key', JSON.stringify(this.form.fields))
+          
         this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
       }
 
