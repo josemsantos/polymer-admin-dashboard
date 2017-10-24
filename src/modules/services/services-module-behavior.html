@@ -97,6 +97,11 @@
               _selected = e.detail.response.items[i].id;
             }
           }
+          //If in case of missing data on new formelements added in the future this will set the default value of the new formelements
+          //as the first item of the list
+          if (_selected === 0) {
+            _selected = e.detail.response.items[i].id;
+          }
         }
 
         let _listId = e.detail.response.id;
