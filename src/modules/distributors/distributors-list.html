@@ -30,10 +30,12 @@
       page="{{page}}"
       custom-pagination
       items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]">
         <paper-fab slot="top-actions" on-tap="_gotoUpload" class="blue" icon="my-icons:file-upload"></paper-fab>
     </dash-list>
     <distributor-model
+      on-model-delete-error="_notifyUserError"
       on-model-delete-success="_updateList"></distributor-model>
   </template>
 
