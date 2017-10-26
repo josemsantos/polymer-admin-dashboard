@@ -86,6 +86,11 @@
         }
         return value;
       }
+
+      _fireUploadResponse (event) {
+        event.detail.el = event.currentTarget;
+        this.dispatchEvent(new CustomEvent('dash-upload-response', event))
+      }
     }
   }
 </script>

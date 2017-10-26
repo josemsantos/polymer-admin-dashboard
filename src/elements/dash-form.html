@@ -144,7 +144,8 @@
                     method="POST" 
                     timeout$="[[field.timeout]]" 
                     headers$="[[field.headers]]" 
-                    form-data-name$="[[field.name]]">
+                    form-data-name$="[[field.name]]"
+                    on-upload-response="_fireUploadResponse">
                   </vaadin-upload>
                 </div>
               </template>

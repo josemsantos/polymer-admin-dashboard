@@ -35,6 +35,7 @@
         model-data="[[data]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
+        on-dash-upload-response="_uploadResponse"
         on-cancel="_goToList"
         on-submit="_execAction">
           <div class="title title-header"><h2><iron-icon icon="my-icons:business"></iron-icon>Upload Distributor Manifest</h2></div>
@@ -104,6 +105,20 @@
       constructor() {
         super();
         this.model = 'distributor-model';
+      }
+
+      _uploadResponse (event) {
+        let response = JSON.parse(event.detail.xhr.response);
+        if (event.detail.xhr.status == 200) {
+          let services = response.response.services;
+          if (services.report) {
+            let msg = "Upload Success. Some services couln'd be removed due to be in use: ";
+            msg += services.report.join(',');
+            this.successMessage = msg;
+          } else {
+            this.successMessage = "Upload Success.";
+          }
+        }
       }
 
       /**
