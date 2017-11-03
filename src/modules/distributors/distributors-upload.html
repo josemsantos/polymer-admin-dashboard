@@ -112,12 +112,17 @@
         if (event.detail.xhr.status == 200) {
           let services = response.response.services;
           if (services.report) {
-            let msg = "Upload Success. Some services couln'd be removed due to be in use: ";
+            let msg = "Upload Success. Some services could'n be removed due to be in use: ";
             msg += services.report.join(',');
+            this.successMessage = '';
             this.successMessage = msg;
           } else {
+            this.successMessage = '';
             this.successMessage = "Upload Success.";
           }
+        } else {
+          this.errorMessage = '';
+          this.errorMessage = response.response;
         }
       }
 
