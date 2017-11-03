@@ -40,6 +40,7 @@
       data="{{routeData}}"></app-route>
       
     <distributor-model
+      on-model-delete-error="_notifyUserError"
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate"></distributor-model>
