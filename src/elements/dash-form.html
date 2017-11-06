@@ -246,11 +246,25 @@
         return errors.join('\n');
       }
 
+      reloadData (data) {
+        let _dfi = this.shadowRoot.querySelectorAll('dash-form-inputs');
+        for (let i = 0; i<_dfi.length; i++) {
+          _dfi[i]._modelDataChanged(data);
+        }
+      }
+
+      setDataToFormElement(elementName, items, selected, fields) {
+        let _dfi = this.shadowRoot.querySelectorAll('dash-form-inputs');
+        let _fields = [];
+        for (let i = 0; i<_dfi.length; i++) {
+          _fields = _fields.concat(_dfi[i].setDataToFormElement(elementName, items, selected, fields));
+        }
+        return _fields;
+      }
+
       formReset() {
         let dashFormInputs = this.shadowRoot.querySelectorAll('dash-form-inputs');
-        console.log(dashFormInputs);
         for (let i = 0; i<dashFormInputs.length; i++) {
-          console.log(dashFormInputs[i]);
           dashFormInputs[i].formReset();
         }
       }

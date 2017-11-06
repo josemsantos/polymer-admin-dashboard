@@ -224,13 +224,14 @@
 
       _externalSourcesChanged (modelReady, externalSources) {
         let existFieldCollection = false;
-        for (let i = 0; i < this.fields.length; i++) {
-          if (!this.tab || (this._isCollection(this.fields[i].type) && this.fields[i].tab === this.tab)) {
-            existFieldCollection = true;
-            break;
+        if (this.modelReady && externalSources) {
+          for (let i = 0; i < this.fields.length; i++) {
+            if (!this.tab || (this._isCollection(this.fields[i].type) && this.fields[i].tab === this.tab)) {
+              existFieldCollection = true;
+              break;
+            }
           }
         }
-        console.log('existFieldCollection, this.modelReady, externalSources', existFieldCollection, this.modelReady, externalSources)
         if (existFieldCollection && this.modelReady && externalSources) {
           for (let name in externalSources) {
             let el = this.shadowRoot.querySelector('#' + name);
@@ -241,7 +242,6 @@
       }
 
       _externalDataSourcesChanged(modelReady, modelData, _allExternalReady) {
-        console.log('modelReady, modelData, _allExternalReady', modelReady, modelData, _allExternalReady);
         if (this.modelReady && modelData && _allExternalReady) {
           for (let name in this.externalSources) {
             this._applyExternalDataToElement(name, this.modelData[name]);
