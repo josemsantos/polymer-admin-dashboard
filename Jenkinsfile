@@ -40,6 +40,7 @@ node {
 
             echo 'Load staging One configuration...'
             sh 'cp -f configsone/niobe.json niobe/parameters.json'
+            sh 'cp -f configsone/niobe.json charts/nginx/parameters.json'
 
             echo 'Building...'
             getCommitHash('niobe')
@@ -58,6 +59,10 @@ node {
 
             echo 'Deploying One in staging...'
             kubernetesDeploy('one', 'staging', 'niobe', 'nginx')
+
+            echo 'Cleaning...'
+            sh 'rm -f niobe/parameters.json'
+            sh 'rm -f charts/nginx/parameters.json'
         }
     }
 }
