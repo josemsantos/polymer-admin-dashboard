@@ -348,6 +348,7 @@
         if (!selected && oSelected) {
           this._listId = undefined;
           this._serviceTypeId = undefined;
+          this._distributorId = undefined;
           this._removeDynamicFieldsInForm();
           for (let i in this.form.fields) {
             if (this.form.fields[i].name == 'digital_services_id'
