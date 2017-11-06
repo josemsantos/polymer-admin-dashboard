@@ -1,19 +1,15 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
-<link rel="import" href="../../bower_components/paper-item/paper-item.html">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.html">
-<link rel="import" href="../../bower_components/paper-chip/paper-chip-input-autocomplete.html">
-<link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/vaadin-upload/vaadin-upload.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../../bower_components/paper-tabs/paper-tab.html">
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../lib/dash-form-elements-behavior.html">
 <link rel="import" href="../lib/dash-form-collection-behavior.html">
-<link rel="import" href="dash-form-dropdown.html">
+<link rel="import" href="dash-form-inputs.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-form">
@@ -22,13 +18,7 @@
       :host {
         display: block;
         @apply --form-layout;
-        --paper-input-container-disabled: {
-          opacity: 0.8;
-        }
-        --paper-input-container-underline-disabled: {
-          border-bottom: solid 1px var(--paper-blue-grey-600);
-        }
-        --paper-chip-autocomplete-suggestion-height: 300px;
+        --paper-tabs-selection-bar-color: var(--app-primary-color);
       }
       .title {
         @apply --form-title;
@@ -85,82 +75,47 @@
           <div class="title">
             <slot></slot>
           </div>
+
+          <template is="dom-if" if="[[_hasTabs(tabs)]]">
+            <paper-tabs selected="{{selected}}" scrollable="[[scrollable]]">
+              <template is="dom-repeat" items="[[tabs]]" as="tab">
+                  <paper-tab>[[tab]]</paper-tab>
+                </template>
+            </paper-tabs>
+          </template>
+
           <div class="body">
             <slot name="body"></slot>
-            <template is="dom-repeat" items="[[fields]]" as="field">
-              <template is="dom-if" if="[[_isInput(field.type)]]">
-                <paper-input 
-                  name$="[[field.name]]"
-                  label="[[field.label]]"
-                  type$="[[field.type]]"
-                  disabled="[[_isReadonly(field.attributes, showOnly)]]"></paper-input>
-              </template>
-              <template is="dom-if" if="[[_isCheckbox(field.type)]]">
-                <div class="checkbox-container">
-                  <paper-checkbox 
-                    checked$="[[field.checked]]" 
-                    name$="[[field.name]]"
-                    disabled="[[_isReadonly(field.attributes, showOnly)]]">[[field.label]]</paper-checkbox>
-                </div>
-              </template>
-              
-              <template is="dom-if" if="[[_isDropdown(field.type)]]">
-                <div class="checkbox-container">
-                  <paper-dropdown-menu
-                    label="[[field.label]]"
-                    name$="[[field.name]]"
-                    disabled="[[_isReadonly(field.attributes, showOnly)]]"
-                    on-selected-item-changed="_onSelectedItemChanged">
-                    <paper-listbox 
-                      slot="dropdown-content" 
-                      selected$="[[field.selected]]"
-                      on-iron-items-changed="_onIronItemsChanged">
-                      <template is="dom-repeat" items="[[field.items]]" as="item">
-                        <paper-item data-key$="[[item.key]]">[[item.label]]</paper-item>
-                      </template>
-                    </paper-listbox>
-                  </paper-dropdown-menu>
-                </div>
-              </template>
-
-              <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
-                <div class="checkbox-container">
-                  <dash-form-dropdown
-                    label="[[field.label]]"
-                    name$="[[field.name]]"
-                    options="[[field.items]]"
-                    disabled="[[_isReadonly(field.attributes, showOnly)]]"
-                    selected$="[[field.selected]]"
-                    on-dash-form-dropdown-changed="_onSelectedItemChanged">
-                  </dash-form-dropdown>
-                </div>
-              </template>
-
-              <template is="dom-if" if="[[_isUploadFile(field.type)]]">
-                <div class="checkbox-container">
-                  <vaadin-upload 
-                    accept$="[[field.acceptType]]"
-                    target$="[[field.target]]"  
-                    method="POST" 
-                    timeout$="[[field.timeout]]" 
-                    headers$="[[field.headers]]" 
-                    form-data-name$="[[field.name]]">
-                  </vaadin-upload>
-                </div>
-              </template>
-
-              <template is="dom-if" if="[[_isCollection(field.type)]]">
-                <paper-chip-input-autocomplete
-                  id="[[field.name]]"
-                  label="[[_computedLabel(showOnly, field.label)]]"
-                  name$="[[field.name]]"
-                  text-only$="[[_isTextonly(field.attributes)]]"
-                  closable="[[!showOnly]]"
-                  disabled="[[showOnly]]">
-                </paper-chip-input-autcomplete>
-              </template>
+            <template is="dom-if" if="[[_hasTabs(tabs)]]">
+              <iron-pages selected="{{selected}}">
+                <template is="dom-repeat" items="[[tabs]]" as="tab">
+                  <div name="[[tab]]">
+                    <dash-form-inputs
+                    class="default"
+                    key="[[key]]"
+                    model="[[model]]"
+                    fields="[[fields]]"
+                    model-data="[[modelData]]"
+                    external-sources="[[externalSources]]"
+                    show-only="[[showOnly]]"
+                    tab="[[tab]]"
+                    model-ready="[[modelReady]]"></dash-form-inputs>
+                    <slot name$="tab-body-[[tab]]"></slot>
+                  </div>
+                </template>
+              </iron-pages>
             </template>
-            <slot name="footer"></slot>
+            <template is="dom-if" if="[[!_hasTabs(tabs)]]">
+                <dash-form-inputs
+                class="default"
+                key="[[key]]"
+                model="[[model]]"
+                fields="[[fields]]"
+                model-data="[[modelData]]"
+                external-sources="[[externalSources]]"
+                show-only="[[showOnly]]"
+                model-ready="[[modelReady]]"></dash-form-inputs>
+            </template>
           </div>
 
           <div class="action-box">
@@ -215,11 +170,9 @@
       static get properties() {
         return {
           key: Object,
-          _allExternalReady: Boolean,
-          _inputTypes: {
+          tabs: {
             type: Array,
-            value: ["button", "color", "date", "datetime", "datetime-local", "email", "file", "hidden", "image",
-                     "month", "number", "password", "range", "reset", "search", "tel", "text", "time", "week", "url"]
+            value: []
           },
           modelReady: {
             type: Boolean,
@@ -230,7 +183,6 @@
           model: Object,
           modelData: {
             type: Object,
-            observer: '_modelDataChanged'
           },
           fields: {
             type: Array,
@@ -243,71 +195,16 @@
           },
           showOnly: {
             type: Boolean,
+          },
+          selected: {
+            type: Number,
+            value: 0
+          },
+          scrollable: {
+            type: Boolean,
             value: false
           }
         };
-      }
-
-      static get observers() {
-        return [
-          '_externalSourcesChanged(modelReady, externalSources)',
-          '_externalDataSourcesChanged(modelReady, modelData, _allExternalReady)'
-        ];
-      }
-
-      _fireFieldEvent (event, eventName) {
-        if (!event.model.field.event || !event.model.field.event[eventName]) {
-          return;
-        }
-        for (let i in this.fields) {
-          if (this.fields[i].name == event.model.field.name) {
-            this.dispatchEvent(new CustomEvent(event.model.field.event[eventName], {
-              detail: {
-                el: event.currentTarget,
-                item: event.detail,
-                model: event.model
-              },
-              composed: true
-            }));
-            break;
-          }
-        }
-
-      }
-
-      _onIronItemsChanged (e) {
-        this._fireFieldEvent(e, 'on-iron-items-changed');
-      }
-
-      _onSelectedItemChanged (e) {
-        this._fireFieldEvent(e, 'on-selected-items-changed');
-      }
-
-      _modelDataChanged (data) {
-        if (data) {
-          for (let field in data) {
-            this._applyDataToElement(field, data[field]);
-          }
-          this.modelReady = true;
-        }
-      }
-
-      _externalSourcesChanged (modelReady, externalSources) {
-        if (this.modelReady && externalSources) {
-          for (let name in externalSources) {
-            let el = this.shadowRoot.querySelector('#' + name);
-            el.setAttribute('source', JSON.stringify(externalSources[name]));
-          }
-          this._allExternalReady = true;
-        }
-      }
-
-      _externalDataSourcesChanged(modelReady, modelData, _allExternalReady) {
-        if (this.modelReady && modelData && _allExternalReady) {
-          for (let name in this.externalSources) {
-            this._applyExternalDataToElement(name, this.modelData[name]);
-          }
-        }
       }
 
       _generateModelPayLoad (model) {
@@ -316,31 +213,12 @@
         }
         return model;
       }
-      
-      _computedLabel(showOnly, label) {
-        if (!showOnly) {
-          return label;
+
+      _hasTabs(tabs) {
+        if (tabs.length) {
+          return true;
         }
-        return '';
-      }
-
-      reloadData (data) {
-        this._modelDataChanged(data);
-      }
-
-      formReset () {
-        this.fields.forEach(fld => {
-          if (this._isInput(fld.type)) {
-            let el = this.shadowRoot.querySelector('paper-input[name=' + fld.name + ']');
-            el.value = '';
-          } else if (this._isCheckbox(fld.type)) {
-            let el = this.shadowRoot.querySelector('paper-checkbox[name=' + fld.name + ']');
-            el.checked = false;
-          } else if (this._isCollection(fld.type)) {
-            let el = this.shadowRoot.querySelector('paper-chip-input-autocomplete[name=' + fld.name + ']');
-            el.items = [];
-          }
-        });
+        return false;
       }
 
       validate (modelFields, request) {
@@ -366,6 +244,15 @@
           }
         }
         return errors.join('\n');
+      }
+
+      formReset() {
+        let dashFormInputs = this.shadowRoot.querySelectorAll('dash-form-inputs');
+        console.log(dashFormInputs);
+        for (let i = 0; i<dashFormInputs.length; i++) {
+          console.log(dashFormInputs[i]);
+          dashFormInputs[i].formReset();
+        }
       }
 
       executeMe (e) {
@@ -398,20 +285,6 @@
             break;
           case 'button':
         }
-      }
-
-      setDataToFormElement(elementName, items, selected, fields) {
-        for (let i in fields) {
-          if (fields[i].name === elementName) {
-            fields[i].items = items;
-            if (selected) {
-              fields[i].selected = selected;
-            } else {
-              fields[i].selected = 0;
-            }
-          }
-        }
-        return fields;
       }
 
       /**
