@@ -62,6 +62,10 @@
             type: Boolean,
             value: false
           },
+          tabs: {
+            type: Array,
+            value: []
+          },
           payload: {
             type: Array,
             value: []
@@ -73,6 +77,7 @@
         return [
           '_getUserActions(permissions, accessControl, actions)',
           '_setFormActions(userActions, pageType)',
+          '_onTabsRequired(form.fields)',
         ];
       }
 
@@ -91,6 +96,21 @@
         if (permissions && accessControl && actions) {
           this.userActions = super._getAvailableActions(permissions, accessControl, actions);
         }
+      }
+
+      _onTabsRequired (fields) {
+        var tabs = [];
+        for(let i = 0; i < fields.length; i++) {
+          if(fields[i].tab) {
+            if (i==0) {
+              tabs.push(fields[i].tab);
+            }
+            if (i !== 0 && fields[i].tab !== fields[i-1].tab) {
+              tabs.push(fields[i].tab);
+            }
+          }
+        }
+        this.tabs = tabs;
       }
 
       _setConnections () {
