@@ -46,7 +46,7 @@
       _setDigitalServiceData (e) {
         if (e.detail.response && e.detail.response.results) {
           this.digitalServiceData = e.detail.response.results;
-        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id) {
+        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id && this.form) {
           this._setFormElementTypeField(e.detail.response.formelement, 0);
         }
       }
