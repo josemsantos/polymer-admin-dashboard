@@ -11,8 +11,8 @@
       _buildErrorMessage (errors) {
         let _errors = [];
         if (errors) {
-          for (let field in errors) {
-            _errors.push(errors[field]);
+          for (let i in errors) {
+            _errors.push(errors[i].property + ': ' + errors[i].message);
           }
         }
         return _errors.join('\n');
@@ -22,6 +22,8 @@
         let payload = JSON.parse(evnt.target.responseText);
         let error = payload.response;
         let errorDetail = this._buildErrorMessage(payload.errors);
+
+        error += '\n' + errorDetail;
 
         if (error) {
           this.dispatchEvent(new CustomEvent('dash-notify', {
