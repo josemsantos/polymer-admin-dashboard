@@ -226,9 +226,10 @@
       _setDefaultData () {
         this.data  = {
           id: 0,
-          template_id: 1,
-          lists_id: 1,
+          template_id: 0,
+          lists_id: 0,
           label: undefined,
+          default_lists_item_id: 0,
           formelement: []
         };
         //Small trick to show the add form element button
@@ -295,7 +296,10 @@
         if (data && templates && templates.length && lists && lists.length) {
           let _form = (data.id) ? this.formelementModel.getForm() : this.formelementModel.getCreateForm();
           let _items = [];
-
+          _items.push({
+            key: '0',
+            label: 'None'
+          });
           for (let i in templates) {
             _items.push({
               key: templates[i].id,
@@ -307,6 +311,10 @@
                 .setDataToFormElement('template_id', _items, this.data.template_id, _form.fields);
 
           _items = [];
+          _items.push({
+              key: '0',
+              label: 'None'
+          });
           let _subItems = [];
           for (let i in lists) {
             _items.push({
@@ -314,7 +322,7 @@
               label: lists[i].name
             });
 
-            if (lists[i].id === this.data.lists_id) {
+            if (lists[i].id == this.data.lists_id) {
               _subItems.push({
                 key: '0',
                 label: 'None'
@@ -327,7 +335,6 @@
               }
             }
           }
-
           _fields = this.shadowRoot.querySelector('dash-form')
                 .setDataToFormElement('lists_id', _items, this.data.lists_id, _fields);
 
