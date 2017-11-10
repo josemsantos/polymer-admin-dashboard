@@ -313,6 +313,7 @@
       
       _setCheckStatusFromData(fields, data) {
         for (let i in fields) {
+          console.log(data[fields[i].name])
           if (data[fields[i].name] === undefined) {
               continue;
           }

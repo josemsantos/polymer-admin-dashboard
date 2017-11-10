@@ -50,6 +50,7 @@ node {
                 sh 'gulp'
                 sh 'polymer build'
                 sh 'gulp revision'
+                sh 'gulp update-cache-version'
                 sh 'docker build -t niobe . -f Dockerfile'
             }
             sh "docker tag niobe:latest 151812620214.dkr.ecr.eu-west-1.amazonaws.com/niobe:staging-${env.COMMIT_HASH}"

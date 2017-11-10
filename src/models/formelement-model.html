@@ -148,7 +148,10 @@
                   message: 'Invalid Template',
                   required: true,
                 }
-              ]
+              ],
+              event: {
+                'on-selected-items-changed': 'template-changed'
+              }
             },
             {
               label: 'List',
@@ -180,10 +183,7 @@
                   regex: '[0-9]+|null',
                   message: 'Invalid pre-selected list item',
                 }
-              ],
-              event: {
-                'on-iron-items-changed': 'sub-list-items-changed'
-              }
+              ]
             }
           ],
           actions: {
