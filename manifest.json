@@ -1,21 +1,51 @@
 {
-  "name": "My App",
-  "short_name": "My App",
-  "description": "My App description",
+  "name": "Jumia One :: Backoffice tools",
+  "short_name": "Jumia One",
+  "description": "This is the Jumia One backoffice tools",
   "start_url": "./?homescreen=1",
   "display": "standalone",
   "theme_color": "#3f51b5",
   "background_color": "#3f51b5",
   "icons": [
     {
-      "src": "images/manifest/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+        "src": "images/manifest/icon-32x32.png",
+        "sizes": "32x32",
+        "type": "image/png"
     },
     {
-      "src": "images/manifest/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
+        "src": "images/manifest/icon-57x57.png",
+        "sizes": "57x57",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-72x72.png",
+        "sizes": "72x72",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-96x96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-144x144.png",
+        "sizes": "144x144",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-256x256.png",
+        "sizes": "256x256",
+        "type": "image/png"
+    },
+    {
+        "src": "images/manifest/icon-384x384.png",
+        "sizes": "384x384",
+        "type": "image/png"
     }
   ]
 }

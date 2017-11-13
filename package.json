@@ -22,6 +22,7 @@
     "watch": "browser-sync start --proxy localhost:8088 --files 'src/**/*.html, src/**/*.js, images/*' "
   },
   "dependencies": {
+    "gulp-git": "^2.4.2",
     "gulp-load-plugins": "^1.5.0",
     "web-animations-js": "^2.3.1"
   }

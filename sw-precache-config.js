@@ -11,10 +11,21 @@
 /* eslint-env node */
 
 module.exports = {
+  runtimeCaching: [{
+    urlPattern: /.*(\/api\/).*/,
+    handler: 'networkOnly'
+  }, {
+    urlPattern: /.*(cloudfront)(?!googleapis).*/,
+    handler: 'networkFirst'
+  }],
   staticFileGlobs: [
     'index.html',
     'manifest.json',
     'bower_components/webcomponentsjs/*',
+    '/images/bg.png',
+    '/images/favicon.ico'
   ],
+  cacheId: '%precache_version%',
   navigateFallback: 'index.html',
+  navigateFallbackWhitelist: [/^((?!(service-worker\.js|manifest\.json|robots\.txt)).)*$/],
 };

@@ -13,9 +13,35 @@
     "src/modules/users/users-show.html",
     "src/modules/users/users-create.html",
     "src/modules/users/users-edit.html",
-    "src/modules/user/user-profile.html"
+    "src/modules/user/user-profile.html",
+    "src/modules/cms/cms-show.html",
+    "src/modules/cms/cms-list.html",
+    "src/modules/cms/cms-create.html",
+    "src/modules/cms/cms-edit.html",
+    "src/modules/lists/lists-list.html",
+    "src/modules/lists/lists-create.html",
+    "src/modules/lists/lists-edit.html",
+    "src/modules/lists/lists-show.html",
+    "src/modules/listitems/listitems-list.html",
+    "src/modules/listitems/listitems-create.html",
+    "src/modules/listitems/listitems-edit.html",
+    "src/modules/listitems/listitems-show.html",
+    "src/modules/digitalservices/digitalservices-list.html",
+    "src/modules/digitalservices/digitalservices-create.html",
+    "src/modules/digitalservices/digitalservices-edit.html",
+    "src/modules/digitalservices/digitalservices-show.html",
+    "src/modules/services/services-list.html",
+    "src/modules/services/services-create.html",
+    "src/modules/services/services-edit.html",
+    "src/modules/services/services-show.html",
+    "src/modules/distributors/distributors-list.html",
+    "src/modules/distributors/distributors-create.html",
+    "src/modules/distributors/distributors-edit.html",
+    "src/modules/distributors/distributors-show.html",
+    "src/modules/distributors/distributors-upload.html"
   ],
   "sources": [
+    "bower_components/**/*.png",
     "src/**/*",
     "images/**/*",
     "bower.json"
@@ -33,10 +59,14 @@
   },
   "builds": [
     {
+      "name": "bundled",
+      "preset": "es5-bundled"
+    },
+    {
       "name": "es5-bundled-server",
       "basePath": "admina",
       "preset": "es5-bundled",
-      "addServiceWorker": false
+      "addServiceWorker": true
     }
   ]
 }
