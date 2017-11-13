@@ -31,6 +31,7 @@ global.config = {
   
 // Build paths
 global.config.bundledPath = path.join(global.config.build.rootDirectory, global.config.build.bundledDirectory);
+global.config.releasePath = path.join(global.config.build.rootDirectory, global.config.build.bundledDirectoryName);
 
 gulp.task('env', function() {
   return gulp.src('env.js')
@@ -76,6 +77,11 @@ gulp.task('update-cache-version', function() {
       gulp.src(global.config.bundledPath + '/service-worker.js')
       .pipe($.replace('%precache_version%', stdout.replace(/(\r\n|\n|\r)/gm,"")))
       .pipe(gulp.dest(global.config.bundledPath, {overwrite: true}));
+
+      gulp.src(global.config.releasePath + '/service-worker.js')
+      .pipe($.replace('%precache_version%', stdout.replace(/(\r\n|\n|\r)/gm,"")))
+      .pipe(gulp.dest(global.config.releasePath, {overwrite: true}));
+
       return;
   });    
 
