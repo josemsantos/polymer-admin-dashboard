@@ -21,9 +21,6 @@ void getCommitHash(String repository) {
 }
 
 void kubernetesDeploy(String project, String env, String application, String chart) {
-    echo 'Checking out charts...'
-    checkoutRepository('master', 'charts', '11c90820-6b3c-4bc5-aab3-67f8b550f30b')
-
     echo "Deploying ${project} in ${env}..."
     getCommitHash(application)
     sh "cd charts && helm upgrade --install ${env}-${project}-${application} ${chart} --values=values/${env}-${project}-${application}.yaml --set image.tag=${env}-$COMMIT_HASH"
@@ -37,6 +34,9 @@ node {
 
             echo 'Checking out Niobe lastest code...'
             checkoutRepository('development', 'niobe', 'b08cddab-b668-416c-a65a-7141fe0d4d7b')
+
+            echo 'Checking out charts...'
+            checkoutRepository('master', 'charts', '11c90820-6b3c-4bc5-aab3-67f8b550f30b')
 
             echo 'Load staging One configuration...'
             sh 'cp -f configsone/niobe.json niobe/parameters.json'
