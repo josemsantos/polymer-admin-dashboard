@@ -95,7 +95,7 @@
           if (this.fields[i].list_id && this.fields[i].list_id == _listId) {
             this.fields[i].label = e.detail.response.name;
             this.fields[i].items = _items;
-            this.fields[i].selected = _selected
+            this.fields[i].selected = _selected;
             this.fields[i].event = {
               'on-selected-items-changed': 'dropdown-changed'
             };

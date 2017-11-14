@@ -45,6 +45,7 @@
         notify-success="[[successMessage]]"
         on-distributor-changed="_getDistributorsServiceKeys"
         on-service-types-changed="_getServiceType"
+        on-dropdown-changed="_dropDownChanged"
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
@@ -121,6 +122,7 @@
       }
 
       _getServiceType (e) {
+        this._dropDownChanged(e);
         this._removeDynamicFieldsInForm();
         this._listId = undefined;
         this._serviceTypeId = Number.parseInt(e.detail.item.selected);
@@ -185,13 +187,17 @@
         }
 
         let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('distributor_service_id', _items, null, this.form.fields);
+                .setDataToFormElement('distributor_service_id', _items, null, this.fields);
 
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
       }
 
       _getDistributorsServiceKeys (e) {
+        this._dropDownChanged(e);
         this._distributorId = Number.parseInt(e.detail.item.selected);
+        //clear all distributor services definitions on distributor change to force use to choose one
+        this._distributorServiceId = 0;
+        this._setDistributorsServiceKeysItems([]);
       }
 
       _setServiceTypeField (e) {
@@ -226,14 +232,17 @@
         }
         
         let _listId = e.detail.response.id;
-        for (let i in this.form.fields) {
-          if (this.form.fields[i].list_id && this.form.fields[i].list_id == _listId) {
-            this.form.fields[i].label = e.detail.response.name;
-            this.form.fields[i].items = _items;
-            this.form.fields[i].selected = _selected
+        for (let i in this.fields) {
+          if (this.fields[i].list_id && this.fields[i].list_id == _listId) {
+            this.fields[i].label = e.detail.response.name;
+            this.fields[i].items = _items;
+            this.fields[i].selected = _selected;
+            this.fields[i].event = {
+              'on-selected-items-changed': 'dropdown-changed'
+            };
           }
         }
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
       }
 
       _setFormElementTypeField (formelement, level) {
@@ -242,7 +251,7 @@
         //require list items
         this._listId = _formElement.lists_id;
 
-        this.form.fields.push({
+        this.fields.push({
           label: "",
           name: name,
           type: "dash-dropdown",
@@ -253,7 +262,7 @@
         this.serviceModel.model[name] = null;
 
         let _fields = this.shadowRoot.querySelector('dash-form')
-                        .setDataToFormElement('list_id', [], null, this.form.fields);
+                        .setDataToFormElement('list_id', [], null, this.fields);
         this.set('fields', JSON.parse(JSON.stringify(_fields)));
 
         if (_formElement.formelement && _formElement.formelement.id) {
@@ -262,14 +271,14 @@
       }
 
       _removeDynamicFieldsInForm () {
-        let i = this.form.fields.length
+        let i = this.fields.length
         while (i--) {
-          if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
-            this.form.fields.splice(i, 1);
+          if (this.fields[i].name.indexOf('dynamicMcd') === 0) {
+            this.fields.splice(i, 1);
           }
         }
 
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
       }
 
       _setDigitalServiceData(e) {
@@ -299,7 +308,7 @@
         e.detail.payload.distributor_id = e.detail.payload.distributor_id == 0 ? null : e.detail.payload.distributor_id;
         e.detail.payload.distributor_service_id = e.detail.payload.distributor_service_id == 0 ? null : e.detail.payload.distributor_service_id;
 
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -353,12 +362,12 @@
           this._serviceTypes = [];
 
           this._removeDynamicFieldsInForm();
-          for (let i in this.form.fields) {
-            if (this.form.fields[i].name == 'digital_services_id'
-              || this.form.fields[i].name == 'distributor_id'
-              || this.form.fields[i].name == 'distributor_service_id') {
-              this.form.fields[i].selected = false;
-              this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+          for (let i in this.fields) {
+            if (this.fields[i].name == 'digital_services_id'
+              || this.fields[i].name == 'distributor_id'
+              || this.fields[i].name == 'distributor_service_id') {
+              this.fields[i].selected = false;
+              this.set('fields', JSON.parse(JSON.stringify(this.fields)));
               break;
             }
           }
