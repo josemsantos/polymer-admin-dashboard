@@ -86,6 +86,7 @@
 
       _selectedChanged(selected) {
         this.value = selected;
+        this.shadowRoot.querySelector('select').value = selected;
       }
 
       _optionsChanged(options) {
