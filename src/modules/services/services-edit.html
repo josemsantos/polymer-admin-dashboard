@@ -56,6 +56,7 @@
         notify-success="[[successMessage]]"
         on-service-types-changed="_getServiceType"
         on-distributor-changed="_getDistributorsServiceKeys"
+        on-dropdown-changed="_dropDownChanged"
         on-cancel="_goToList"
         on-submit="_execAction">
           <div class="title title-header"><h2><iron-icon icon="my-icons:phone-android"></iron-icon>Service - [[data.title]]</h2></div>
@@ -132,7 +133,7 @@
         e.detail.payload.distributor_id = e.detail.payload.distributor_id == 0 ? null : e.detail.payload.distributor_id;
         e.detail.payload.distributor_service_id = e.detail.payload.distributor_service_id == 0 ? null : e.detail.payload.distributor_service_id;
 
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;

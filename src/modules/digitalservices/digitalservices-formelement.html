@@ -70,7 +70,7 @@
       model-data="[[data]]"
       notify-error="[[errorMessage]]"
       notify-success="[[successMessage]]"
-      on-template-changed="_templateChanged"
+      on-template-changed="_dropDownChanged"
       on-list-items-changed="_listSelectedChanged"
       on-cancel="_goToList"
       on-submit="_execAction">
@@ -267,15 +267,6 @@
               break;
             }
           }
-        }
-      }
-
-      _templateChanged(e) {
-        let selectedId = e.detail.item.selected;
-        if (selectedId) {
-          let _fields = this.fields;
-          _fields = this._setCheckStatusFromData(_fields, {'template_id': selectedId});
-          this.set('fields', JSON.parse(JSON.stringify(_fields)));
         }
       }
 
