@@ -340,9 +340,6 @@
           let _fields = this.fields;
           let data = {}
           data[e.detail.el.name] = selectedId;
-
-          console.log(e.detail.el.name, selectedId);
-
           _fields = this._setCheckStatusFromData(_fields, data);
           this.set('fields', JSON.parse(JSON.stringify(_fields)));
         }
