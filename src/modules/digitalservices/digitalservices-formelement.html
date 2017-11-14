@@ -72,6 +72,7 @@
       notify-success="[[successMessage]]"
       on-template-changed="_dropDownChanged"
       on-list-items-changed="_listSelectedChanged"
+      on-default-list-item-changed="_dropDownChanged"
       on-cancel="_goToList"
       on-submit="_execAction">
       <div slot="action-box">
@@ -239,15 +240,15 @@
 
       _listSelectedChanged (e) {
         let selectedId = e.detail.item.selected;
+        let _subItems = [];
+        _subItems.push({
+          key: '0',
+          label: 'None'
+        });
+
         if (selectedId) {
           for (var i in this.lists) {
-            
             if (this.lists[i].id == selectedId) {
-              let _subItems = [];
-              _subItems.push({
-                key: '0',
-                label: 'None'
-              });
               for (let j in this.lists[i].items) {
                 _subItems.push({
                   key: this.lists[i].items[j].id,
@@ -255,19 +256,16 @@
                 });
               }
 
-              //If the user change from the original save list item then the sublist will select the first element
-              let _defaultListItem = (selectedId == this.data.lists_id) ? this._getDefaultListItemId() : 0;
-
-              let _fields = this.fields;
-              _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('default_lists_item_id', _subItems, 0, _fields);
-              _fields = this._setCheckStatusFromData(_fields, {'lists_id': selectedId});
-              _fields = this._setCheckStatusFromData(_fields, {'default_lists_item_id': 0});
-              this.set('fields', JSON.parse(JSON.stringify(_fields)));
               break;
             }
           }
         }
+
+        let _fields = this.shadowRoot.querySelector('dash-form')
+                .setDataToFormElement('default_lists_item_id', _subItems, 0, this.fields);
+        _fields = this._setCheckStatusFromData(_fields, {'lists_id': selectedId});
+        _fields = this._setCheckStatusFromData(_fields, {'default_lists_item_id': 0});
+        this.set('fields', JSON.parse(JSON.stringify(_fields)));
       }
 
       _setLists (e) {
@@ -279,10 +277,6 @@
 
       _setTemplates (e) {
         this.templates = (e.detail.length) ? e.detail : [];
-      }
-
-      _getDefaultListItemId () {
-        return (this.data && this.data.default_lists_item_id) ? this.data.default_lists_item_id : 0;
       }
 
       _isTemplatesListsAndDataReady (data, templates, lists) {
@@ -309,6 +303,10 @@
               label: 'None'
           });
           let _subItems = [];
+          _subItems.push({
+            key: '0',
+            label: 'None'
+          });
           for (let i in lists) {
             _items.push({
               key: lists[i].id,
@@ -316,10 +314,6 @@
             });
 
             if (lists[i].id == this.data.lists_id) {
-              _subItems.push({
-                key: '0',
-                label: 'None'
-              });
               for (let j in lists[i].items) {
                 _subItems.push({
                   key: lists[i].items[j].id,
@@ -353,6 +347,10 @@
       }
 
       _updateFormElement (e) {
+        // force required fields validation
+        e.detail.payload.template_id = e.detail.payload.template_id == 0 ? null : e.detail.payload.template_id;
+        e.detail.payload.lists_id = e.detail.payload.lists_id == 0 ? null : e.detail.payload.lists_id;
+
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -375,7 +373,6 @@
         } else {
           payload['digital_service_id'] = this.digitalServiceId;
         }
-        
         if (this.formelementId) {
           this.formelementModel.update(null, this.formelementId, JSON.stringify(payload));
         } else {

@@ -130,7 +130,7 @@
                 {
                   type: 'regex',
                   regex: '^(.){3,}$',
-                  message: 'Title should have at least thre characters',
+                  message: 'Title should have at least three characters',
                   required: true,
                 }
               ]
@@ -183,7 +183,10 @@
                   regex: '[0-9]+|null',
                   message: 'Invalid pre-selected list item',
                 }
-              ]
+              ],
+              event: {
+                'on-selected-items-changed': 'default-list-item-changed'
+              }
             }
           ],
           actions: {
