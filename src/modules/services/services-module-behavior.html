@@ -43,27 +43,13 @@
         }
       }
 
-      _setDigitalServiceData (e) {
-        if (e.detail.response && e.detail.response.results) {
-          this.digitalServiceData = e.detail.response.results;
-        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id) {
-          this._setFormElementTypeField(e.detail.response.formelement, 0);
-        }
-      }
-
-      _getServiceType (e) {
-        this._removeDynamicFieldsInForm();
-        this._listId = undefined;
-        this._serviceTypeId = Number.parseInt(e.detail.item.selected);
-      }
-
       _setFormElementTypeField (formelement, level) {
         let _formElement = formelement;
         let name = "dynamicMcd" + (level);
         //require list items
         this._listId = _formElement.lists_id;
 
-        this.form.fields.push({
+        this.fields.push({
           label: "",
           name: name,
           type: "dash-dropdown",
@@ -74,7 +60,7 @@
         this.serviceModel.model[name] = null;
 
         let _fields = this.shadowRoot.querySelector('dash-form')
-                .setDataToFormElement('list_id', [], null, this.form.fields);
+                .setDataToFormElement('list_id', [], null, this.fields);
         _fields = this._setCheckStatusFromData(_fields, this.data);
         this.set('fields', JSON.parse(JSON.stringify(_fields)));
 
@@ -105,26 +91,52 @@
         }
 
         let _listId = e.detail.response.id;
-        for (let i in this.form.fields) {
-          if (this.form.fields[i].list_id && this.form.fields[i].list_id == _listId) {
-            this.form.fields[i].label = e.detail.response.name;
-            this.form.fields[i].items = _items;
-            this.form.fields[i].selected = _selected
+        for (let i in this.fields) {
+          if (this.fields[i].list_id && this.fields[i].list_id == _listId) {
+            this.fields[i].label = e.detail.response.name;
+            this.fields[i].items = _items;
+            this.fields[i].selected = _selected;
+            this.fields[i].event = {
+              'on-selected-items-changed': 'dropdown-changed'
+            };
           }
         }
         
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
       }
 
       _removeDynamicFieldsInForm () {
-        let i = this.form.fields.length;
+        let i = this.fields.length;
         while (i--) {
-          if (this.form.fields[i].name.indexOf('dynamicMcd') === 0) {
-            this.form.fields.splice(i, 1);
+          if (this.fields[i].name.indexOf('dynamicMcd') === 0) {
+            this.fields.splice(i, 1);
           }
         }
 
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
+      }
+
+      _getServiceType (e) {
+        this._dropDownChanged(e);
+        this._removeDynamicFieldsInForm();
+        this._listId = undefined;
+        this._serviceTypeId = Number.parseInt(e.detail.item.selected);
+      }
+
+      _getDistributorsServiceKeys (e) {
+        this._dropDownChanged(e);
+        this._distributorId = Number.parseInt(e.detail.item.selected);
+        //clear all distributor services definitions on distributor change to force use to choose one
+        this._distributorServiceId = 0;
+        this._setDistributorsServiceKeysItems([]);
+      }
+
+      _setDigitalServiceData (e) {
+        if (e.detail.response && e.detail.response.results) {
+          this.digitalServiceData = e.detail.response.results;
+        } else if (e.detail.response && e.detail.response.formelement && e.detail.response.formelement.id && this.form) {
+          this._setFormElementTypeField(e.detail.response.formelement, 0);
+        }
       }
 
       _setDistributorData (e) {
@@ -158,13 +170,6 @@
                   .setDataToFormElement('distributor_id', _items, this.data.distributor.id, _fields);
       }
 
-      _getDistributorsServiceKeys (e) {
-        this._distributorId = Number.parseInt(e.detail.item.selected);
-        //clear all distributor services definitions on distributor change to force use to choose one
-        this._distributorServiceId = 0;
-        this._setDistributorsServiceKeysItems([]);
-      }
-
       _setDistributorsServiceKeysItems (services) {
         let _items = [];
         _items.push({
@@ -187,10 +192,10 @@
             'distributor_service_id',
             _items,
             _selected,
-            this.form.fields
+            this.fields
           );
           
-        this.set('fields', JSON.parse(JSON.stringify(this.form.fields)));
+        this.set('fields', JSON.parse(JSON.stringify(this.fields)));
       }
 
       _setData (e) {

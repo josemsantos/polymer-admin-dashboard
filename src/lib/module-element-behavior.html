@@ -39,6 +39,7 @@
           accessControl: {
             type: Object,
           },
+          fields: Array,
           actions: Array,
           permissions: {
             type: Array
@@ -351,6 +352,17 @@
           bubbles: true,
           composed: true
         }));
+      }
+
+      _dropDownChanged (e) {
+        let selectedId = e.detail.item.selected;
+        if (selectedId) {
+          let _fields = this.fields;
+          let data = {}
+          data[e.detail.el.name] = selectedId;
+          _fields = this._setCheckStatusFromData(_fields, data);
+          this.set('fields', JSON.parse(JSON.stringify(_fields)));
+        }
       }
 
       constructor () {

@@ -130,7 +130,7 @@
                 {
                   type: 'regex',
                   regex: '^(.){3,}$',
-                  message: 'Title should have at least thre characters',
+                  message: 'Title should have at least three characters',
                   required: true,
                 }
               ]
@@ -148,7 +148,10 @@
                   message: 'Invalid Template',
                   required: true,
                 }
-              ]
+              ],
+              event: {
+                'on-selected-items-changed': 'template-changed'
+              }
             },
             {
               label: 'List',
@@ -182,7 +185,7 @@
                 }
               ],
               event: {
-                'on-iron-items-changed': 'sub-list-items-changed'
+                'on-selected-items-changed': 'default-list-item-changed'
               }
             }
           ],

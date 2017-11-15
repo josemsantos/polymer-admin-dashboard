@@ -30,7 +30,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     -->
     <base href="/">
 
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
 
     <!-- See https://goo.gl/OOhYW5 -->
     <link rel="manifest" href="manifest.json">
@@ -75,13 +76,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       window.Polymer = {rootPath: Dash.rootPath};
 
       // Load and register pre-caching Service Worker
-//      if ('serviceWorker' in navigator) {
-//        window.addEventListener('load', function() {
-//          navigator.serviceWorker.register('service-worker.js', {
-//            scope: Polymer.rootPath,
-//          });
-//        });
-//      }
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('service-worker.js', {
+            scope: Polymer.rootPath,
+          });
+        });
+      }
     </script>
 
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->

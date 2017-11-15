@@ -33,7 +33,7 @@
     </style>
     <label class="floated-label-placeholder" for="">[[label]]</label>
     <div class="select-style">
-      <select name$="[[name]]" disabled="[[disabled]]">
+      <select on-change="_onSelectChanged" name$="[[name]]" disabled="[[disabled]]">
         <template is="dom-repeat" items="[[options]]" as="option">
           <option selected$="[[_isSelected(selected, option)]]" value$="[[option.key]]">[[option.label]]</option>
         </template>
@@ -71,7 +71,11 @@
             type: Boolean,
             value: false
           },
-          selected: Object,
+          selected: {
+            type: Object,
+            observer: '_selectedChanged',
+            reflectToAttribute: true
+          },
           options: {
             type: Array,
             observer: '_optionsChanged'
@@ -80,14 +84,9 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_setInitialValue(selected)'
-        ];
-      }
-
-      _setInitialValue(selected) {
+      _selectedChanged(selected) {
         this.value = selected;
+        this.shadowRoot.querySelector('select').value = selected;
       }
 
       _optionsChanged(options) {
@@ -102,36 +101,19 @@
         return option.key == selected;
       }
 
-      /**
-       * Instance of the element is created/upgraded. Use: initializing state,
-       * set up event listeners, create shadow dom.
-       * @constructor
-       */
-      constructor() {
-        super();
-      }
-
-      /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
-       */
-      ready() {
-        super.ready();
-
-        let select = this.shadowRoot.querySelector('select');
-        select.addEventListener('change', (e) => {
+      _onSelectChanged(e) {
+          this.value = e.currentTarget.value;
+          this.selected = e.currentTarget.value;
 
           this.dispatchEvent(new CustomEvent('dash-form-dropdown-changed', {
             detail: {
-              el: select,
+              el: e.currentTarget,
               options: this.options,
-              selected: select.value
+              selected: e.currentTarget.value
             },
             bubbles: true,
             composed: true
           }));
-
-          this.value = this.shadowRoot.querySelector('select').value;
-        });
       }
 
     }
