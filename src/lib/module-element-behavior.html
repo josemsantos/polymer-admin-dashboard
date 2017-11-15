@@ -94,8 +94,10 @@
       }
 
       _routeIdChanged (id) {
-        this.shadowRoot.querySelector('dash-form').formReset();
-        this.key = id;
+        if (id) {
+          this.shadowRoot.querySelector('dash-form').formReset();
+          this.key = id;
+        }
       }
 
       _getUserActions(permissions, accessControl, actions) {
