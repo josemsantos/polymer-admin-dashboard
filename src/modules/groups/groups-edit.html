@@ -92,12 +92,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setExternalData (e) {
         let roles = [];
         if (e.detail.length) {
@@ -111,10 +105,6 @@
         this.externalData = {
           'roles': roles
         };
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       _updateGroup (e) {

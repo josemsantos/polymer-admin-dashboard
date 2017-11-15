@@ -78,6 +78,7 @@
           '_getUserActions(permissions, accessControl, actions)',
           '_setFormActions(userActions, pageType)',
           '_onTabsRequired(form.fields)',
+          '_routeIdChanged(routeData.id, isReady)'
         ];
       }
 
@@ -90,6 +91,11 @@
           };
         }
         this.accessControl = _accessControl;
+      }
+
+      _routeIdChanged (id) {
+        this.shadowRoot.querySelector('dash-form').formReset();
+        this.key = id;
       }
 
       _getUserActions(permissions, accessControl, actions) {

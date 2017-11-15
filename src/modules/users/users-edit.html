@@ -95,12 +95,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setExternalData (e) {
         let groups = [];
         if (e.detail.length) {
@@ -114,10 +108,6 @@
         this.externalData = {
           'access_groups': groups
         };
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       _updateUser (e) {
