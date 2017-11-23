@@ -129,18 +129,8 @@
         super._notifyUser(e)
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setData (e) {
         this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       _updateDigitalService (e) {

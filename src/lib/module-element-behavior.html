@@ -94,8 +94,8 @@
         this.accessControl = _accessControl;
       }
 
-      _routeIdChanged (id) {
-        if (id) {
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
           this.shadowRoot.querySelector('dash-form').formReset();
           this.key = id;
         }

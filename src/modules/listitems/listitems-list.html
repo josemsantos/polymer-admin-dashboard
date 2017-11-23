@@ -152,12 +152,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
       }
@@ -179,6 +173,7 @@
           this.heading = 'List Items of list #' + id;
           this.actions.create.path = ':module/create/' + id;
           this.listId = id;
+          super._routeIdChanged (id, isReady);
         }
       }
 

@@ -20,7 +20,6 @@
       data="{{routeData}}"></app-route>
       
     <cms-model
-      fetch="[[key]]"
       endpoint="[[modelEndpoint]]"
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
@@ -98,18 +97,8 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setData (e) {
         this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       _updateCms (e) {

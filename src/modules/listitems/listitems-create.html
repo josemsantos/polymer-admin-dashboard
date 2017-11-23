@@ -90,12 +90,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _notifyUser (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {
@@ -107,12 +101,6 @@
         this.shadowRoot.querySelector('dash-form').formReset();
         e.detail.message = e.detail.message.response.name + " created";
         super._notifyUser(e)
-      }
-
-      _routeIdChanged (id, isReady) {
-        if (id && isReady) {
-          this.listId = id;
-        }
       }
 
       _createListItem (e) {

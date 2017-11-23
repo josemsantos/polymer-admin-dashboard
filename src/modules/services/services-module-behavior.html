@@ -202,10 +202,6 @@
         this.data = e.detail.response;
       }
 
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
       onSelectedChange(selected, oSelected) {
         if (selected) {
           this.digitalServiceModel = this.shadowRoot.querySelector('digitalservice-model');

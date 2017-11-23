@@ -96,15 +96,8 @@
 
       static get observers() {
         return [
-          '_routeIdChanged(routeData.id, isReady)',
           '_dataChanged(data, isReady)'
         ];
-      }
-
-      _routeIdChanged (id, isReady) {
-        if (id && isReady) {
-          this.key = id; // set id to load form data from endpoint
-        }
       }
 
       _dataChanged (data, isReady) {

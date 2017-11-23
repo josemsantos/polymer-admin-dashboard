@@ -19,7 +19,6 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
     <cms-model
-      fetch="[[key]]"
       endpoint="/blocks"
       on-model-response-changed="_setData"></cms-model>
     <paper-material elevation="2">
@@ -79,18 +78,8 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setData (e) {
         this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       /**
