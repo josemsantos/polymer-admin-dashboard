@@ -46,7 +46,7 @@
         has-cancel
         key="[[key]]"
         model="[[distributorModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         show-only>
@@ -146,6 +146,7 @@
         this.distributorModel = this.shadowRoot.querySelector(this.model);
         this.form = this.distributorModel.getForm();
 
+        this.fields = this.form.fields;
         this.isReady = true;
       }
 

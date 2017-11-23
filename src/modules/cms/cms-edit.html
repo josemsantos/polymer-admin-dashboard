@@ -32,7 +32,7 @@
         has-cancel
         key="[[key]]"
         model="[[cmsModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
         notify-error="[[errorMessage]]"
@@ -113,7 +113,7 @@
       }
 
       _updateCms (e) {
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -152,6 +152,7 @@
         this.cmsModel = this.shadowRoot.querySelector(this.model);
         this.form = this.cmsModel.getForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 

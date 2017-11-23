@@ -50,7 +50,7 @@
         has-cancel
         key="[[key]]"
         model="[[listModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         notify-error="[[errorMessage]]"
@@ -150,6 +150,7 @@
         super.ready();
         this.listModel = this.shadowRoot.querySelector(this.model);
         this.form = this.listModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

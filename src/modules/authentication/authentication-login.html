@@ -59,7 +59,7 @@
       <dash-form
         class="default"
         model="[[userModel.model]]"
-        fields="[[loginForm.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         on-submit="_signIn">
           <iron-icon icon="my-icons:person"></iron-icon>
@@ -112,7 +112,7 @@
           password: user.password,
           rememberme: user.rememberme
         };
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.loginForm.fields, authData);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, authData);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -171,6 +171,7 @@
           this.userModel = this.shadowRoot.querySelector(this.model);
           this.loginForm = this.userModel.getLoginForm();
           this._setAllActionsForAnonymous(['edit']);
+          this.fields = this.loginForm.fields;
           this.actions = this.loginForm.actions;
           this.isReady = true;
         });

@@ -26,7 +26,7 @@
         has-cancel
         key="[[key]]"
         model="[[digitalservice.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         show-only>
@@ -103,6 +103,7 @@
         super.ready();
         this.digitalserviceModel = this.shadowRoot.querySelector(this.model);
         this.form = this.digitalserviceModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

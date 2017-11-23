@@ -24,7 +24,7 @@
           has-cancel
           key="[[key]]"
           model="[[listModel.model]]"
-          fields="[[form.fields]]"
+          fields="[[fields]]"
           actions="[[_formActions]]"
           notify-error="[[errorMessage]]"
           notify-success="[[successMessage]]"
@@ -95,7 +95,7 @@
       }
 
       _createList (e) {
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -125,6 +125,7 @@
         this.listModel = this.shadowRoot.querySelector(this.model);
         this.form = this.listModel.getCreateForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 

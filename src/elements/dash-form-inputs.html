@@ -111,7 +111,6 @@
         </paper-chip-input-autcomplete>
       </template>
     </template>
-    <slot name="footer"></slot>
   </template>
 
   <script>
@@ -266,6 +265,9 @@
         } else if (this._isCollection(fld.type)) {
           let el = this.shadowRoot.querySelector('paper-chip-input-autocomplete[name=' + fld.name + ']');
           el.items = [];
+        } else if (this._isDashDropdown(fld.type)) {
+          let el = this.shadowRoot.querySelector('dash-form-dropdown[name=' + fld.name + ']');
+          el.selected = 0;
         }
       }
 

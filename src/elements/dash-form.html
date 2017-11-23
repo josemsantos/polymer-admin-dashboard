@@ -116,6 +116,7 @@
                 show-only="[[showOnly]]"
                 model-ready="[[modelReady]]"></dash-form-inputs>
             </template>
+            <slot name="footer"></slot>
           </div>
 
           <div class="action-box">
@@ -169,7 +170,10 @@
        */
       static get properties() {
         return {
-          key: Object,
+          key: {
+            type: Object,
+            observer: '_keyChanged'
+          },
           tabs: {
             type: Array,
             value: []
@@ -219,6 +223,13 @@
           return true;
         }
         return false;
+      }
+
+      _keyChanged(key) {
+        if (this.tabs.length) {
+          //Select first tab
+          this.selected = 0;
+        }
       }
 
       validate (modelFields, request) {

@@ -32,7 +32,7 @@
         has-cancel
         key="[[key]]"
         model="[[userModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
@@ -95,12 +95,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setExternalData (e) {
         let groups = [];
         if (e.detail.length) {
@@ -116,12 +110,8 @@
         };
       }
 
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
       _updateUser (e) {
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -150,6 +140,7 @@
         this.userModel = this.shadowRoot.querySelector(this.model);
         this.form = this.userModel.getForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 
