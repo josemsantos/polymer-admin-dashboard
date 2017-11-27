@@ -43,6 +43,7 @@
               digital_service_id : null,
               parent_id : null,
               label : null,
+              short_title : null,
               template_id : null,
               lists_id : null,
               default_lists_item_id : null
@@ -129,8 +130,21 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^(.){3,}$',
-                  message: 'Title should have at least three characters',
+                  regex: '^[^-\\s](.){2,}$',
+                  message: 'Title should have at least three characters and without spaces at the beginning',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Short Title',
+              name: 'short_title',
+              type: 'text',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^[^-\\s](.){4,19}$',
+                  message: 'Short title should be between 5 to 20 characters and without spaces at the beginning',
                   required: true,
                 }
               ]
