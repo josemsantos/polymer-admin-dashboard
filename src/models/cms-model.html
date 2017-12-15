@@ -55,6 +55,7 @@
       }
 
       _posUpdateCallBack (response) {
+        this.message = response.response.name + " updated";
         super._posUpdateCallBack(response.response.name + " updated");
       }
 
