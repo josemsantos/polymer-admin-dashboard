@@ -96,7 +96,10 @@
 
       _routeIdChanged (id, isReady) {
         if (id && isReady) {
-          this.shadowRoot.querySelector('dash-form').formReset();
+          let _form = this.shadowRoot.querySelector('dash-form');
+          if (_form !== undefined && _form !== null) {
+            _form.formReset();
+          }
           this.key = id;
         }
       }

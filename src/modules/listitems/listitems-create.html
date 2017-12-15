@@ -103,6 +103,12 @@
         super._notifyUser(e)
       }
 
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          this.listId = id;
+        }
+      }
+
       _createListItem (e) {
         // set parent Id from route Id
         e.detail.payload.list_id = this.listId;

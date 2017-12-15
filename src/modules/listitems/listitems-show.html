@@ -80,6 +80,12 @@
         };
       }
 
+      static get observers() {
+        return [
+          '_dataChanged(data, isReady)'
+        ];
+      }
+
       _dataChanged (data, isReady) {
         if (data && isReady) {
           this.listId = data.list_id;

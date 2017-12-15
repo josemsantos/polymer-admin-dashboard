@@ -100,6 +100,12 @@
         ];
       }
 
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          this.key = id; // set id to load form data from endpoint
+        }
+      }
+
       _dataChanged (data, isReady) {
         if (data && isReady) {
           this.listId = data.list_id;
