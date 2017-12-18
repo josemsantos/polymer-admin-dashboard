@@ -16,6 +16,7 @@
     "src/modules/user/user-profile.html"
   ],
   "sources": [
+    "bower_components/**/*.png",
     "src/**/*",
     "images/**/*",
     "bower.json"
@@ -28,16 +29,18 @@
     "bower_components/webrtc-adapter/release/adapter.js"
   ],
   "lint": {
-    "rules": ["polymer-2"]
+    "rules": ["polymer-2"],
+    "ignoreWarnings": ["unknown-superclass", "databind-with-unknown-property", "set-unknown-attribute", "databinding-calls-must-be-functions"]
   },
   "builds": [
     {
+      "name": "bundled",
       "preset": "es5-bundled"
     },
     {
-      "basePath": "/",
+      "name": "es5-bundled-server",
       "preset": "es5-bundled",
-      "name": "es5-bundled-server"
+      "addServiceWorker": false
     }
   ]
 }

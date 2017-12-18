@@ -39,6 +39,7 @@
           accessControl: {
             type: Object,
           },
+          fields: Array,
           actions: Array,
           permissions: {
             type: Array
@@ -77,7 +78,7 @@
         return [
           '_getUserActions(permissions, accessControl, actions)',
           '_setFormActions(userActions, pageType)',
-          '_onTabsRequired(form.fields)',
+          '_onTabsRequired(fields)',
           '_routeIdChanged(routeData.id, isReady)'
         ];
       }
@@ -93,9 +94,12 @@
         this.accessControl = _accessControl;
       }
 
-      _routeIdChanged (id) {
-        if (id) {
-          this.shadowRoot.querySelector('dash-form').formReset();
+      _routeIdChanged (id, isReady) {
+        if (id && isReady) {
+          let _form = this.shadowRoot.querySelector('dash-form');
+          if (_form !== undefined && _form !== null) {
+            _form.formReset();
+          }
           this.key = id;
         }
       }
@@ -359,6 +363,17 @@
           bubbles: true,
           composed: true
         }));
+      }
+
+      _dropDownChanged (e) {
+        let selectedId = e.detail.item.selected;
+        if (selectedId) {
+          let _fields = this.fields;
+          let data = {}
+          data[e.detail.el.name] = selectedId;
+          _fields = this._setCheckStatusFromData(_fields, data);
+          this.set('fields', JSON.parse(JSON.stringify(_fields)));
+        }
       }
 
       constructor () {
