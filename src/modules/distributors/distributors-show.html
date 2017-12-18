@@ -46,7 +46,7 @@
         has-cancel
         key="[[key]]"
         model="[[distributorModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         show-only>
@@ -118,16 +118,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -146,6 +136,7 @@
         this.distributorModel = this.shadowRoot.querySelector(this.model);
         this.form = this.distributorModel.getForm();
 
+        this.fields = this.form.fields;
         this.isReady = true;
       }
 

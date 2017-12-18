@@ -30,7 +30,7 @@
         has-cancel
         key="[[key]]"
         model="[[listItemModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
@@ -90,12 +90,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _notifyUser (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {
@@ -119,7 +113,7 @@
         // set parent Id from route Id
         e.detail.payload.list_id = this.listId;
 
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -157,6 +151,7 @@
         this.listItemModel = this.shadowRoot.querySelector(this.model);
         this.form = this.listItemModel.getCreateForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 

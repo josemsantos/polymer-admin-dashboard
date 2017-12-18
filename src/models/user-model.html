@@ -36,6 +36,7 @@
       static get properties() {
         return {
           fetchGroups: Boolean,
+          fetchGroupsOnCreate: Boolean,
           groups: {
             type: Array,
             value: []
@@ -73,7 +74,7 @@
 
       static get observers() {
         return [
-          '_onFetchGroupsRequired(fetchGroups, connection, model.id)',
+          '_onFetchGroupsRequired(fetchGroups, connection, model.id, fetchGroupsOnCreate)',
           '_modelChanged(model)',
         ];
       }
@@ -125,8 +126,8 @@
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 
-      _onFetchGroupsRequired (fetchGroups, connection, modelId) {
-        if (fetchGroups && connection && modelId) {
+      _onFetchGroupsRequired (fetchGroups, connection, modelID, fetchGroupsOnCreate) {
+        if (fetchGroups && connection && (modelID || fetchGroupsOnCreate)) {
           this._getGroups();
         }
       }
@@ -208,7 +209,7 @@
                 {
                   type: 'regex',
                   required: false,
-                  regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
+                  regex: '^$|(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
                   message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
                   stop: false
                 }

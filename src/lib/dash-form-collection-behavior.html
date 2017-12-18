@@ -8,10 +8,11 @@
         }
       }
 
-      _getValuesFromSelectedColletion (elId, items) {
+      _getValuesFromSelectedColletion (formField) {
         let list = [];
+        let items = formField.items;
         try {
-          let source = JSON.parse(this.shadowRoot.querySelector('#' + elId).getAttribute('source'));
+          let source = JSON.parse(formField.getAttribute('source'));
           if (source.length) {
             for (let i in items) {
               for (let j in source) {
@@ -27,10 +28,10 @@
         return list;
       }
 
-      _preSelectItemFromValues (elId, items) {
+      _preSelectItemFromValues (formField, items) {
         let list = [];
         try {
-          let source = JSON.parse(this.shadowRoot.querySelector('#' + elId).getAttribute('source'));
+          let source = JSON.parse(formField.getAttribute('source'));
           if (source.length) {
             for (let i in items) {
               for (let j in source) {

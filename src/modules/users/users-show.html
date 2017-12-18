@@ -30,7 +30,7 @@
         has-cancel
         key="[[key]]"
         model="[[userModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
         on-cancel="_goToList"
@@ -79,12 +79,6 @@
           }
         };
       }
-
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
       
       _setExternalData (e) {
         let groups = [];
@@ -99,10 +93,6 @@
         this.externalData = {
           'access_groups': groups
         };
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       /**
@@ -122,6 +112,7 @@
         super.ready();
         this.userModel = this.shadowRoot.querySelector(this.model);
         this.form = this.userModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

@@ -18,7 +18,8 @@
       <user-model
         fetch-groups
         on-users-groups-changed="_setExternalData"
-        on-model-create-success="_notifyUser"></user-model>
+        on-model-create-success="_notifyUser"
+        fetch-groups-on-create></user-model>
   
       <paper-material elevation="2">
         <dash-form
@@ -26,7 +27,7 @@
           has-cancel
           key="[[key]]"
           model="[[userModel.model]]"
-          fields="[[form.fields]]"
+          fields="[[fields]]"
           actions="[[_formActions]]"
           external-sources="[[externalData]]"
           notify-error="[[errorMessage]]"
@@ -118,7 +119,7 @@
       }
 
       _createUser (e) {
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -147,6 +148,7 @@
         this.userModel = this.shadowRoot.querySelector(this.model);
         this.form = this.userModel.getCreateForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 

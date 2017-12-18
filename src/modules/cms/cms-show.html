@@ -19,7 +19,6 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
     <cms-model
-      fetch="[[key]]"
       endpoint="/blocks"
       on-model-response-changed="_setData"></cms-model>
     <paper-material elevation="2">
@@ -28,7 +27,7 @@
         has-cancel
         key="[[key]]"
         model="[[cmsModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
         on-cancel="_goToList"
@@ -79,18 +78,8 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setData (e) {
         this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       /**
@@ -110,6 +99,7 @@
         super.ready();
         this.cmsModel = this.shadowRoot.querySelector(this.model);
         this.form = this.cmsModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

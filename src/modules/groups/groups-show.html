@@ -28,7 +28,7 @@
         has-cancel
         key="[[key]]"
         model="[[groupModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
         on-cancel="_goToList"
@@ -75,12 +75,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setExternalData (e) {
         let roles = [];
         if (e.detail.length) {
@@ -94,10 +88,6 @@
         this.externalData = {
           'roles': roles
         };
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       /**
@@ -117,6 +107,7 @@
         super.ready();
         this.groupModel = this.shadowRoot.querySelector(this.model);
         this.form = this.groupModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

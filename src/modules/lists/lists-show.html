@@ -50,7 +50,7 @@
         has-cancel
         key="[[key]]"
         model="[[listModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         notify-error="[[errorMessage]]"
@@ -123,16 +123,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)'
-        ];
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -150,6 +140,7 @@
         super.ready();
         this.listModel = this.shadowRoot.querySelector(this.model);
         this.form = this.listModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }

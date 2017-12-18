@@ -32,7 +32,7 @@
         has-cancel
         key="[[key]]"
         model="[[groupModel.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
         external-sources="[[externalData]]"
@@ -92,12 +92,6 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setExternalData (e) {
         let roles = [];
         if (e.detail.length) {
@@ -113,12 +107,8 @@
         };
       }
 
-      _routeIdChanged (id) {
-        this.key = id;
-      }
-
       _updateGroup (e) {
-        let valid = this.shadowRoot.querySelector('dash-form').validate(this.form.fields, e.detail.payload);
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
           this.errorMessage = valid;
@@ -147,6 +137,7 @@
         this.groupModel = this.shadowRoot.querySelector(this.model);
         this.form = this.groupModel.getForm();
 
+        this.fields = this.form.fields;
         this.actions = this.form.actions;
         this.isReady = true;
 

@@ -26,7 +26,7 @@
         has-cancel
         key="[[key]]"
         model="[[digitalservice.model]]"
-        fields="[[form.fields]]"
+        fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
         show-only>
@@ -72,18 +72,8 @@
         };
       }
 
-      static get observers() {
-        return [
-          '_routeIdChanged(routeData.id, isReady)',
-        ];
-      }
-
       _setData (e) {
         this.data = e.detail.response;
-      }
-
-      _routeIdChanged (id) {
-        this.key = id;
       }
 
       /**
@@ -103,6 +93,7 @@
         super.ready();
         this.digitalserviceModel = this.shadowRoot.querySelector(this.model);
         this.form = this.digitalserviceModel.getForm();
+        this.fields = this.form.fields;
 
         this.isReady = true;
       }
