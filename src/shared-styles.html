@@ -14,6 +14,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <dom-module id="shared-styles">
   <template>
     <style>
+      :host {
+        --dash-nav-background: #262f3d;
+        --dash-nav-open-background: #19212b;
+        --dash-nav-item-color: white;
+        --dash-nav-item-hover-color: rgba(255,255,255,.08);
+        --dash-nav-sub-item-color: rgba(255,255,255,.7);
+        --dash-nav-sub-item-selected-color: #4fc3f7;
+        --dash-nav-item-border-color: rgba(255,255,255,0.12);
+      }
+
       .yellow {
         color: var(--paper-yellow-600);
       }
@@ -25,6 +35,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       app-drawer {
         box-shadow: 2px 0px 6px 0px rgba(0,0,0,0.75);
+        --app-drawer-content-container: {
+          color: #fff;
+          background-color: var(--dash-nav-background);
+        }
       }
 
       paper-material {
