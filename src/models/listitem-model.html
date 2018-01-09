@@ -38,6 +38,7 @@
               list_id: null,
               name: null,
               icon: null,
+              order_position: null,
               created_at: null,
               updated_at: null
             }
@@ -102,6 +103,19 @@
               name: 'icon',
               type: 'text',
               validators: []
+            },
+            {
+              label: 'Order position',
+              name: 'order_position',
+              type: 'number',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^[1-9][0-9]*$',
+                  message: 'Invalid Order Position.',
+                  required: true
+                }
+              ]
             }
           ],
           actions: {
