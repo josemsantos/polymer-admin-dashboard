@@ -238,6 +238,8 @@
       ready() {
         super.ready();
 
+        super._sort({detail: {sort: {property: 'order_position', direction: 'asc'}}});
+
         this.isReady = true;
 
         this.addEventListener('delete-listitem', function (e) {

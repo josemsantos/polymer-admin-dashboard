@@ -149,6 +149,8 @@
       ready() {
         super.ready();
 
+        super._sort({detail: {sort: {property: 'order_position', direction: 'desc'}}});
+
         this.addEventListener('delete-digitalservice', function (e) {
           let item = this.getItem(this.items, e.detail.key);
           this._alert({
