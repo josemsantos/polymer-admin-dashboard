@@ -199,14 +199,14 @@
         }
 
         if (this.sortQuery === undefined) {
-          this.sortQuery = 'sort=id&order=normal';
+          this.sortQuery = 'sort=order_position&order=normal';
         }
 
         super._pageChanged(e);
       }
 
       getList () {
-        this.modelElement.search('', this.itemsPerPage, this.page, 'list_id=' + this.listId + '&', 'sort=id&order=normal');
+        this.modelElement.search('', this.itemsPerPage, this.page, 'list_id=' + this.listId + '&', 'sort=order_position&order=normal');
       }
 
       _goToParentList() {
@@ -237,8 +237,6 @@
        */
       ready() {
         super.ready();
-
-        super._sort({detail: {sort: {property: 'order_position', direction: 'desc'}}});
 
         this.isReady = true;
 
