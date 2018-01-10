@@ -24,7 +24,7 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-      
+
     <digitalservice-model
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
@@ -112,7 +112,8 @@
               'name',
               'icon',
               'order_position',
-              'active'
+              'active',
+              'homepage_label'
             ]
           }
         };
@@ -175,7 +176,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
