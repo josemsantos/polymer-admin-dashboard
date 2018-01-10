@@ -1,0 +1,160 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../elements/dash-list.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cashback-list">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+    </style>
+
+    <dash-list
+      heading="Cash Back"
+      items="[[items]]"
+      heading-style="title-header"
+      filters="[[filters]]"
+      icon="my-icons:account-box"
+      key="[[key]]"
+      columns="[[columns]]"
+      actions="[[userActions]]"
+      total-items="[[totalItems]]"
+      page="{{page}}"
+      custom-pagination
+      items-per-page="[[itemsPerPage]]"
+      notify-error="[[errorMessage]]"
+      notify-success="[[successMessage]]"></dash-list>
+    <cashback-model
+      on-model-search-error="_notifyUserError"
+      on-model-delete-error="_notifyUserError"
+      on-model-delete-success="_updateList"></cashback-model>
+  </template>
+
+  <script>
+    /**
+     * `cashback-list` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class CashBackList extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'cashback-list';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          key: {
+            type: String,
+            value: 'id'
+          },
+          module: {
+            type: String,
+            value: 'cashback'
+          },
+          model: String,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          columns: {
+            type: Array,
+            value: [
+              {
+                header: 'Name',
+                index: 'name',
+                type: 'data'
+              },
+              {
+                header: 'Last updated',
+                index: 'updated_at',
+                type: 'data'
+              },
+              {
+                header: 'Actions',
+                index: 'id',
+                type: 'actions'
+              },
+            ]
+          },
+          filters: {
+            type: Array,
+            value: [
+              {
+                label: 'Name',
+                name: 'name',
+                type: 'text',
+                validators: []
+              }
+            ]
+          },
+          actions: {
+            type: Object,
+            value: {
+              'create': {
+              },
+              'show': {
+                'path': ':module/show/:key'
+              },
+              'edit': {
+                'path': ':module/edit/:key'
+              },
+              'delete': {
+                'event': 'delete-cashback'
+              }
+            }
+          }
+        };
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'cashback-model';
+      }
+
+      onResponseChanged (e) {
+        let list = this.shadowRoot.querySelector('dash-list');
+        this.totalItems = e.detail.response.total;
+        this.items = this._setActionsKey(e.detail.response.results);
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+
+        this.addEventListener('delete-cashback', function (e) {
+          let item = this.getItem(this.items, e.detail.key);
+          this._alert({
+            'key': item.key,
+            'message': item.name,
+          });
+        }.bind(this));
+      }
+
+    }
+
+    window.customElements.define(CashBackList.is, CashBackList);
+  </script>
+</dom-module>

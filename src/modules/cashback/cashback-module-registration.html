@@ -1,0 +1,65 @@
+<script>
+  'use strict';
+
+  function CashBackModuleRegistration(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+            cashback_module: {
+            type: Object,
+            value: [
+              {
+                'cashback': {
+                  'inMenu': true,
+                  'menuGroup': 'Price Management',
+                  'menuItems': [
+                    {
+                      'label': 'Cashback',
+                      'action': 'list',
+                      'icon': 'my-icons:account-box',
+                      'name': 'cashback',
+                      'restrictions': [
+                        'ROLE_CASHBACK_GUEST',
+                        'ROLE_CASHBACK_STAFF',
+                        'ROLE_CASHBACK_EDITOR',
+                        'ROLE_CASHBACK_ADMIN'
+                      ]
+                    }
+                  ],
+                  'actions': {
+                    'show': {
+                      'restrictions': [
+                        'ROLE_CASHBACK_GUEST',
+                        'ROLE_CASHBACK_STAFF',
+                        'ROLE_CASHBACK_EDITOR',
+                        'ROLE_CASHBACK_ADMIN'
+                      ]
+                    },
+                    'create': {
+                      'restrictions': [
+                        'ROLE_CASHBACK_STAFF',
+                        'ROLE_CASHBACK_EDITOR',
+                        'ROLE_CASHBACK_ADMIN'
+                      ]
+                    },
+                    'edit': {
+                      'restrictions': [
+                        'ROLE_CASHBACK_EDITOR',
+                        'ROLE_CASHBACK_ADMIN'
+                      ]
+                    },
+                    'delete': {
+                      'restrictions': [
+                        'ROLE_CASHBACK_ADMIN'
+                      ]
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        };
+      }
+    }
+  }
+</script>
