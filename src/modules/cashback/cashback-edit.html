@@ -1,0 +1,204 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/app-route/app-route.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cashback-edit">
+  <template>
+    <style include="shared-styles">
+       :host {
+        display: block
+      }
+      .extra-padding {
+        padding: 32px;
+      }
+    </style>
+    <app-route
+      route="{{route}}"
+      pattern="/:id"
+      data="{{routeData}}"></app-route>
+      
+    <cashback-model
+      on-model-response-changed="_setData"
+      on-model-update-success="_notifyUser"
+      on-model-delete-success="_notifyAndNavigate">
+
+    </cashback-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[cashbackModel.model]]"
+        fields="[[fields]]"
+        actions="[[_formActions]]"
+        model-data="[[data]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-cancel="_goToList"
+        on-submit="_execAction">
+          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>Edit Cash Back - [[data.name]]</h2></div>
+          <div class="extra-padding" slot="before-end">
+            <hr>
+            <div class="text-centered">
+              <template is="dom-if" if="[[_isFormElementHidden]]">
+                <cashback-formelement-button  class="extra-padding"
+                  on-cashback-formelement-request="_openFirstFormElement"
+                  formelement="[[data.formelement]]"></cashback-formelement-button>
+              </template>
+            </div>
+            <template is="dom-if" if="[[!_isFormElementHidden]]" restamp>
+              <cashback-formelement
+                selected="[[selected]]"
+                cash-back-id="[[data.id]]"
+                formelement="[[data.formelement]]"
+                access-control="[[accessControl]]"
+                permissions="[[permissions]]"></cashback-formelement>
+            </template>
+          </div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+    /**
+     * `cashback-edit` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class CashBackEdit extends ModuleElementBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'cashback-edit';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          _isFormElementHidden: {
+            type: Boolean,
+            value: true
+          },
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          cashbackModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'icon',
+              'order_position',
+              'active'
+            ]
+          }
+        };
+      }
+
+      _notifyUser (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+              route: this.getModuleName() + '/list'
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
+        super._notifyUser(e)
+      }
+
+      _setData (e) {
+        this.data = e.detail.response;
+      }
+
+      _updateCashBack (e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
+        this.errorMessage = "";
+        console.log(this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload));
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.cashbackModel.update(null, this.key, JSON.stringify(payload));
+      }
+
+      _deleteConfirmed (key) {
+        this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _openFirstFormElement (e) {
+        this._isFormElementHidden = false;
+      }
+
+      /**
+       * Close the form element if the user leaves the page
+       */
+      onSelectedChange(selected, oSelected) {
+        if (!selected && oSelected) {
+          this._isFormElementHidden = true;
+        }
+        super.onSelectedChange(selected, oSelected);
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.model = 'cashback-model';
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized. 
+       */
+      ready() {
+        super.ready();
+        this.cashbackModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cashbackModel.getForm();
+
+        this.fields = this.form.fields;
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('delete-cashback', function (e) {
+          this._alert({
+            'key': this.key,
+            'message': this.data.name
+          });
+        }.bind(this));
+
+        this.addEventListener('update-cashback', function (e) {
+          this._updateCashBack(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(CashBackEdit.is, CashBackEdit);
+  </script>
+</dom-module>

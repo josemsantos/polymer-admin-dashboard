@@ -1,0 +1,143 @@
+<link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../my-icons.html">
+<link rel="import" href="../../shared-styles.html">
+
+<dom-module id="cashback-create">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block
+      }
+    </style>
+
+    <cashback-model
+      on-model-create-error="_notifyUserError"
+      on-model-create-success="_notifyUser"></cashback-model>
+
+    <paper-material elevation="2">
+      <dash-form
+        class="default"
+        has-cancel
+        key="[[key]]"
+        model="[[cashBackModel.model]]"
+        fields="[[fields]]"
+        actions="[[_formActions]]"
+        notify-error="[[errorMessage]]"
+        notify-success="[[successMessage]]"
+        on-submit="_execAction"
+        on-cancel="_goToList"
+        model-ready>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>New Cash Back</h2></div>
+      </dash-form>
+    </paper-material>
+  </template>
+
+  <script>
+   /**
+    * `cashback-create` Description
+    *
+    * @summary ShortDescription.
+    * @customElement
+    * @polymer
+    * @extends {Polymer.Element}
+    */
+    class CashBackCreate extends ModuleElementBehavior(Polymer.Element) {
+      /**
+        * String providing the tag name to register the element under.
+        */
+      static get is() {
+        return 'cashback-create';
+      }
+
+      /**
+        * Object describing property-related metadata used by Polymer features
+        */
+      static get properties() {
+        return {
+          isReady: Boolean,
+          connection: {
+            type: String,
+            value: 'dozer'
+          },
+          module: {
+            type: String,
+            value: 'cashback'
+          },
+          cashBackModel: HTMLElement,
+          pageType: {
+            type: String,
+            value: 'form'
+          },
+          data: Object,
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'active',
+            ]
+          }
+        };
+      }
+
+      _notifyUser(e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/list'
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
+        e.detail.message = e.detail.message.response.name + " created";
+        super._notifyUser(e)
+      }
+
+      _createCashBack(e) {
+        let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
+        this.errorMessage = "";
+        if (valid.length > 0) {
+          this.errorMessage = valid;
+          return;
+        }
+        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+        let payload = this._sanitizePayload(this.payload, e.detail.payload);
+        this.cashBackModel.create(null, JSON.stringify(payload));
+      }
+
+      /**
+        * Instance of the element is created/upgraded. Use: initializing state,
+        * set up event listeners, create shadow dom.
+        * @constructor
+        */
+      constructor() {
+        super();
+        this.model = 'cashback-model';
+      }
+
+      /**
+        * Use for one-time configuration of your component after local DOM is initialized.
+        */
+      ready() {
+        super.ready();
+        this.cashBackModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cashBackModel.getCreateForm();
+
+        this.fields = this.form.fields;
+        this.actions = this.form.actions;
+        this.isReady = true;
+
+        this.addEventListener('create-cashback', function (e) {
+          this._createCashBack(e);
+        });
+      }
+
+    }
+
+    window.customElements.define(CashBackCreate.is, CashBackCreate);
+  </script>
+</dom-module>

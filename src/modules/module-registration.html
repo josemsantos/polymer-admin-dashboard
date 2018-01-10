@@ -1,5 +1,6 @@
 <link rel="import" href="cms/cms-module-registration.html">
 <link rel="import" href="digitalservices/digitalservices-module-registration.html">
+<link rel="import" href="cashback/cashback-module-registration.html">
 <link rel="import" href="distributors/distributors-module-registration.html">
 <link rel="import" href="services/services-module-registration.html">
 <link rel="import" href="lists/lists-module-registration.html">
@@ -16,10 +17,11 @@
                             ListItemsModuleRegistration(
                             CmsModuleRegistration(
                             DigitalServicesModuleRegistration(
+                            CashBackModuleRegistration(
                             DistributorsModuleRegistration(
                             UserModuleRegistration(
                             UsersModuleRegistration(
-                            GroupsModuleRegistration(superClass))))))))) {
+                            GroupsModuleRegistration(superClass)))))))))) {
         static get properties() {
           return {
             modules: {
@@ -44,6 +46,7 @@
           this._addModules(this.listitems_module);
           this._addModules(this.distributors_module);
           this._addModules(this.digitalservices_module);
+          this._addModules(this.cashback_module);
           this._addModules(this.services_module);
           this._addModules(this.group_module);
           this._addModules(this.users_module);

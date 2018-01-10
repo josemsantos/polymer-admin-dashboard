@@ -255,6 +255,22 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]"
               name="distributors-upload"
               route="[[subroute]]"></distributors-upload>
+            <cashback-list
+                    permissions="[[permissions]]"
+                    name="cashback-list"
+                    route="[[subroute]]"></cashback-list>
+            <cashback-create
+                    permissions="[[permissions]]"
+                    name="cashback-create"
+                    route="[[subroute]]"></cashback-create>
+            <cashback-edit
+                    permissions="[[permissions]]"
+                    name="cashback-edit"
+                    route="[[subroute]]"></cashback-edit>
+            <cashback-show
+                    permissions="[[permissions]]"
+                    name="cashback-show"
+                    route="[[subroute]]"></cashback-show>
             <groups-list
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
@@ -337,7 +353,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       'distributors-create': 'modules/distributors/distributors-create.html',
       'distributors-edit': 'modules/distributors/distributors-edit.html',
       'distributors-show': 'modules/distributors/distributors-show.html',
-      'distributors-upload': 'modules/distributors/distributors-upload.html'
+      'distributors-upload': 'modules/distributors/distributors-upload.html',
+      'cashback-list': 'modules/cashback/cashback-list.html',
+      'cashback-create': 'modules/cashback/cashback-create.html',
+      'cashback-edit': 'modules/cashback/cashback-edit.html',
+      'cashback-show': 'modules/cashback/cashback-show.html',
     };
 
     class DashApp extends Polymer.Element {
