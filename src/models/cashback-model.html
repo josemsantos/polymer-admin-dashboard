@@ -37,7 +37,10 @@
             value: {
               id: null,
               name: null,
-              active: null
+              active: null,
+              percentage: null,
+              cap: null,
+              service_id: null,
             }
           }
         };
@@ -83,7 +86,7 @@
                 {
                   type: 'regex',
                   regex: '^(.){1,}$',
-                  message: 'Invalid Cash Back name',
+                  message: 'Invalid Cashback name',
                   required: true,
                 }
               ]
@@ -93,6 +96,50 @@
               name: 'active',
               type: 'checkbox',
               validators: []
+            },
+            {
+              label: 'Percentage',
+              name: 'percentage',
+              type: 'number',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^[0-9]*([.](?=[0-9]))?[0-9]*$',
+                  message: 'Invalid Cashback Percentage',
+                  required: true,
+                }
+              ]
+            },
+            {
+              label: 'Cap',
+              name: 'cap',
+              type: 'number',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: '^[0-9]*([.](?=[0-9]))?[0-9]*$',
+                  message: 'Invalid Cashback Cap',
+                  required: true,
+                }
+              ]
+            },
+            {
+                label: 'Service',
+                name: 'service_id',
+                type: 'dash-dropdown',
+                items: [],
+                selected: 0,
+                validators: [
+                    {
+                        type: 'regex',
+                        regex: '^\\d{1,}$',
+                        message: 'Invalid Service Type',
+                        required: true,
+                    }
+                ],
+                event: {
+                    'on-selected-items-changed': 'service-types-changed'
+                }
             }
           ],
           actions: {
@@ -118,7 +165,6 @@
         };
         return form;
       }
-
     }
 
     window.customElements.define(CashBackModel.is, CashBackModel);

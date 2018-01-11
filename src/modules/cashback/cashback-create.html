@@ -28,10 +28,12 @@
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
+        on-service-types-changed="_getServiceType"
+        on-dropdown-changed="_dropDownChanged"
         on-submit="_execAction"
         on-cancel="_goToList"
         model-ready>
-          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>New Cash Back</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>New Cashback</h2></div>
       </dash-form>
     </paper-material>
   </template>
@@ -79,6 +81,9 @@
             value: [
               'name',
               'active',
+              'percentage',
+              'cap',
+              'service_id'
             ]
           }
         };

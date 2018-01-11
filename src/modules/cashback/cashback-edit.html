@@ -43,7 +43,7 @@
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>Edit Cash Back - [[data.name]]</h2></div>
+          <div class="title title-header"><h2><iron-icon icon="my-icons:account-box"></iron-icon>Edit Cashback - [[data.name]]</h2></div>
           <div class="extra-padding" slot="before-end">
             <hr>
             <div class="text-centered">
@@ -108,7 +108,9 @@
             type: Array,
             value: [
               'name',
-              'active'
+              'active',
+              'percentage',
+              'cap'
             ]
           }
         };
@@ -133,7 +135,6 @@
       _updateCashBack (e) {
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
-        console.log(this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload));
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;

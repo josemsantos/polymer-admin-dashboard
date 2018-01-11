@@ -13,7 +13,7 @@
     </style>
 
     <dash-list
-      heading="Cash Back"
+      heading="Cashback"
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
@@ -77,8 +77,18 @@
                 type: 'data'
               },
               {
-                header: 'Last updated',
-                index: 'updated_at',
+                header: 'Status',
+                index: 'active',
+                type: 'data'
+              },
+              {
+                header: 'Percentage',
+                index: 'percentage',
+                type: 'data'
+              },
+              {
+                header: 'Cap',
+                index: 'cap',
                 type: 'data'
               },
               {
