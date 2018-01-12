@@ -38,7 +38,11 @@
     "src/modules/distributors/distributors-create.html",
     "src/modules/distributors/distributors-edit.html",
     "src/modules/distributors/distributors-show.html",
-    "src/modules/distributors/distributors-upload.html"
+    "src/modules/distributors/distributors-upload.html",
+    "src/modules/cashback/cashback-show.html",
+    "src/modules/cashback/cashback-list.html",
+    "src/modules/cashback/cashback-edit.html",
+    "src/modules/cashback/cashback-create.html"
   ],
   "sources": [
     "bower_components/**/*.png",

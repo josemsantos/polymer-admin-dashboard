@@ -1,0 +1,77 @@
+<script>
+  'use strict';
+  function CashBackModuleBehavior(superClass) {
+      return class extends superClass {
+          _isDataAndServicesReady(data, servicesData) {
+              if (data && servicesData) {
+                  let _items = [];
+                  _items.push({
+                      key: 0,
+                      label: 'None'
+                  });
+
+                  for (let i in servicesData) {
+                      _items.push({
+                          key: servicesData[i].id,
+                          label: servicesData[i].title
+                      })
+                  }
+
+                  let _form = this.cashBackModel.getForm();
+
+                  let _fields = this.shadowRoot.querySelector('dash-form')
+                      .setDataToFormElement('service_id', _items, this.data.service_id, _form.fields);
+
+                  this.fields = _fields;
+                  this.form = {
+                      fields: _fields,
+                      actions: _form.actions
+                  };
+
+                  this.actions = this.form.actions;
+                  this.isReady = true;
+
+                  setTimeout(function () {
+                      this.shadowRoot.querySelector('dash-form').reloadData(data);
+                  }.bind(this), 1);
+
+                  this._serviceId = this.data.service_id;
+              }
+          }
+
+          _setServiceData(e) {
+              if (e.detail.response && e.detail.response.results) {
+                  this.servicesData = e.detail.response.results;
+              }
+          }
+
+          _openFirstFormElement (e) {
+              this._isFormElementHidden = false;
+          }
+
+          _setData(e) {
+              this.data = e.detail.response;
+          }
+
+          onSelectedChange(selected, oSelected) {
+              if (!selected && oSelected) {
+                  this._isFormElementHidden = true;
+              }
+
+              if (selected) {
+                  this.serviceModel = this.shadowRoot.querySelector('service-model');
+                  this.serviceModel.connection = this.requestConnections[this.connection];
+                  this.serviceModel.search(null, 1000);
+              }
+
+              super.onSelectedChange(selected, oSelected);
+          }
+
+          constructor () {
+              super();
+          }
+      }
+  }
+
+
+</script>
