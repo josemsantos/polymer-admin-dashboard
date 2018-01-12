@@ -3,7 +3,9 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="cashback-module-behavior.html">
 <link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -23,11 +25,14 @@
       pattern="/:id"
       data="{{routeData}}"></app-route>
 
+    <service-model
+            fetch="[[_serviceId]]"
+            on-model-response-changed="_setServiceData"></service-model>
+
     <cashback-model
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate">
-
     </cashback-model>
 
     <paper-material elevation="2">
@@ -35,7 +40,7 @@
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[cashbackModel.model]]"
+        model="[[cashBackModel.model]]"
         fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
@@ -75,7 +80,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class CashBackEdit extends ModuleElementBehavior(Polymer.Element) {
+    class CashBackEdit extends CashBackModuleBehavior(ModuleElementBehavior (Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -88,6 +93,8 @@
        */
       static get properties() {
         return {
+          _serviceId: Number,
+          servicesData: Object,
           _isFormElementHidden: {
             type: Boolean,
             value: true
@@ -97,7 +104,7 @@
             type: String,
             value: 'dozer'
           },
-          cashbackModel: HTMLElement,
+          cashBackModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -108,57 +115,55 @@
             type: Array,
             value: [
               'name',
-              'active'
+              'active',
+              'percentage',
+              'cap',
+              'service_id'
             ]
           }
         };
       }
 
-      _notifyUser (e) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {
-              route: this.getModuleName() + '/list'
-          },
-          bubbles: true,
-          composed: true
-        }));
-        this.shadowRoot.querySelector('dash-form').formReset();
-        super._notifyUser(e)
-      }
 
-      _setData (e) {
-        this.data = e.detail.response;
+      static get observers() {
+        return [
+          '_isDataAndServicesReady(data, servicesData)',
+        ];
       }
 
       _updateCashBack (e) {
+        // force required validation on service type, distributor_id and distributor_service_id
+        e.detail.payload.service_id = e.detail.payload.service_id == 0 ? null : e.detail.payload.service_id;
+
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
-        console.log(this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload));
         if (valid.length > 0) {
           this.errorMessage = valid;
           return;
         }
-        //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
+
+
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.cashbackModel.update(null, this.key, JSON.stringify(payload));
+        payload.service_id = parseInt(payload.service_id);
+        payload.cap = payload.cap == '' ? null : payload.cap;
+
+        this.cashBackModel.update(null, this.key, JSON.stringify(payload));
       }
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
       }
 
-      _openFirstFormElement (e) {
-        this._isFormElementHidden = false;
-      }
-
-      /**
-       * Close the form element if the user leaves the page
-       */
-      onSelectedChange(selected, oSelected) {
-        if (!selected && oSelected) {
-          this._isFormElementHidden = true;
-        }
-        super.onSelectedChange(selected, oSelected);
+      _notifyUser (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {
+            route: this.getModuleName() + '/list'
+          },
+          bubbles: true,
+          composed: true
+        }));
+        this.shadowRoot.querySelector('dash-form').formReset();
+        super._notifyUser(e)
       }
 
       /**
@@ -176,8 +181,8 @@
        */
       ready() {
         super.ready();
-        this.cashbackModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.cashbackModel.getForm();
+        this.cashBackModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cashBackModel.getForm();
 
         this.fields = this.form.fields;
         this.actions = this.form.actions;
