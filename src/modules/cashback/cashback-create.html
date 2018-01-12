@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -14,6 +15,10 @@
       }
     </style>
 
+    <service-model
+      fetch="[[_serviceId]]"
+      on-model-response-changed="_setServiceData"></service-model>
+
     <cashback-model
       on-model-create-error="_notifyUserError"
       on-model-create-success="_notifyUser"></cashback-model>
@@ -23,7 +28,7 @@
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[cashBackModel.model]]"
+        model="[[cashbackModel.model]]"
         fields="[[fields]]"
         actions="[[_formActions]]"
         notify-error="[[errorMessage]]"
@@ -60,6 +65,7 @@
         */
       static get properties() {
         return {
+          servicesData: Object,
           isReady: Boolean,
           connection: {
             type: String,
@@ -69,7 +75,7 @@
             type: String,
             value: 'cashback'
           },
-          cashBackModel: HTMLElement,
+          cashbackModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -89,6 +95,35 @@
         };
       }
 
+     _setServiceData (e) {
+       if (e.detail.response && e.detail.response.results) {
+         this.servicesData = e.detail.response.results;
+
+         let _items = [];
+         _items.push({
+           key: 0,
+           label: 'None'
+         });
+
+         for (let i in this.servicesData) {
+           _items.push({
+             key: this.servicesData[i].id,
+             label: this.servicesData[i].title
+           })
+         }
+
+         let _form = this.cashbackModel.getForm();
+         let _fields = this.shadowRoot.querySelector('dash-form')
+                 .setDataToFormElement('service_id', _items, 0, _form.fields);
+
+         this.fields = _fields;
+         this.form = {
+           fields: _fields,
+           actions: _form.actions
+         };
+       }
+     }
+
       _notifyUser(e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {
@@ -103,6 +138,9 @@
       }
 
       _createCashBack(e) {
+        // force required validation on service type, distributor_id and distributor_service_id
+        e.detail.payload.service_id = e.detail.payload.service_id == 0 ? null : e.detail.payload.service_id;
+
         let valid = this.shadowRoot.querySelector('dash-form').validate(this.fields, e.detail.payload);
         this.errorMessage = "";
         if (valid.length > 0) {
@@ -111,8 +149,23 @@
         }
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.cashBackModel.create(null, JSON.stringify(payload));
+        payload.service_id = parseInt(payload.service_id);
+        payload.cap = payload.cap == '' ? null : payload.cap;
+        this.cashbackModel.create(null, JSON.stringify(payload));
       }
+
+     /**
+      * Close the form element if the user leaves the page
+      */
+     onSelectedChange(selected, oSelected) {
+       if (selected) {
+         this.serviceModel = this.shadowRoot.querySelector('service-model');
+         this.serviceModel.connection = this.requestConnections[this.connection];
+         this.serviceModel.search(null, 1000);
+       }
+
+       super.onSelectedChange(selected, oSelected);
+     }
 
       /**
         * Instance of the element is created/upgraded. Use: initializing state,
@@ -129,8 +182,8 @@
         */
       ready() {
         super.ready();
-        this.cashBackModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.cashBackModel.getCreateForm();
+        this.cashbackModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cashbackModel.getCreateForm();
 
         this.fields = this.form.fields;
         this.actions = this.form.actions;
