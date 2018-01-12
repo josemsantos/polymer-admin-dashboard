@@ -104,8 +104,8 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^([0-9]|[1-8][0-9]|9[0-9]|100)$',
-                  message: 'Invalid Cashback Percentage. Allowed from 0 to 100.',
+                  regex: '(?!^0*$)(?!^0*\\.0*$)^\\d{1,2}(\\.\\d{1,2})?$',
+                  message: 'Invalid Cashback Percentage. Allowed from 0 to 100 with only 2 decimal places',
                   required: true,
                 }
               ]
