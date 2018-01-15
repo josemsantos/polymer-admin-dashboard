@@ -20,6 +20,10 @@
         return type === 'collection';
       }
 
+      _isTextarea(type) {
+         return type === 'textarea';
+       }
+
       _isDropdown(type) {
         return type === 'dropdown';
       }
@@ -45,6 +49,10 @@
         if (formField) {
           if (formField.tagName === 'PAPER-CHECKBOX') {
             formField.checked = data;
+          } else if (formField.tagName === 'DASH-FORM-DROPDOWN') {
+            formField.selected = data;
+          } else if (formField.tagName === 'PAPER-CHIP-INPUT-AUTOCOMPLETE') {
+            formField.items = this._preSelectItemFromValues(formField, data);
           } else {
             formField.value = data;
           }

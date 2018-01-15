@@ -12,7 +12,12 @@
         let list = [];
         let items = formField.items;
         try {
-          let source = JSON.parse(formField.getAttribute('source'));
+          if (formField.getAttribute('source')) {
+            var source = JSON.parse(formField.getAttribute('source'));
+          } else {
+            var source = formField.source;
+            source = source ? source : [];
+          }
           if (source.length) {
             for (let i in items) {
               for (let j in source) {
@@ -31,7 +36,12 @@
       _preSelectItemFromValues (formField, items) {
         let list = [];
         try {
-          let source = JSON.parse(formField.getAttribute('source'));
+          if (formField.getAttribute('source')) {
+            var source = JSON.parse(formField.getAttribute('source'));
+          } else {
+            var source = formField.source;
+            source = source ? source : [];
+          }
           if (source.length) {
             for (let i in items) {
               for (let j in source) {
@@ -42,7 +52,7 @@
             }
           }
         } catch (e) {
-          console.warn('Json parse failed');
+          console.warn('Json parse failed', e);
         }
         return list;
       }

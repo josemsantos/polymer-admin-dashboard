@@ -136,11 +136,21 @@
           verb: method,
           data: queryParams,
           onLoad(e) {
+            try {
             _self.set('response', JSON.parse(e.target.responseText));
+            }
+            catch(err) {
+              _self.set('response', {});
+            }
           },
           onError(e) {
             _self._setFailure(true);
+            try {
             _self._posSearchErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+          }
+            catch(err) {
+              _self._posSearchErrorCallBack.call(_self, {});
+            }
           }
         });
       }
@@ -152,11 +162,21 @@
           url: this.endpoint + '/' + key,
           verb: method,
           onLoad(e) {
+            try {
             _self.set('response', JSON.parse(e.target.responseText));
+            }
+            catch(err) {
+              _self.set('response', {});
+            }
           },
           onError(e) {
             _self._setFailure(true);
+            try {
             _self._posLoadErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+          }
+            catch(err) {
+              _self._posLoadErrorCallBack.call(_self, {});
+            }
           }
         });
       }
@@ -169,11 +189,21 @@
           verb: method,
           data: payload,
           onLoad(e) {
+            try {
             _self._posCreateCallBack.call(_self, JSON.parse(e.target.responseText));
+            }
+            catch(err) {
+              _self._posCreateCallBack.call(_self, {});
+            }
           },
           onError(e) {
             _self._setFailure(true);
+            try {
             _self._posCreateErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+          }
+            catch(err) {
+              _self._posCreateErrorCallBack.call(_self, {});
+            }
           }
         });
       }
@@ -186,11 +216,21 @@
           verb: method,
           data: payload,
           onLoad(e) {
+            try {
             _self._posUpdateCallBack.call(_self, JSON.parse(e.target.responseText));
+            }
+            catch(err) {
+              _self._posUpdateCallBack.call(_self, {});
+            }
           },
           onError(e) {
             _self._setFailure(true);
+            try {
             _self._posUpdateErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+          }
+            catch(err) {
+              _self._posUpdateErrorCallBack.call(_self, {});
+            }
           }
         });
       }
@@ -206,7 +246,12 @@
           },
           onError(e) {
             _self._setFailure(true);
+            try {
             _self._posDeleteErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+          }
+            catch(err) {
+              _self._posDeleteErrorCallBack.call(_self, {});
+            }
           }
         });
       }

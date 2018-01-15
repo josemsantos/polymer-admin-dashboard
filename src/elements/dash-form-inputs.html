@@ -2,6 +2,7 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
@@ -107,8 +108,20 @@
           name$="[[field.name]]"
           text-only$="[[_isTextonly(field.attributes)]]"
           closable="[[!showOnly]]"
-          disabled="[[showOnly]]">
+          disabled="[[showOnly]]"
+          source="[[field.source]]"
+          min-search-string-length="[[_minSearchLength(field.minSearchLength)]]">
         </paper-chip-input-autcomplete>
+      </template>
+      
+      <template is="dom-if" if="[[_isTextarea(field.type)]]">
+        <paper-textarea
+          always-float-label
+          name$="[[field.name]]"
+          label="[[field.label]]"
+          type$="[[field.type]]"
+          disabled="[[_isReadonly(field.attributes, showOnly)]]"
+          maxlength="[[field.maxlength]]"></paper-textarea>
       </template>
     </template>
   </template>
@@ -193,6 +206,11 @@
 
       }
 
+      _minSearchLength(length) {
+        //Default 2 characters
+        return length ? length : 2;
+      }
+
       _onIronItemsChanged (e) {
         this._fireFieldEvent(e, 'on-iron-items-changed');
       }
@@ -265,6 +283,9 @@
         } else if (this._isCollection(fld.type)) {
           let el = this.shadowRoot.querySelector('paper-chip-input-autocomplete[name=' + fld.name + ']');
           el.items = [];
+        } else if (this._isTextarea(fld.type)) {
+          let el = this.shadowRoot.querySelector('paper-textarea[name=' + fld.name + ']');
+          el.value = '';
         } else if (this._isDashDropdown(fld.type)) {
           let el = this.shadowRoot.querySelector('dash-form-dropdown[name=' + fld.name + ']');
           el.selected = 0;

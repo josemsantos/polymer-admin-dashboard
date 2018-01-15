@@ -19,7 +19,12 @@
       }
 
       notifyFromApiResponse(evnt) {
-        let payload = JSON.parse(evnt.target.responseText);
+        let payload = {};
+        try {
+          payload = JSON.parse(evnt.target.responseText);
+        }
+        catch (err) { }
+
         let error = payload.response;
         let errorDetail = this._buildErrorMessage(payload.errors);
 
