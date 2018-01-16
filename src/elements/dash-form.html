@@ -253,10 +253,11 @@
                 let max = validators[j].max ? validators[j].max : null;
                 let decimalsAllowed = validators[j].decimals ? validators[j].decimals : null;
                 let decimalsTyped = (fieldValue.split('.')[1] || []).length;
-                      console.log(decimalsAllowed, decimalsTyped);
-                if ((min !== null && min > fieldValue)
-                  || (max !== null && max < fieldValue)
-                  || (decimalsAllowed !== null && decimalsAllowed < decimalsTyped)
+
+                if (((null === fieldValue || undefined === fieldValue || '' === fieldValue) && required)
+                    || (min !== null && min > fieldValue)
+                    || (max !== null && max < fieldValue)
+                    || (decimalsAllowed !== null && decimalsAllowed < decimalsTyped)
                 ) {
                   errors.push(validators[j].message);
                 }
