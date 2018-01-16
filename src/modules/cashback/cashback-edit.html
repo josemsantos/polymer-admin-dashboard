@@ -3,6 +3,7 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="cashback-module-behavior.html">
 <link rel="import" href="../../models/cashback-model.html">
 <link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
@@ -27,12 +28,11 @@
     <service-model
             fetch="[[_serviceId]]"
             on-model-response-changed="_setServiceData"></service-model>
-      
+
     <cashback-model
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate">
-
     </cashback-model>
 
     <paper-material elevation="2">
@@ -40,7 +40,7 @@
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[cashbackModel.model]]"
+        model="[[cashBackModel.model]]"
         fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
@@ -80,7 +80,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class CashBackEdit extends ModuleElementBehavior(Polymer.Element) {
+    class CashBackEdit extends CashBackModuleBehavior(ModuleElementBehavior (Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -104,7 +104,7 @@
             type: String,
             value: 'dozer'
           },
-          cashbackModel: HTMLElement,
+          cashBackModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -124,57 +124,11 @@
         };
       }
 
+
       static get observers() {
         return [
           '_isDataAndServicesReady(data, servicesData)',
         ];
-      }
-
-      _isDataAndServicesReady (data, servicesData) {
-        if (data && servicesData) {
-          let _items = [];
-          _items.push({
-            key: 0,
-            label: 'None'
-          });
-
-          for (let i in servicesData) {
-            _items.push({
-              key: servicesData[i].id,
-              label: servicesData[i].title
-            })
-          }
-
-          let _form = this.cashbackModel.getForm();
-
-          let _fields = this.shadowRoot.querySelector('dash-form')
-                  .setDataToFormElement('service_id', _items, this.data.service_id, _form.fields);
-
-          this.fields = _fields;
-          this.form = {
-            fields: _fields,
-            actions: _form.actions
-          };
-
-          this.actions = this.form.actions;
-          this.isReady = true;
-
-          setTimeout(function() {
-            this.shadowRoot.querySelector('dash-form').reloadData(data);
-          }.bind(this), 1);
-
-          this._serviceId = this.data.service_id;
-        }
-      }
-
-      _setData (e) {
-        this.data = e.detail.response;
-      }
-
-      _setServiceData (e) {
-        if (e.detail.response && e.detail.response.results) {
-          this.servicesData = e.detail.response.results;
-        }
       }
 
       _updateCashBack (e) {
@@ -193,15 +147,11 @@
         payload.service_id = parseInt(payload.service_id);
         payload.cap = payload.cap == '' ? null : payload.cap;
 
-        this.cashbackModel.update(null, this.key, JSON.stringify(payload));
+        this.cashBackModel.update(null, this.key, JSON.stringify(payload));
       }
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
-      }
-
-      _openFirstFormElement (e) {
-        this._isFormElementHidden = false;
       }
 
       _notifyUser (e) {
@@ -217,23 +167,6 @@
       }
 
       /**
-       * Close the form element if the user leaves the page
-       */
-      onSelectedChange(selected, oSelected) {
-        if (!selected && oSelected) {
-          this._isFormElementHidden = true;
-        }
-
-        if (selected) {
-          this.serviceModel = this.shadowRoot.querySelector('service-model');
-          this.serviceModel.connection = this.requestConnections[this.connection];
-          this.serviceModel.search(null, 1000);
-        }
-
-        super.onSelectedChange(selected, oSelected);
-      }
-
-      /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
        * @constructor
@@ -244,12 +177,12 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
-        this.cashbackModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.cashbackModel.getForm();
+        this.cashBackModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.cashBackModel.getForm();
 
         this.fields = this.form.fields;
         this.actions = this.form.actions;

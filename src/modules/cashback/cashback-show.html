@@ -2,7 +2,9 @@
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
+<link rel="import" href="cashback-module-behavior.html">
 <link rel="import" href="../../models/cashback-model.html">
+<link rel="import" href="../../models/service-model.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -18,14 +20,20 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
+
+    <service-model
+            fetch="[[_serviceId]]"
+            on-model-response-changed="_setServiceData"></service-model>
+
     <cashback-model
       on-model-response-changed="_setData"></cashback-model>
+
     <paper-material elevation="2">
       <dash-form
         class="default"
         has-cancel
         key="[[key]]"
-        model="[[cashback.model]]"
+        model="[[cashBackModel.model]]"
         fields="[[fields]]"
         model-data="[[data]]"
         on-cancel="_goToList"
@@ -44,7 +52,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class CashBackShow extends ModuleElementBehavior(Polymer.Element) {
+    class CashBackShow extends CashBackModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -57,6 +65,12 @@
        */
       static get properties() {
         return {
+          _serviceId: Number,
+          servicesData: Object,
+          _isFormElementHidden: {
+            type: Boolean,
+            value: true
+          },
           isReady: Boolean,
           connection: {
             type: String,
@@ -68,12 +82,25 @@
             value: 'form'
           },
           data: Object,
-          form: Object
+          form: Object,
+          payload: {
+            type: Array,
+            value: [
+              'name',
+              'active',
+              'percentage',
+              'cap',
+              'service_id'
+            ]
+          }
         };
       }
 
-      _setData (e) {
-        this.data = e.detail.response;
+
+      static get observers() {
+        return [
+          '_isDataAndServicesReady(data, servicesData)',
+        ];
       }
 
       /**
@@ -87,14 +114,13 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
         this.cashBackModel = this.shadowRoot.querySelector(this.model);
         this.form = this.cashBackModel.getForm();
         this.fields = this.form.fields;
-
         this.isReady = true;
       }
 
