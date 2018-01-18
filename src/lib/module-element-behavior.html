@@ -289,10 +289,12 @@
 
       _sort (e) {
         this.filterSortRequest = true;
-        this.page = 1; //reset pagination element
-        let direction = e.detail.sort.direction == 'desc' ? 'normal' : 'reverse';
-        this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + direction;
-        this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery);
+        if (e.detail.sort.property) {
+          this.page = 1; //reset pagination element
+          let _direction = e.detail.sort.direction == 'asc' ? 'normal' : 'reverse';
+          this.sortQuery = 'sort=' + e.detail.sort.property + '&order=' + _direction;
+          this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery);
+        }
         this.filterSortRequest = false;
       }
 

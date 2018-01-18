@@ -15,7 +15,11 @@
             type: Object,
             observer: '_responseChanged'
           },
-          message: String
+          message: String,
+          sortQueryDefault: {
+            type: String,
+            value: 'sort=id&order=reverse'
+          }
         };
       }
 
@@ -127,7 +131,7 @@
           queryParams += page ? "page=" + page + '&': '';
         }
         queryParams += filterQuery ? filterQuery : '';
-        queryParams += sortQuery ? sortQuery : 'sort=id&order=reverse';
+        queryParams += sortQuery ? sortQuery : this.sortQueryDefault;
         method = method || 'GET';
         
         var _self = this;
