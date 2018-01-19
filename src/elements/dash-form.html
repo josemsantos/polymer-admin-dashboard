@@ -238,13 +238,27 @@
           let validators = modelFields[i].validators;
           for (let j in validators) {
             let required = (validators[j].required === true);
+            let fieldValue = request[modelFields[i].name];
             switch (validators[j].type) {
               case 'regex':
-                let fieldValue = request[modelFields[i].name];
                 var reg = new RegExp(validators[j].regex);
                 if ((null === fieldValue || undefined === fieldValue) && required) {
                   errors.push(validators[j].message);
                 } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && false === reg.test(fieldValue)) {
+                  errors.push(validators[j].message);
+                }
+              break;
+              case 'numeric':
+                let min = validators[j].min || validators[j].min === 0 ? validators[j].min : null;
+                let max = validators[j].max ? validators[j].max : null;
+                let decimalsAllowed = validators[j].decimals ? validators[j].decimals : null;
+                let decimalsTyped = (fieldValue.split('.')[1] || []).length;
+
+                if (((null === fieldValue || undefined === fieldValue || '' === fieldValue) && required)
+                    || (min !== null && min > fieldValue)
+                    || (max !== null && max < fieldValue)
+                    || (decimalsAllowed !== null && decimalsAllowed < decimalsTyped)
+                ) {
                   errors.push(validators[j].message);
                 }
               break;

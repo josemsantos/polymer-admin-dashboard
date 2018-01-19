@@ -5,32 +5,49 @@
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
 <link rel="import" href="dash-submenu.html">
 <link rel="import" href="../my-icons.html">
+<link rel="import" href="../shared-styles.html">
 
 <dom-module id="dash-navigation-menu">
   <template>
-    <style>
+    <style include="shared-styles">
        :host {
         display: block;
-        margin-top: 48px;
       }
       
       paper-item {
         cursor: pointer;
       }
 
-      .drawer-list paper-item {
-        display: block;
+      .drawer-list paper-listbox paper-item,
+      .drawer-list paper-listbox paper-listbox paper-item {
+        -o-transition:.3s;
+        -ms-transition:.3s;
+        -moz-transition:.3s;
+        -webkit-transition:.3s;
+        /* ...and now for the proper property */
+        transition:.3s;
+
         padding: 4px 16px;
         text-decoration: none;
-        color: #FFF;
+        color: var(--dash-nav-item-color);
         line-height: 40px;
         font-weight: 300;
-        background-color: var(--paper-blue-grey-800);
+        background-color: var(--dash-nav-open-background);
+        border-bottom: 1px solid var(--dash-nav-item-border-color);
+      }
+
+      .drawer-list paper-listbox paper-listbox paper-item {
+        color: var(--dash-nav-sub-item-color);
+        border-bottom: none;
       }
 
       .drawer-list paper-item.iron-selected {
-        color: #FFF;
-        background-color: var(--paper-blue-500);
+        color: var(--dash-nav-sub-item-selected-color);
+        background-color: var(--dash-nav-open-background);
+      }
+
+      .drawer-list paper-item:hover {
+        background-color: var(--dash-nav-item-hover-color);
       }
 
       .drawer-list paper-item iron-icon {
@@ -40,13 +57,22 @@
 
       .drawer-list paper-listbox {
         padding: 0;
+        background-color: var(--dash-nav-background);
         box-shadow: 0px 6px 8px 0px rgba(0,0,0,0.25);
       }
 
+      .drawer-list paper-listbox paper-listbox {
+        background-color: var(--dash-nav-open-background);
+        border-bottom: 1px solid var(--dash-nav-item-border-color);
+      }
+
       .drawer-list > paper-listbox > dash-submenu > paper-item {
-        background-color: var(--paper-blue-grey-600);
+        background-color: var(--dash-nav-background);
         box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
         z-index: 1;
+      }
+      .paper-item-label {
+        flex: 1;
       }
     </style>
 
@@ -54,7 +80,10 @@
       <paper-listbox>
         <template is="dom-repeat" items="[[menu]]" as="menuGroups">
           <dash-submenu>
-            <paper-item slot="menu-trigger">[[menuGroups.group]]</paper-item>
+            <paper-item slot="menu-trigger" on-tap="_toggleArrow">
+              <div class="paper-item-label">[[menuGroups.group]]</div>
+              <iron-icon icon="my-icons:keyboard-arrow-down"></iron-icon>
+            </paper-item>
             <paper-listbox slot="menu-content">
               <iron-selector on-iron-select="_openParent" selected$="[[module]]" attr-for-selected="name" role="navigation">
                 <template is="dom-repeat" items="[[menuGroups.subItems]]" as="menuItem">
@@ -104,9 +133,19 @@
         };
       }
 
+      _toggleArrow(e) {
+        var _icon = e.currentTarget.querySelector('iron-icon').icon;
+        if (_icon === "my-icons:keyboard-arrow-up") {
+          e.currentTarget.querySelector('iron-icon').icon = "my-icons:keyboard-arrow-down";
+        } else if (_icon === "my-icons:keyboard-arrow-down") {
+          e.currentTarget.querySelector('iron-icon').icon = "my-icons:keyboard-arrow-up";
+        }
+      }
+
       _openParent (e) {
         //Opens the dash-submenu assuming that the iron-selector wich fired this event is always inside a paper-listbox
         e.currentTarget.parentNode.parentNode.opened = true;
+        e.currentTarget.parentNode.parentNode.querySelector('paper-item').querySelector('iron-icon').icon = "my-icons:keyboard-arrow-up";
       }
 
       _goTo(e) {

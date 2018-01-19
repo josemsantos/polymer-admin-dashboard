@@ -248,7 +248,7 @@
 
       _getValueByType (value, type) {
         if( type === 'data-yesno') {
-          return value ? 'Yes' : 'No';
+          return value == true ? 'Yes' : 'No';
         }
 
         return value;
