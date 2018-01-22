@@ -3,7 +3,7 @@
 Polymer admin is a backoffice tool/interface to manage user actions and interactions on REST API based platforms.
 
   - Ease the creation on lists and forms
-  - Add Role-based access control on resources
+  - Add Role-based access control to resources
   - Brings user management out of the box
   - Magic
 
