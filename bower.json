@@ -40,7 +40,8 @@
     "paper-toast": "PolymerElements/paper-toast#^2.0.0",
     "paper-dropdown-menu": "PolymerElements/paper-dropdown-menu#^2.0.0",
     "vaadin-upload": "vaadin/vaadin-upload#^2.1.2",
-    "paper-tabs": "PolymerElements/paper-tabs#^2.0.0"
+    "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
+    "iron-a11y-keys": "PolymerElements/iron-a11y-keys#^2.0.0"
   },
   "resolutions": {
     "polymer": "^2.0.0",

@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
@@ -12,12 +13,13 @@
       }
     </style>
 
+    <dash-header
+      title="Access Groups"
+      icon="my-icons:group"></dash-header>
     <dash-list
-      heading="Access Groups"
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
-      icon="my-icons:group"
       key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"
@@ -68,11 +70,6 @@
           columns: {
             type: Array,
             value: [
-              {
-                header: 'Id',
-                index: 'id',
-                type: 'data'
-              },
               {
                 header: 'Name',
                 index: 'name',

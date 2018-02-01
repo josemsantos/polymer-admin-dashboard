@@ -2,6 +2,7 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
@@ -18,6 +19,10 @@
         fetch-roles
         on-groups-roles-changed="_setExternalData"
         on-model-create-success="_notifyUser"></group-model>
+
+      <dash-header
+        title="New Group"
+        icon="my-icons:group"></dash-header>
   
       <paper-material elevation="2">
         <dash-form
@@ -33,7 +38,6 @@
           on-cancel="_goToList"
           on-submit="_execAction"
           model-ready>
-            <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>New Group</h2></div>
         </dash-form>
       </paper-material>
   </template>

@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-a11y-keys/iron-a11y-keys.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../../bower_components/iron-form/iron-form.html">
@@ -20,9 +21,6 @@
         @apply --form-layout;
         --paper-tabs-selection-bar-color: var(--app-primary-color);
       }
-      .title {
-        @apply --form-title;
-      }
       .body {
         @apply --form-body;
       }
@@ -37,6 +35,7 @@
       }
       .action-box > div {
         flex: 1;
+        @apply --form-action-box-actions;
       }
       .action-box > div.left {
         text-align: left;
@@ -72,10 +71,7 @@
     <div class="form-wrapper">
       <iron-form>
         <form>
-          <div class="title">
-            <slot></slot>
-          </div>
-
+          <slot></slot>
           <template is="dom-if" if="[[_hasTabs(tabs)]]">
             <paper-tabs selected="{{selected}}" scrollable="[[scrollable]]">
               <template is="dom-repeat" items="[[tabs]]" as="tab">
@@ -118,6 +114,9 @@
             </template>
             <slot name="footer"></slot>
           </div>
+
+          <iron-a11y-keys id="a11y" target="[[formTarget]]" keys="enter"
+                    on-keys-pressed="_onEnter"></iron-a11y-keys>
 
           <div class="action-box">
             <slot name="action-box"></slot>
@@ -207,7 +206,8 @@
           scrollable: {
             type: Boolean,
             value: false
-          }
+          },
+          formTarget: Object
         };
       }
 
@@ -342,6 +342,7 @@
         super.ready();
         let form = this.shadowRoot.querySelector('iron-form');
         form.attached();
+        this.formTarget = form;
       }
 
     }

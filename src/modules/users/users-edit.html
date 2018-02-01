@@ -2,8 +2,9 @@
 <link rel="import" href="../../../bower_components/app-route/app-route.html">
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
-<link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
+<link rel="import" href="../../models/user-model.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
 
@@ -26,6 +27,10 @@
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate"></user-model>
 
+    <dash-header
+      title="User account - [[data.username]]"
+      icon="my-icons:group"></dash-header>
+
     <paper-material elevation="2">
       <dash-form
         class="default"
@@ -40,7 +45,6 @@
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
         on-submit="_execAction">
-          <div class="title title-header"><h2><iron-icon icon="my-icons:group"></iron-icon>User account - [[data.username]]</h2></div>
       </dash-form>
     </paper-material>
   </template>

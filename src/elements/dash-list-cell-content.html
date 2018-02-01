@@ -16,19 +16,16 @@
       }
       paper-icon-button.create,
       paper-icon-button.show {
-        background-color:  var(--paper-blue-grey-500);
+        background-color:  var(--dash-action-view);
+        color:  var(--dash-action-view-text);
       }
       paper-icon-button.edit {
-        background-color:  var(--paper-green-500);
+        background-color:  var(--dash-action-edit);
+        color:  var(--dash-action-edit-text);
       }
       paper-icon-button.delete {
-        background-color:  var(--paper-red-500);
-      }
-      paper-icon-button.create,
-      paper-icon-button.show,
-      paper-icon-button.edit,
-      paper-icon-button.delete {
-        color: #FFF;
+        background-color:  var(--dash-action-delete);
+        color:  var(--dash-action-delete-text);
       }
     </style>
     <slot></slot>
@@ -109,7 +106,7 @@
       getIcon (type, icon) {
         let defaultIcon = 'my-icons:edit';
         let icons = {
-          show: 'my-icons:pageview',
+          show: 'my-icons:remove-red-eye',
           create: 'my-icons:create',
           edit: 'my-icons:edit',
           delete: 'my-icons:delete'

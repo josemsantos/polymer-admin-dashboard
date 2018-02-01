@@ -15,6 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   <template>
     <style>
       :host {
+        --dash-header-background-color: white;
+        --dash-sub-header-background-color: #2972e7;
         --dash-nav-background: #262f3d;
         --dash-nav-open-background: #19212b;
         --dash-nav-item-color: white;
@@ -22,6 +24,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --dash-nav-sub-item-color: rgba(255,255,255,.7);
         --dash-nav-sub-item-selected-color: #4fc3f7;
         --dash-nav-item-border-color: rgba(255,255,255,0.12);
+        --dash-action-create: #2972e7;
+        --dash-action-filter: #e6e6e6;
+        --dash-action-filter-text: #727272;
+        --dash-action-view: rgba(96, 125, 139, 0.19);
+        --dash-action-view-text: #607d8b;
+        --dash-action-edit: rgba(76, 175, 79, 0.19);
+        --dash-action-edit-text: #4caf4f;
+        --dash-action-delete: rgba(244, 67, 54, 0.19);
+        --dash-action-delete-text: #f44336;
+        --dash-action-upload: #80ff00;
+        --dash-action-upload-text: #558000;
+        --dash-action-box-form-actions-border: #cccccc;
+        --dash-list-header-text-color: #727272;
+        --dash-list-header-background-color: #f7f7f7;
+        --dash-list-even-background-color: #f7f7f7;
       }
 
       .yellow {
@@ -44,13 +61,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       paper-material {
         display: block;
         margin: 16px;
+        border-radius: 4px;
+        background-color: #FFF;
       }
 
       .filter > dash-form {
         margin-top: 0px;
-        --form-layout: {
-          background-color: #FFF;
-        }
         --form-body: {
           padding: 0 32px;
         }
@@ -59,35 +75,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           border-bottom: none;
           position: relative;
         }
-        --form-wrapper: {
-          border-left: none;
-        }
         --form-action-box: {
           padding: 0;
         }
       }
 
       dash-form.default {
-        margin-top: 100px;
-        --form-layout: {
-          background-color: #FFF;
-        }
         --form-body: {
           padding: 32px;
         }
         --form-title: {
           padding: 35px 16px 16px;
-          border-bottom: solid 1px var(--paper-blue-grey-200);
           position: relative;
           --iron-icon-width: 48px;
           --iron-icon-height: 48px;
-          background-color: #ffffff;
-        }
-        --form-wrapper: {
-          border-left: solid 4px var(--paper-blue-800);
         }
         --form-action-box: {
-          padding: 32px;
+          padding: 0 32px 32px;
+        }
+        --form-action-box-actions: {
+          padding-top: 32px;
+          border-top: solid 1px var(--dash-action-box-form-actions-border);
         }
       }
         
@@ -97,10 +105,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
       dash-form  h2 iron-icon {
         padding-right: 16px;
-      }
-
-      dash-list {
-        margin-top: 100px;
       }
 
       .text-centered {

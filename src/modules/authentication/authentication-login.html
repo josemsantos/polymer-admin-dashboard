@@ -50,6 +50,10 @@
       .title {
         margin-top: 16px;
       }
+      .header-content {
+        padding: 32px;
+        text-align: center;
+      }
     </style>
     <user-model
       on-update-request-credentials="_notifyAuthHeaders"
@@ -62,9 +66,11 @@
         fields="[[fields]]"
         actions="[[_formActions]]"
         on-submit="_signIn">
-          <iron-icon icon="my-icons:person"></iron-icon>
-          <div class="title">LOGIN TO YOUR ACCOUNT</div>
-          <div class="error">[[errorMessage]]</div>
+          <div class="header-content">
+            <iron-icon icon="my-icons:person"></iron-icon>
+            <div class="title">LOGIN TO YOUR ACCOUNT</div>
+            <div class="error">[[errorMessage]]</div>
+        </div>
       </dash-form>
     </paper-material>
   </template>

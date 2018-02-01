@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../shared-styles.html">
+<link rel="import" href="../my-icons.html">
+
+<dom-module id="dash-header">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 24px;
+      }
+      iron-icon {
+        color: white;
+        --iron-icon-width: 36px;
+        --iron-icon-height: 36px;
+        margin-right: 16px;
+      }
+      h2 {
+        color: white;
+        font-size: 20px;
+        font-weight: 300;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        margin: 0px;
+      }
+    </style>
+
+    <div>
+      <h2><iron-icon icon$="[[icon]]"></iron-icon> [[title]]</h2>
+    </div>
+
+  </template>
+
+  <script>
+    /**
+     * `dash-header` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class DashHeader extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-header';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          title: String,
+          icon: String
+        };
+      }
+
+    }
+
+    window.customElements.define(DashHeader.is, DashHeader);
+  </script>
+</dom-module>

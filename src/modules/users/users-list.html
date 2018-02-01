@@ -1,4 +1,5 @@
 <link rel="import" href="../../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-list.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/user-model.html">
@@ -11,13 +12,13 @@
         display: block
       }
     </style>
-
+    <dash-header
+      title="Backoffice Users"
+      icon="my-icons:group"></dash-header>
     <dash-list
-      heading="Backoffice Users"
       items="[[items]]"
       heading-style="title-header"
       filters="[[filters]]"
-      icon="my-icons:group"
       key="[[key]]"
       columns="[[columns]]"
       actions="[[userActions]]"

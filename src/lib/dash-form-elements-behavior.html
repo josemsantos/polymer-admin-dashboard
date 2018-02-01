@@ -105,6 +105,13 @@
         event.detail.el = event.currentTarget;
         this.dispatchEvent(new CustomEvent('dash-upload-response', event))
       }
+
+      _onEnter (e) {
+        let mainAction = this.shadowRoot.querySelector('paper-button.edit');
+        if (mainAction) {
+          mainAction.click();
+        }
+      }
     }
   }
 </script>
