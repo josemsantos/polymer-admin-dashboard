@@ -2,10 +2,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/roles-model.html">
 <link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
+<link rel="import" href="groups-module-behavior.html">
 
 <dom-module id="groups-create">
   <template>
@@ -14,16 +16,17 @@
         display: block
       }
     </style>
-        
+
       <group-model
-        fetch-roles
-        on-groups-roles-changed="_setExternalData"
         on-model-create-success="_notifyUser"></group-model>
+
+      <roles-model
+        on-model-response-changed="_setRoles"></roles-model>
 
       <dash-header
         title="New Group"
         icon="my-icons:group"></dash-header>
-  
+
       <paper-material elevation="2">
         <dash-form
           class="default"
@@ -32,7 +35,6 @@
           model="[[groupModel.model]]"
           fields="[[fields]]"
           actions="[[_formActions]]"
-          external-sources="[[externalData]]"
           notify-error="[[errorMessage]]"
           notify-success="[[successMessage]]"
           on-cancel="_goToList"
@@ -51,7 +53,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsCreate extends ModuleElementBehavior(Polymer.Element) {
+    class GroupsCreate extends GroupsModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -75,9 +77,6 @@
             value: 'form'
           },
           data: Object,
-          externalData: {
-            type: Object,
-          },
           form: Object,
           payload: {
             type: Array,
@@ -100,21 +99,6 @@
         this.shadowRoot.querySelector('dash-form').formReset();;
         e.detail.message = e.detail.message.response.name + " created";
         super._notifyUser(e)
-      }
-
-      _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
-        };
       }
 
       _createGroup (e) {
@@ -140,7 +124,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

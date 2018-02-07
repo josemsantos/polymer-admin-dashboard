@@ -3,10 +3,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/roles-model.html">
 <link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
+<link rel="import" href="groups-module-behavior.html">
 
 <dom-module id="groups-show">
   <template>
@@ -19,9 +21,11 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
+
+    <roles-model
+      on-model-response-changed="_setRoles"></roles-model>
+
     <group-model
-      fetch-roles
-      on-groups-roles-changed="_setExternalData"
       on-model-response-changed="_setData"></group-model>
 
     <dash-header
@@ -36,7 +40,6 @@
         model="[[groupModel.model]]"
         fields="[[fields]]"
         model-data="[[data]]"
-        external-sources="[[externalData]]"
         on-cancel="_goToList"
         show-only>
       </dash-form>
@@ -52,7 +55,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsShow extends ModuleElementBehavior(Polymer.Element) {
+    class GroupsShow extends GroupsModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -80,21 +83,6 @@
         };
       }
 
-      _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
-        };
-      }
-
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -106,7 +94,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

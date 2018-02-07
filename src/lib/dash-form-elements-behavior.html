@@ -7,7 +7,7 @@
         return {
         }
       }
-      
+
       _isInput(type) {
         return (this._inputTypes.indexOf(type) > -1);
       }
@@ -52,7 +52,7 @@
           } else if (formField.tagName === 'DASH-FORM-DROPDOWN') {
             formField.selected = data;
           } else if (formField.tagName === 'PAPER-CHIP-INPUT-AUTOCOMPLETE') {
-            formField.items = this._preSelectItemFromValues(formField, data);
+            formField.items = data;
           } else {
             formField.value = data;
           }
