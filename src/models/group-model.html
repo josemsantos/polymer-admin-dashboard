@@ -99,7 +99,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
@@ -118,7 +118,7 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^(.){1,}$',
+                  regex: this.regex.minMaxChars(1),
                   message: 'Invalid Group name',
                   required: true,
                   stop: true

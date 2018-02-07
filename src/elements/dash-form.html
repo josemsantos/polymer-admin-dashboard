@@ -242,9 +242,10 @@
             switch (validators[j].type) {
               case 'regex':
                 var reg = new RegExp(validators[j].regex);
+                console.log(fieldValue)
                 if ((null === fieldValue || undefined === fieldValue) && required) {
                   errors.push(validators[j].message);
-                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue !== undefined && false === reg.test(fieldValue)) {
+                } else if (request.hasOwnProperty(modelFields[i].name) && fieldValue && false === reg.test(fieldValue)) {
                   errors.push(validators[j].message);
                 }
               break;
