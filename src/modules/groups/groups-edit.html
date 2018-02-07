@@ -3,10 +3,12 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../models/group-model.html">
+<link rel="import" href="../../models/roles-model.html">
 <link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../my-icons.html">
 <link rel="import" href="../../shared-styles.html">
+<link rel="import" href="groups-module-behavior.html">
 
 <dom-module id="groups-edit">
   <template>
@@ -19,13 +21,14 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-      
+
     <group-model
-      fetch-roles
-      on-groups-roles-changed="_setExternalData"
       on-model-response-changed="_setData"
       on-model-update-success="_notifyUser"
       on-model-delete-success="_notifyAndNavigate"></group-model>
+
+    <roles-model
+      on-model-response-changed="_setRoles"></roles-model>
 
     <dash-header
       title="Access Groups [[data.name]]"
@@ -40,7 +43,6 @@
         fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
-        external-sources="[[externalData]]"
         notify-error="[[errorMessage]]"
         notify-success="[[successMessage]]"
         on-cancel="_goToList"
@@ -58,7 +60,7 @@
      * @polymer
      * @extends {Polymer.Element}
      */
-    class GroupsEdit extends ModuleElementBehavior(Polymer.Element) {
+    class GroupsEdit extends GroupsModuleBehavior(ModuleElementBehavior(Polymer.Element)) {
       /**
        * String providing the tag name to register the element under.
        */
@@ -82,9 +84,6 @@
             value: 'form'
           },
           data: Object,
-          externalData: {
-            type: Object,
-          },
           form: Object,
           payload: {
             type: Array,
@@ -93,21 +92,6 @@
               'roles'
             ]
           }
-        };
-      }
-
-      _setExternalData (e) {
-        let roles = [];
-        if (e.detail.length) {
-          e.detail.forEach(item => {
-            roles.push({
-              text: item.name,
-              value: item.name
-            });
-          });
-        }
-        this.externalData = {
-          'roles': roles
         };
       }
 
@@ -134,7 +118,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
