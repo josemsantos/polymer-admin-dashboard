@@ -1,0 +1,67 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../my-icons.html">
+
+<dom-module id="dash-list-cell-check">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+      paper-icon-button.checked {
+        color: var(--dash-action-edit-text);
+      }
+      paper-icon-button.unchecked {
+        color: var(--dash-action-delete-text);
+      }
+    </style>
+
+    <paper-icon-button
+      class$="[[getClass(value)]]"
+      icon$="[[getIcon(value)]]">
+    </paper-icon-button>
+
+  </template>
+
+  <script>
+    /**
+      * `dash-list-cell-check` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
+    class DashListCellCheck extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-list-cell-check';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          value: {
+            type: Boolean,
+            value: false
+          }
+        };
+      }
+
+      getClass (value) {
+        return value ? 'checked' : 'unchecked';
+      }
+
+      getIcon (value) {
+        return value ? 'my-icons:check-circle' : 'my-icons:cancel';
+      }
+
+    }
+
+    window.customElements.define(DashListCellCheck.is, DashListCellCheck);
+  </script>
+</dom-module>

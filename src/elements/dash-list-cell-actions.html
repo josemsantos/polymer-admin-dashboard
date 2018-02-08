@@ -1,16 +1,14 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../my-icons.html">
 
-<dom-module id="dash-list-cell-content">
+<dom-module id="dash-list-cell-actions">
   <template>
     <style>
       :host {
         display: block
       }
       paper-icon-button {
-        @apply --dash-list-cell-content-actions-custom;
         border-radius: 2px;
         margin: 2px;
       }
@@ -28,14 +26,13 @@
         color:  var(--dash-action-delete-text);
       }
     </style>
-    <slot></slot>
     <template is="dom-repeat" items="[[actions]]">
-      <paper-icon-button 
+      <paper-icon-button
         title$="[[item.type]]"
         alt$="[[item.type]]"
         data-key$="[[key]]"
         data-action-type$="[[item.type]]"
-        class$="[[item.type]]" 
+        class$="[[item.type]]"
         icon$="[[getIcon(item.type, item.icon)]]"
         on-tap="_callToAction"></paper-icon-button>
     </template>
@@ -43,19 +40,19 @@
 
   <script>
     /**
-      * `dash-list-cell-content` Description
+      * `dash-list-cell-actions` Description
       *
       * @summary ShortDescription.
       * @customElement
       * @polymer
       * @extends {Polymer.Element}
       */
-    class DashListCellContent extends CellElementBehavior(Polymer.Element) {
+    class DashListCellActions extends Polymer.Element {
       /**
        * String providing the tag name to register the element under.
        */
       static get is() {
-        return 'dash-list-cell-content';
+        return 'dash-list-cell-actions';
       }
 
       /**
@@ -64,10 +61,6 @@
       static get properties() {
         return {
           key: Object,
-          column: {
-            type: Object,
-            value: {}
-          },
           actions: {
             type: Array,
           }
@@ -97,7 +90,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
@@ -116,6 +109,6 @@
 
     }
 
-    window.customElements.define(DashListCellContent.is, DashListCellContent);
+    window.customElements.define(DashListCellActions.is, DashListCellActions);
   </script>
 </dom-module>
