@@ -1,0 +1,29 @@
+<script>
+  'use strict';
+  function GroupsModuleBehavior(superClass) {
+    return class extends superClass {
+      static get properties() {
+        return {
+        }
+      }
+      _setRoles (e) {
+        var _autocompleteItems = [];
+        var roles = e.detail.response.roles;
+        for (let i in roles) {
+          _autocompleteItems.push({
+            text: roles[i].name,
+            value: roles[i].name
+          });
+        }
+        this.fields[1].source = _autocompleteItems;
+        this.fields = JSON.parse(JSON.stringify(this.fields));
+      }
+      onSelectedChange(selected) {
+        super.onSelectedChange(selected);
+        this.rolesModel = this.shadowRoot.querySelector('roles-model');
+        this.rolesModel.connection = this.requestConnections[this.connection];
+        this.rolesModel.search();
+      }
+    }
+  }
+</script>

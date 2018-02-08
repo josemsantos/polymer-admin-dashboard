@@ -32,11 +32,6 @@
        */
       static get properties() {
         return {
-          fetchRoles: Boolean,
-          roles: {
-            type: Array,
-            value: []
-          },
           model: {
             type: Object,
             value: {
@@ -46,12 +41,6 @@
             }
           }
         };
-      }
-
-      static get observers() {
-        return [
-          '_onFetchRolesRequired(fetchRoles, connection)',
-        ];
       }
 
       /**
@@ -73,33 +62,8 @@
         this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
       }
 
-      _onFetchRolesRequired (fetchRoles, connection) {
-        if (fetchRoles && connection) {
-          this._getRoles();
-        }
-      }
-
-      _getRoles () {
-        var _self = this;
-        this.connection.request({
-          url: '/authorization/permissions/roles',
-          verb: 'GET',
-          onLoad(e) {
-            _self.set('roles', JSON.parse(e.target.responseText).response.roles);
-            _self.dispatchEvent(new CustomEvent('groups-roles-changed', {
-              detail: _self.roles,
-              bubbles: true,
-              composed: true
-            }));
-          },
-          onError(e) {
-            _self._setFailure(true);
-          }
-        });
-      }
-
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
