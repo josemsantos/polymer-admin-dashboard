@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../../bower_components/iron-collapse/iron-collapse.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
@@ -96,10 +97,24 @@
       .footer-pagination {
         padding: 8px;
       }
+      app-drawer {
+        --app-drawer-width: 384px;
+        --app-drawer-content-container: {
+          background-color: white;
+          padding-left: 32px;
+          padding-right: 32px;
+        }
+      }
+      .drawer-content {
+        margin-top: 80px;
+        height: calc(100% - 80px);
+        overflow: auto;
+      }
     </style>
 
     <paper-material elevation="[[elevation]]">
       <div class="card-content">
+        <!-- filters -->
         <template is="dom-if" if="[[!showListOnly]]">
           <template is="dom-if" if="[[filters]]">
             <div class="filter">
@@ -114,15 +129,10 @@
                   </paper-button>
                 </template>
               </h2>
-              <iron-collapse>
-                <dash-form
-                  fields="[[filters]]"
-                  actions="[[_filterActions]]"
-                  on-filter="_filterRequest"></dash-form>
-              </iron-collapse>
             </div>
           </template>
         </template>
+        <!-- endfilters -->
         <paper-datatable-api
           data="[[items]]"
           selected-rows="{{selectedRows}}"
@@ -171,6 +181,15 @@
         <slot name="after-list"></slot>
       </div>
     </paper-material>
+
+    <app-drawer id="drawer" slot="drawer" align="right">
+      <div class="drawer-content">
+        <dash-form
+          fields="[[filters]]"
+          actions="[[_filterActions]]"
+          on-filter="_filterRequest"></dash-form>
+      </div>
+    </app-drawer>
 
   </template>
 
@@ -284,7 +303,7 @@
       }
 
       _toggleFilters (e) {
-        this.shadowRoot.querySelector('iron-collapse').toggle();
+        this.shadowRoot.querySelector('app-drawer').toggle();
       }
 
       _filterRequest (e) {
@@ -293,6 +312,7 @@
           bubbles: true,
           composed: true
         }));
+        this._toggleFilters();
       }
 
       _hasFooterComputed(customPagination, showListOnly, totalItems) {
