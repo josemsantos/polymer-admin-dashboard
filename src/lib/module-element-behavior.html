@@ -96,10 +96,6 @@
 
       _routeIdChanged (id, isReady) {
         if (id && isReady) {
-          let _form = this.shadowRoot.querySelector('dash-form');
-          if (_form !== undefined && _form !== null) {
-            _form.formReset();
-          }
           this.key = id;
         }
       }
@@ -399,6 +395,7 @@
           if (this.pageType === 'list') {
             this.getList();
           } else if (this.pageType === 'form') {
+            this.shadowRoot.querySelector('dash-form').formReset();
             this.getForm();
             if (this.key) {
               this.loadItem();
