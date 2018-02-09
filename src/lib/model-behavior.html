@@ -19,6 +19,22 @@
           sortQueryDefault: {
             type: String,
             value: 'sort=id&order=reverse'
+          },
+          regex: {
+            type: Object,
+            value: {
+              email: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+              password: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
+              minMaxChars(min, max) {
+                if(min >= 0 && max >= 0) {
+                  return '^.{' + min + ',' + max + '}$'
+                } else if(min >= 0) {
+                  return '^.{' + min + ',}$'
+                } else if (max >= 0) {
+                  return '^.{,' + max + '}$'
+                }
+              }
+            }
           }
         };
       }
@@ -48,18 +64,18 @@
           detail: {
             message: response
           },
-          bubbles: true, 
+          bubbles: true,
           composed: true
         }));
       }
-      
+
       _posUpdateCallBack (response) {
         this.response = response;
         this.dispatchEvent(new CustomEvent('model-update-success', {
           detail: {
             message: this.message
           },
-          bubbles: true, 
+          bubbles: true,
           composed: true
         }));
       }
@@ -67,7 +83,7 @@
       _posDeleteCallBack (response) {
         this.dispatchEvent(new CustomEvent('model-delete-success', {
           detail: response,
-          bubbles: true, 
+          bubbles: true,
           composed: true
         }));
       }
@@ -133,7 +149,7 @@
         queryParams += filterQuery ? filterQuery : '';
         queryParams += sortQuery ? sortQuery : this.sortQueryDefault;
         method = method || 'GET';
-        
+
         var _self = this;
         this.connection.request({
           url: this.endpoint,

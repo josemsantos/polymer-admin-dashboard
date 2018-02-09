@@ -81,10 +81,14 @@
               type: 'text',
               validators: [
                 {
+                  type: 'required',
+                  message: 'Invalid Group Name. Group Name must be between 3 and 50 characters',
+                  stop: true
+                },
+                {
                   type: 'regex',
-                  regex: '^(.){1,}$',
-                  message: 'Invalid Group name',
-                  required: true,
+                  regex: this.regex.minMaxChars(3, 50),
+                  message: 'Invalid Group Name. Group Name must be between 3 and 50 characters',
                   stop: true
                 }
               ]
@@ -96,7 +100,13 @@
               attributes: {
                 textOnly: true
               },
-              validators: []
+              validators: [
+                {
+                  type: 'required',
+                  message: 'The group should have at least 1 role associated',
+                  stop: true
+                }
+              ]
             }
           ],
           actions: {

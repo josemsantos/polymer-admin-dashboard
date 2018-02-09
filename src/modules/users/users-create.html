@@ -15,7 +15,7 @@
           display: block
         }
       </style>
-        
+
       <user-model
         fetch-groups
         on-users-groups-changed="_setExternalData"
@@ -25,7 +25,7 @@
       <dash-header
         title="New User account"
         icon="my-icons:group"></dash-header>
-  
+
       <paper-material elevation="2">
         <dash-form
           class="default"
@@ -97,7 +97,7 @@
       _notifyUser (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {
-            route: this.getModuleName() + '/edit/' + e.detail.message.response.id
+            route: this.getModuleName() + '/list'
           },
           bubbles: true,
           composed: true
@@ -145,7 +145,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
