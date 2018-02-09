@@ -1,0 +1,44 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+
+<dom-module id="dash-list-cell-content">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+    </style>
+
+    <slot></slot>
+
+  </template>
+
+  <script>
+    /**
+      * `dash-list-cell-content` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
+    class DashListCellContent extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-list-cell-content';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+
+        };
+      }
+    }
+
+    window.customElements.define(DashListCellContent.is, DashListCellContent);
+  </script>
+</dom-module>

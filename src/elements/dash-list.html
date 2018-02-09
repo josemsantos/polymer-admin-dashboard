@@ -11,6 +11,7 @@
 <link rel="import" href="../elements/dash-form.html">
 <link rel="import" href="dash-list-cell-actions.html">
 <link rel="import" href="dash-list-cell-check.html">
+<link rel="import" href="dash-list-cell-content.html">
 <link rel="import" href="dash-list-footer.html">
 
 <link rel="import" href="../my-icons.html">
@@ -152,7 +153,8 @@
 
                 <!-- Regular Data -->
                 <template is="dom-if" if="[[_isData(column.type)]]">
-                  [[value]]
+                  <!-- Element only needed to allow style of the content -->
+                  <dash-list-cell-content>[[value]]</dash-list-cell-content>
                 </template>
 
                 <!-- Actions -->
