@@ -101,14 +101,31 @@
         --app-drawer-width: 384px;
         --app-drawer-content-container: {
           background-color: white;
-          padding-left: 32px;
-          padding-right: 32px;
         }
       }
       .drawer-content {
-        margin-top: 80px;
-        height: calc(100% - 80px);
+        text-align: left;
+        margin-top: 64px;
+        height: calc(100% - 64px);
         overflow: auto;
+      }
+      .drawer-content .filters-header {
+        padding: 8px;
+        background-color: var(--dash-action-filter);
+        display: flex;
+        align-items: center;
+      }
+      .drawer-content .filters-header paper-icon-button {
+        margin-right: 32px;
+      }
+      .drawer-content .filters-body {
+          padding-left: 32px;
+          padding-right: 32px;
+      }
+      .drawer-content .filters-body dash-form {
+        --form-action-box-actions: {
+          margin-top: 32px;
+        }
       }
     </style>
 
@@ -184,10 +201,16 @@
 
     <app-drawer id="drawer" slot="drawer" align="right">
       <div class="drawer-content">
-        <dash-form
-          fields="[[filters]]"
-          actions="[[_filterActions]]"
-          on-filter="_filterRequest"></dash-form>
+        <div class="filters-header">
+          <paper-icon-button on-tap="_toggleFilters" icon="my-icons:close"></paper-icon-button>
+          FILTERS
+        </div>
+        <div class="filters-body">
+          <dash-form
+            fields="[[filters]]"
+            actions="[[_filterActions]]"
+            on-filter="_filterRequest"></dash-form>
+        </div>
       </div>
     </app-drawer>
 
