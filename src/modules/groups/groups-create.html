@@ -91,7 +91,7 @@
       _notifyUser (e) {
         this.dispatchEvent(new CustomEvent('dash-go-to', {
           detail: {
-            route: this.getModuleName() + '/edit/' + e.detail.message.response.id
+            route: this.getModuleName() + '/list'
           },
           bubbles: true,
           composed: true

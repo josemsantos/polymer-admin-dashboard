@@ -1,0 +1,114 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../my-icons.html">
+
+<dom-module id="dash-list-cell-actions">
+  <template>
+    <style>
+      :host {
+        display: block
+      }
+      paper-icon-button {
+        border-radius: 2px;
+        margin: 2px;
+      }
+      paper-icon-button.create,
+      paper-icon-button.show {
+        background-color:  var(--dash-action-view);
+        color:  var(--dash-action-view-text);
+      }
+      paper-icon-button.edit {
+        background-color:  var(--dash-action-edit);
+        color:  var(--dash-action-edit-text);
+      }
+      paper-icon-button.delete {
+        background-color:  var(--dash-action-delete);
+        color:  var(--dash-action-delete-text);
+      }
+    </style>
+    <template is="dom-repeat" items="[[actions]]">
+      <paper-icon-button
+        title$="[[item.type]]"
+        alt$="[[item.type]]"
+        data-key$="[[key]]"
+        data-action-type$="[[item.type]]"
+        class$="[[item.type]]"
+        icon$="[[getIcon(item.type, item.icon)]]"
+        on-tap="_callToAction"></paper-icon-button>
+    </template>
+  </template>
+
+  <script>
+    /**
+      * `dash-list-cell-actions` Description
+      *
+      * @summary ShortDescription.
+      * @customElement
+      * @polymer
+      * @extends {Polymer.Element}
+      */
+    class DashListCellActions extends Polymer.Element {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'dash-list-cell-actions';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          key: Object,
+          actions: {
+            type: Array,
+          }
+        };
+      }
+
+      _callToAction (e) {
+        let cta = e.currentTarget;
+
+        this.dispatchEvent(new CustomEvent('dash-list-cta', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            type: cta.dataset.actionType,
+            key: cta.dataset.key
+          }
+        }));
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+      }
+
+      /**
+       * Use for one-time configuration of your component after local DOM is initialized.
+       */
+      ready() {
+        super.ready();
+      }
+
+      getIcon (type, icon) {
+        let defaultIcon = 'my-icons:edit';
+        let icons = {
+          show: 'my-icons:remove-red-eye',
+          create: 'my-icons:create',
+          edit: 'my-icons:edit',
+          delete: 'my-icons:delete'
+        };
+        return icon || icons[type] || defaultIcon;
+      }
+
+    }
+
+    window.customElements.define(DashListCellActions.is, DashListCellActions);
+  </script>
+</dom-module>

@@ -10,6 +10,8 @@
 <link rel="import" href="../lib/cell-element-behavior.html">
 <link rel="import" href="../lib/dash-notifications-behavior.html">
 <link rel="import" href="../elements/dash-form.html">
+<link rel="import" href="dash-list-cell-actions.html">
+<link rel="import" href="dash-list-cell-check.html">
 <link rel="import" href="dash-list-cell-content.html">
 <link rel="import" href="dash-list-footer.html">
 
@@ -161,25 +163,39 @@
               header="[[column.header]]"
               draggable-column="[[_isDraggable(column)]]"
               sortable="[[_isSortable(column.type, column.sort)]]"
-              td-custom-style="[[!_isDraggable(column)]]"
+              td-custom-style="[[_isActions(column.type)]]"
               property="[[column.index]]"
               other-properties='["disabled"]'>
               <template>
-                <template is="dom-if" if="[[!_isActions(column.type)]]">
-                  <dash-list-cell-content
-                    column="[[column]]">[[_getValueByType(value, column.type)]]</dash-list-cell-content>
+
+                <!-- Boolean Data -->
+                <!-- Variable built in the negative way. Ex: Inactive -->
+                <template is="dom-if" if="[[_isNotActiveType(column.type)]]">
+                  <dash-list-cell-check value="[[!value]]"></dash-list-cell-check>
                 </template>
+                <!-- Variable built in the positive way. Ex: Active -->
+                <template is="dom-if" if="[[_isYesNoType(column.type)]]">
+                  <dash-list-cell-check value="[[value]]"></dash-list-cell-check>
+                </template>
+
+                <!-- Regular Data -->
+                <template is="dom-if" if="[[_isData(column.type)]]">
+                  <!-- Element only needed to allow style of the content -->
+                  <dash-list-cell-content>[[value]]</dash-list-cell-content>
+                </template>
+
+                <!-- Actions -->
                 <template is="dom-if" if="[[_isActions(column.type)]]">
                   <template is="dom-if" if="[[!otherValues.disabled]]">
-                    <dash-list-cell-content
-                      key="[[value]]"
-                      actions="[[_columnActions]]"></dash-list-cell-content>
+                    <dash-list-cell-actions key="[[value]]" actions="[[_columnActions]]"></dash-list-cell-actions>
                   </template>
+
+                  <!-- Soft Delete -->
                   <template is="dom-if" if="[[otherValues.disabled]]">
-                    <dash-list-cell-content
-                      column="[[column]]">Disabled</dash-list-cell-content>
+                    Disabled
                   </template>
                 </template>
+
               </template>
             </paper-datatable-api-column>
           </template>
@@ -299,14 +315,6 @@
 
       _isEmpty(items) {
         return items === false || items === undefined || items === null || items.length < 1;
-      }
-
-      _getValueByType (value, type) {
-        if( type === 'data-yesno') {
-          return value == true ? 'Yes' : 'No';
-        }
-
-        return value;
       }
 
       _handleSort (e) {
