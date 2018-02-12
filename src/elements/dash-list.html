@@ -31,8 +31,6 @@
           font-size: 14px;
           background-color: var(--dash-list-header-background-color);
           color: var(--dash-list-header-text-color);
-          font-size: 14px;
-
         }
       }
       paper-material {
@@ -135,13 +133,15 @@
       <div class="card-content">
         <!-- filters -->
         <template is="dom-if" if="[[!showListOnly]]">
-          <template is="dom-if" if="[[filters]]">
+          <template is="dom-if" if="[[_filterOrCreateSection(filters, actions.create)]]">
             <div class="filter">
               <h2>
                 <slot name="top-actions"></slot>
-                <paper-button class="filter-btn" on-tap="_toggleFilters">
-                  <iron-icon icon="my-icons:filter-list"></iron-icon> Filters
-                </paper-button>
+                <template is="dom-if" if="[[!_isEmpty(filters)]]">
+                  <paper-button class="filter-btn" on-tap="_toggleFilters">
+                    <iron-icon icon="my-icons:filter-list"></iron-icon> Filters
+                  </paper-button>
+                </template>
                 <template is="dom-if" if="[[actions.create]]">
                   <paper-button on-tap="_notifyGoToCreate">
                     <iron-icon icon="my-icons:playlist-add"></iron-icon> CREATE
@@ -313,6 +313,10 @@
         };
       }
 
+      _filterOrCreateSection(filters, create) {
+        return (!this._isEmpty(filters) || create) ? true : false;
+      }
+
       _isEmpty(items) {
         return items === false || items === undefined || items === null || items.length < 1;
       }
@@ -386,7 +390,6 @@
 
       resetFilters() {
         this.shadowRoot.querySelector('dash-form').formReset();
-        this.shadowRoot.querySelector('iron-collapse').hide();
       }
 
       /**
