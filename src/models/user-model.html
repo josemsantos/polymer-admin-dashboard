@@ -90,7 +90,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
@@ -193,10 +193,14 @@
               },
               validators: [
                 {
+                  type: 'required',
+                  message: 'Invalid Username. Username must be between 3 and 50 characters',
+                  stop: true
+                },
+                {
                   type: 'regex',
-                  required: true,
-                  regex: '^.{5,}$',
-                  message: 'Invalid Username. Username should have at least 5 characters',
+                  regex: this.regex.minMaxChars(3, 50),
+                  message: 'Invalid Username. Username must be between 3 and 50 characters',
                   stop: false
                 }
               ]
@@ -208,8 +212,7 @@
               validators: [
                 {
                   type: 'regex',
-                  required: false,
-                  regex: '^$|(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
+                  regex: this.regex.password,
                   message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
                   stop: false
                 }
@@ -221,8 +224,13 @@
               type: 'email',
               validators: [
                 {
+                  type: 'required',
+                  message: 'Invalid e-mail',
+                  stop: true
+                },
+                {
                   type: 'regex',
-                  regex: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+                  regex: this.regex.email,
                   message: 'Invalid e-mail',
                   stop: false
                 }
@@ -232,15 +240,13 @@
               label: 'Inactive',
               name: 'inactive',
               type: 'checkbox',
-              validators: [
-              ]
+              validators: []
             },
             {
               label: 'Groups',
               name: 'access_groups',
               type: 'collection',
-              validators: [
-              ]
+              validators: []
             },
           ],
           actions: {
@@ -258,10 +264,17 @@
 
       getCreateForm () {
         let form = this.getForm();
-        //Username becomes editable
+
+        // Username becomes editable
         form.fields[0].attributes.readonly = false;
-        //Password becomes required
-        form.fields[1].validators[0].required = true;
+
+        // Password becomes required
+        form.fields[1].validators.unshift({
+          type: 'required',
+          message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
+          stop: true
+        })
+
         form.actions = {
           'create' :{
             label: 'Create',
@@ -281,7 +294,7 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^(.){5,}$',
+                  regex: this.regex.minMaxChars(3, 50),
                   message: 'Invalid credentials',
                   stop: true
                 }
@@ -294,7 +307,7 @@
               validators: [
                 {
                   type: 'regex',
-                  regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
+                  regex: this.regex.password,
                   message: 'Invalid credentials',
                   stop: true
                 }
@@ -327,8 +340,7 @@
               attributes: {
                 readonly: true
               },
-              validators: [
-              ]
+              validators: []
             },
             {
               label: 'Password',
@@ -337,9 +349,8 @@
               validators: [
                 {
                   type: 'regex',
-                  required: false,
-                  regex: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[$@$!%*?&])[A-Za-z\\d$@$!%*?&]{8,}',
-                  message: 'Invalid Password. password should contains at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
+                  regex: this.regex.password,
+                  message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
                   stop: false
                 }
               ]
@@ -350,8 +361,13 @@
               type: 'email',
               validators: [
                 {
+                  type: 'required',
+                  message: 'Invalid e-mail',
+                  stop: true
+                },
+                {
                   type: 'regex',
-                  regex: '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
+                  regex: this.regex.email,
                   message: 'Invalid e-mail',
                   stop: false
                 }
