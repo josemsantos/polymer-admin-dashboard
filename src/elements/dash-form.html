@@ -156,6 +156,7 @@
     </div>
   </template>
 
+  <script src="../../bower_components/libphonenumber/dist/libphonenumber.js"></script>
   <script>
     /**
      * `dash-form` Description
@@ -264,7 +265,33 @@
                 if (this._isEmpty(fieldValue)) {
                   errors.push(validators[j].message);
                 }
-                break;
+              	break;
+
+              case 'phone_number':
+
+                /**
+                 * If not empty but invalid -> error
+                 */
+                if(!this._isEmpty(fieldValue)) {
+
+                  // If accepted countries configured to validate
+                  // check if valid for that countries
+                  var acceptedCountries = validators[j].acceptedCountries;
+                  if(acceptedCountries && acceptedCountries.length > 0) {
+                    for (var c = 0; c < acceptedCountries.length; c++) {
+                      if (!phoneUtils.isValidNumberForRegion(fieldValue, acceptedCountries[c])) {
+                        errors.push(validators[j].message);
+                        break;
+                      }
+                    }
+                  } else {
+                    // otherwise check if it is valid for any country
+                    if (!phoneUtils.isValidNumber(fieldValue)) {
+                      errors.push(validators[j].message);
+                    }
+                  }
+                }
+              	break;
 
               case 'regex':
                 var reg = new RegExp(validators[j].regex);

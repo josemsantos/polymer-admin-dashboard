@@ -340,7 +340,7 @@
       _setData (e) {
         this.data = e.detail.response;
       }
-      
+
       _setCheckStatusFromData(fields, data) {
         for (let i in fields) {
           if (data[fields[i].name] === undefined) {
@@ -384,12 +384,12 @@
         this.modelElement = this.shadowRoot.querySelector(this.model);
         this.modelElement.connection = this.requestConnections[this.connection];
         this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
-        
+
         if (this.pageType === 'list') {
           this._addListEventListeners();
         }
       }
-      
+
       onSelectedChange(selected) {
         if (selected) {
           if (this.pageType === 'list') {

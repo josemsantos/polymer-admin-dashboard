@@ -1,5 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../my-icons.html">
 
 <dom-module id="dash-list-cell-check">
@@ -8,18 +8,18 @@
       :host {
         display: block
       }
-      paper-icon-button.checked {
+      iron-icon.checked {
         color: var(--dash-action-edit-text);
       }
-      paper-icon-button.unchecked {
+      iron-icon.unchecked {
         color: var(--dash-action-delete-text);
       }
     </style>
 
-    <paper-icon-button
+    <iron-icon
       class$="[[getClass(value)]]"
       icon$="[[getIcon(value)]]">
-    </paper-icon-button>
+    </iron-icon>
 
   </template>
 
