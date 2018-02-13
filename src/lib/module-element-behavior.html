@@ -395,7 +395,9 @@
           if (this.pageType === 'list') {
             this.getList();
           } else if (this.pageType === 'form') {
-            this.shadowRoot.querySelector('dash-form').formReset();
+            if (this.fields) {
+              this.shadowRoot.querySelector('dash-form').formReset();
+            }
             this.getForm();
             if (this.key) {
               this.loadItem();
