@@ -41,21 +41,22 @@
     </style>
     <template is="dom-repeat" items="[[fields]]" as="field" filter="{{_computeFilterFields(tab)}}">
       <template is="dom-if" if="[[_isInput(field.type)]]">
-        <paper-input 
+        <paper-input
           name$="[[field.name]]"
           label="[[field.label]]"
+          placeholder="[[field.placeholder]]"
           type$="[[field.type]]"
           disabled="[[_isReadonly(field.attributes, showOnly)]]"></paper-input>
       </template>
       <template is="dom-if" if="[[_isCheckbox(field.type)]]">
         <div class="checkbox-container">
-          <paper-checkbox 
-            checked$="[[field.checked]]" 
+          <paper-checkbox
+            checked$="[[field.checked]]"
             name$="[[field.name]]"
             disabled="[[_isReadonly(field.attributes, showOnly)]]">[[field.label]]</paper-checkbox>
         </div>
       </template>
-      
+
       <template is="dom-if" if="[[_isDropdown(field.type)]]">
         <div class="checkbox-container">
           <paper-dropdown-menu
@@ -63,8 +64,8 @@
             name$="[[field.name]]"
             disabled="[[_isReadonly(field.attributes, showOnly)]]"
             on-selected-item-changed="_onSelectedItemChanged">
-            <paper-listbox 
-              slot="dropdown-content" 
+            <paper-listbox
+              slot="dropdown-content"
               selected$="[[field.selected]]"
               on-iron-items-changed="_onIronItemsChanged">
               <template is="dom-repeat" items="[[field.items]]" as="item">
@@ -90,12 +91,12 @@
 
       <template is="dom-if" if="[[_isUploadFile(field.type)]]">
         <div class="checkbox-container">
-          <vaadin-upload 
+          <vaadin-upload
             accept$="[[field.acceptType]]"
-            target$="[[field.target]]"  
-            method="POST" 
-            timeout$="[[field.timeout]]" 
-            headers$="[[field.headers]]" 
+            target$="[[field.target]]"
+            method="POST"
+            timeout$="[[field.timeout]]"
+            headers$="[[field.headers]]"
             form-data-name$="[[field.name]]">
           </vaadin-upload>
         </div>
@@ -113,7 +114,7 @@
           min-search-string-length="[[_minSearchLength(field.minSearchLength)]]">
         </paper-chip-input-autcomplete>
       </template>
-      
+
       <template is="dom-if" if="[[_isTextarea(field.type)]]">
         <paper-textarea
           always-float-label
@@ -234,7 +235,7 @@
           return null;
         } else {
           return function(field) {
-            return tab === field.tab ? true : false;  
+            return tab === field.tab ? true : false;
           }
         }
       }
@@ -265,7 +266,7 @@
           }
         }
       }
-      
+
       _computedLabel(showOnly, label) {
         if (!showOnly) {
           return label;
