@@ -275,7 +275,7 @@
         let propertyName = '';
         for (let i=0; i<this.filters.length; i++) {
           propertyName = this.filters[i].name;
-          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+          queryParam = e.detail[propertyName] ? propertyName + '=' + encodeURIComponent(e.detail[propertyName]) + '&' : '';
           filterQuery += queryParam;
         }
         this.filterQuery = filterQuery;

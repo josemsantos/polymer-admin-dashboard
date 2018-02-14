@@ -116,7 +116,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       remember-me="[[rememberMe]]"
       auth-headers="{{authHeaders}}"></dash-logged-user>
 
-    <dash-access 
+    <dash-access
       permissions="[[permissions]]"
       menu="{{menu}}"
       module="[[module]]"
@@ -126,7 +126,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <dash-firebase
       real-db="{{fireDB}}"
       storage="{{fireStorage}}"></dash-firebase>
-      
+
     <dash-notifications></dash-notifications>
 
     <!-- Main content -->
@@ -137,7 +137,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <paper-icon-button icon="my-icons:menu" on-tap="_drawerToggle"></paper-icon-button>
           <paper-icon-button icon="my-icons:dashboard" on-tap="goToDashBoard"></paper-icon-button>
           <div main-title>[[appName]]</div>
-          <dash-user-actions 
+          <dash-user-actions
             user="[[user]]"
             storage="[[fireStorage]]"
             real-db="[[fireDB]]"
@@ -149,9 +149,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           <!-- Drawer content -->
           <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
             <div class="drawer-content">
-              <dash-navigation-menu 
+              <dash-navigation-menu
                 page="[[page]]"
-                module="[[module]]" 
+                module="[[module]]"
                 root-path="[[rootPath]]"
                 menu="[[menu]]"></dash-navigation-menu>
             </div>
@@ -166,11 +166,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <groups-list 
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
-            <groups-create 
-              permissions="[[permissions]]" 
+            <groups-create
+              permissions="[[permissions]]"
               name="groups-create"></groups-create>
-            <groups-edit 
-              permissions="[[permissions]]" 
+            <groups-edit
+              permissions="[[permissions]]"
               name="groups-edit"
               route="[[subroute]]"></groups-edit>
             <groups-show
@@ -183,27 +183,27 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <users-create
               permissions="[[permissions]]"
               name="users-create"></users-create>
-            <users-edit 
-              permissions="[[permissions]]" 
+            <users-edit
+              permissions="[[permissions]]"
               name="users-edit"
               route="[[subroute]]"></users-edit>
             <users-show
               permissions="[[permissions]]"
               name="users-show"
               route="[[subroute]]"></users-show>
-            <user-profile 
+            <user-profile
               user="[[user]]"
-              permissions="[[permissions]]" 
+              permissions="[[permissions]]"
               name="user-profile"
               storage="[[fireStorage]]"
               real-db="[[fireDB]]"></user-profile>
             <authentication-login
-              name$="[[loginPage]]" 
+              name$="[[loginPage]]"
               on-dash-user-logged="_setUser"></authentication-login>
             <my-view404 name="view404"></my-view404>
           </iron-pages>
         </app-drawer-layout>
-      
+
     </app-header-layout>
   </template>
 
@@ -319,7 +319,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
           return;
         }
         this.module = module;
-        this.fragment = module + '-' + page; 
+        this.fragment = module + '-' + page;
         // If no page was found in the route data, page will be an empty string.
         // Deault to 'view1' in that case.
         this.page = page || 'view1';
@@ -343,13 +343,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         if (this.redirectAndPreventLoad()) {
           return;
         }
-        
+
         var resolvedPageUrl = this.resolveUrl(PAGES_URL[this.fragment]);
         Polymer.importHref(
             resolvedPageUrl,
             () => {
               if (this._oFragment) {
-                this.shadowRoot.querySelector(this._oFragment).selected = false;  
+                this.shadowRoot.querySelector(this._oFragment).selected = false;
               }
               this.shadowRoot.querySelector(el).selected = true;
             },

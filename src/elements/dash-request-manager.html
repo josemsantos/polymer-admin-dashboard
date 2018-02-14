@@ -133,7 +133,7 @@
         xhr.addEventListener('load', function (e) {
           let status = this.status;
           let isSuccess = status >= 200 && status < 300 || status === 304;
-          
+
           if (isSuccess) {
             rq.onLoad.call(this, e);
           } else {
@@ -167,7 +167,7 @@
           xhr.setRequestHeader(header, rq.headers[header]);
         }
         xhr.withCredentials = true;
-        
+
         if (rq.data) {
           xhr.send(rq.data);
         } else {
