@@ -27,8 +27,10 @@
         let _userActions = {};
 
         for (let action in actions) {
-          if (this._hasAccess(userRoles, accessControl[action].restrictions)) {
-            _userActions[action] = actions[action];
+          if (accessControl[action] !== undefined) {
+            if (this._hasAccess(userRoles, accessControl[action].restrictions)) {
+              _userActions[action] = actions[action];
+            }
           }
         };
         return _userActions;

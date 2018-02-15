@@ -96,10 +96,6 @@
 
       _routeIdChanged (id, isReady) {
         if (id && isReady) {
-          let _form = this.shadowRoot.querySelector('dash-form');
-          if (_form !== undefined && _form !== null) {
-            _form.formReset();
-          }
           this.key = id;
         }
       }
@@ -279,7 +275,7 @@
         let propertyName = '';
         for (let i=0; i<this.filters.length; i++) {
           propertyName = this.filters[i].name;
-          queryParam = e.detail[propertyName] ? propertyName + '=' + e.detail[propertyName] + '&' : '';
+          queryParam = e.detail[propertyName] ? propertyName + '=' + encodeURIComponent(e.detail[propertyName]) + '&' : '';
           filterQuery += queryParam;
         }
         this.filterQuery = filterQuery;
@@ -344,7 +340,7 @@
       _setData (e) {
         this.data = e.detail.response;
       }
-      
+
       _setCheckStatusFromData(fields, data) {
         for (let i in fields) {
           if (data[fields[i].name] === undefined) {
@@ -388,17 +384,20 @@
         this.modelElement = this.shadowRoot.querySelector(this.model);
         this.modelElement.connection = this.requestConnections[this.connection];
         this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
-        
+
         if (this.pageType === 'list') {
           this._addListEventListeners();
         }
       }
-      
+
       onSelectedChange(selected) {
         if (selected) {
           if (this.pageType === 'list') {
             this.getList();
           } else if (this.pageType === 'form') {
+            if (this.fields) {
+              this.shadowRoot.querySelector('dash-form').formReset();
+            }
             this.getForm();
             if (this.key) {
               this.loadItem();

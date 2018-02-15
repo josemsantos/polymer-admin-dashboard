@@ -1,4 +1,5 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../shared-styles.html">
 <link rel="import" href="../my-icons.html">
@@ -8,13 +9,20 @@
     <style include="shared-styles">
       :host {
         display: block;
-        padding: 24px;
+        padding: 24px 16px;
       }
       iron-icon {
         color: white;
         --iron-icon-width: 36px;
         --iron-icon-height: 36px;
         margin-right: 16px;
+      }
+      .header-content {
+        display: flex;
+        flex-direction: row;
+      }
+      paper-icon-button {
+        color: white;
       }
       h2 {
         color: white;
@@ -24,10 +32,14 @@
         align-items: center;
         flex-direction: row;
         margin: 0px;
+        flex: 1;
       }
     </style>
 
-    <div>
+    <div class="header-content">
+      <template is="dom-if" if="[[back]]">
+        <paper-icon-button on-tap="_notifyBack" icon="my-icons:back-arrow"></paper-icon-button>
+      </template>
       <h2><iron-icon icon$="[[icon]]"></iron-icon> [[title]]</h2>
     </div>
 
@@ -56,8 +68,16 @@
       static get properties() {
         return {
           title: String,
-          icon: String
+          icon: String,
+          back: {
+            type: Boolean,
+            value: false
+          }
         };
+      }
+
+      _notifyBack(e) {
+        this.dispatchEvent(new CustomEvent('back', {bubbles: true, composed: true}));
       }
 
     }
