@@ -315,6 +315,15 @@
                   errors.push(validators[j].message);
                 }
                 break;
+              case 'json':
+                if (!this._isEmpty(fieldValue)) {
+                  try {
+                    JSON.parse(fieldValue);
+                  } catch (e) {
+                    errors.push(modelFields[i].label + " is not in a valid JSON format.");
+                  }
+                }
+                break;
             }
             if (validators[j].stop && errors.length > 0) {
               return errors.join('\n');
