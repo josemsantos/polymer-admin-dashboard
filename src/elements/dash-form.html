@@ -246,11 +246,12 @@
         }
       }
 
-      _isEmpty(value) {
+      _isEmpty(value, inputType) {
         return null === value
           || undefined === value
           || "" === value // empty string
-          || (value.constructor === Array && value.length === 0); // empty array
+          || (value.constructor === Array && value.length === 0) // empty array
+          || (inputType === 'dash-dropdown' && value === 0); // empty option on dash-dropdown
       }
 
       validate (modelFields, request) {
@@ -262,7 +263,7 @@
             switch (validators[j].type) {
 
               case 'required':
-                if (this._isEmpty(fieldValue)) {
+                if (this._isEmpty(fieldValue, modelFields[i].type)) {
                   errors.push(validators[j].message);
                 }
               	break;
