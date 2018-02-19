@@ -363,6 +363,14 @@
         }));
       }
 
+      _goToCollection (e) {
+        this.dispatchEvent(new CustomEvent('dash-go-to', {
+          detail: {route: this.getModuleName() + '/collection/' + this.key},
+          bubbles: true,
+          composed: true
+        }));
+      }
+
       _dropDownChanged (e) {
         let selectedId = e.detail.item.selected;
         if (selectedId) {
@@ -381,11 +389,12 @@
 
       ready () {
         super.ready();
+
         this.modelElement = this.shadowRoot.querySelector(this.model);
         this.modelElement.connection = this.requestConnections[this.connection];
         this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
 
-        if (this.pageType === 'list') {
+        if (this.pageType === 'list' || this.pageType === 'collection') {
           this._addListEventListeners();
         }
       }
@@ -399,6 +408,10 @@
               this.shadowRoot.querySelector('dash-form').formReset();
             }
             this.getForm();
+            if (this.key) {
+              this.loadItem();
+            }
+          } else if (this.pageType === 'collection') {
             if (this.key) {
               this.loadItem();
             }
