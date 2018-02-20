@@ -1,0 +1,158 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/cell-element-behavior.html">
+<link rel="import" href="dash-list-cell-actions.html">
+
+<dom-module id="dash-entity-card">
+  <template>
+    <style>
+      .entity-resume {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 32px 32px 0 32px;
+      }
+
+      .entity-resume > .card-content {
+        box-sizing: border-box;
+        padding: 0 16px 16px 16px;
+        flex-basis: 33%;
+      }
+
+      .entity-resume > .card-content > .label {
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.38);
+      }
+
+      .entity-resume > .card-content > .value {
+        font-size: 16px;
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .actions {
+        padding: 0 16px 16px 16px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      dash-list-cell-actions {
+        margin-left: 8px;
+      }
+    </style>
+
+    <div class="entity-resume">
+      <template is="dom-repeat" items="[[items]]" as="item">
+        <div class="card-content">
+          <div class="label">[[item.label]]</div>
+          <div class="value">[[item.value]]</div>
+        </div>
+      </template>
+    </div>
+
+    <div class="actions">
+      <dash-list-cell-actions key="[[key]]" actions="[[_bottomActions]]"></dash-list-cell-actions>
+    </div>
+  </template>
+
+  <script>
+   /**
+    * `dash-list` Description
+    *
+    * @summary ShortDescription.
+    * @customElement
+    * @polymer
+    * @extends {Polymer.Element}
+    */
+    class DashEntityCard extends CellElementBehavior(Polymer.Element) {
+      /**
+        * String providing the tag name to register the element under.
+        */
+      static get is() {
+        return 'dash-entity-card';
+      }
+
+      /**
+        * Object describing property-related metadata used by Polymer features
+        */
+      static get properties() {
+        return {
+          key: Object,
+          actions: {
+            type: Array,
+            observer: '_actionsChanged'
+          },
+          _bottomActions: {
+            type: Array,
+            value: []
+          },
+          items: {
+            type: Array
+          },
+          data: {
+            type: Object,
+            observer: '_dataChanged'
+          },
+          propertiesToShow: {
+            type: Array,
+            value: []
+          }
+        }
+      }
+
+      _getProperty( propertyName, object ) {
+        var parts = propertyName.split( "." ),
+          length = parts.length,
+          i,
+          property = object || this;
+
+        for ( i = 0; i < length; i++ ) {
+          property = property[parts[i]];
+        }
+
+        return property;
+      }
+
+      _dataChanged(data) {
+        var items = [];
+
+        for(var i = 0; i < this.propertiesToShow.length; i++) {
+          items.push({
+            label: this.propertiesToShow[i].label,
+            value: this._getProperty(this.propertiesToShow[i].name, data)
+          })
+        }
+
+        this.items = items;
+      }
+
+      _notifyCTA (action) {
+        this.dispatchEvent(new CustomEvent('dash-list-exec', {
+          bubbles: true,
+          composed: true,
+          detail: action
+        }));
+      }
+
+      _actionsChanged (actions) {
+        if (actions) {
+          let _cActions = [];
+          for (let action in actions) {
+            if (action !== 'create') {
+              _cActions.push({
+                type: action,
+                icon: actions[action].icon
+              });
+            }
+          }
+          this.set('_bottomActions', _cActions);
+        }
+      }
+      ready () {
+        super.ready();
+        this.addEventListener('dash-list-cta', function (e) {
+          this._notifyCTA(e.detail);
+        }.bind(this));
+      }
+    }
+
+    window.customElements.define(DashEntityCard.is, DashEntityCard);
+  </script>
+</dom-module>

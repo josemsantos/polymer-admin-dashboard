@@ -12,6 +12,7 @@
         border-radius: 2px;
         margin: 2px;
       }
+      paper-icon-button.collection,
       paper-icon-button.create,
       paper-icon-button.show {
         background-color:  var(--dash-action-view);
@@ -99,6 +100,7 @@
       getIcon (type, icon) {
         let defaultIcon = 'my-icons:edit';
         let icons = {
+          collection: 'my-icons:remove-red-eye',
           show: 'my-icons:remove-red-eye',
           create: 'my-icons:create',
           edit: 'my-icons:edit',
