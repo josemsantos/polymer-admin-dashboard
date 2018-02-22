@@ -21,7 +21,7 @@
     </style>
     <paper-dialog modal>
       <h2><iron-icon icon="my-icons:report-problem"></iron-icon> Are you sure you want to delete</h2>
-      <p>[[message]]</p>
+      <div inner-h-t-m-l="[[message]]"></div>
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
         <paper-button on-tap="delete" dialog-confirm autofocus>OK</paper-button>
@@ -82,7 +82,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

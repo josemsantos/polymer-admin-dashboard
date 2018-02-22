@@ -401,6 +401,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
 
       _setAccessControl (e) {
+        this.modules = e.detail;
         let modules = e.detail;
         let fragments = this.shadowRoot.querySelectorAll('iron-pages > *');
         fragments.forEach(fragment => {
