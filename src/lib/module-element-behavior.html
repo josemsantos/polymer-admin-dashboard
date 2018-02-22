@@ -247,6 +247,12 @@
       }
 
       _execAction (e) {
+        // Stop event propagation to avoid modules to catch submodules events
+        // Example: when opening a edit or a show page of a sub module we don't want to
+        // be catched by the parent module because it will open his page
+        // instead of the page of the submodule
+        e.stopPropagation();
+
         let action = e.detail.type;
         let identifier = e.detail.key;
         let procedure = this._procedureFactory(action, this.actions[action], identifier);
@@ -425,8 +431,8 @@
       }
 
       getModuleName() {
-        let elName = this.getAttribute('name');
-        return elName.split('-')[0];
+        var moduleName = this.getAttribute('name');
+        return moduleName.substring(0, moduleName.lastIndexOf('-'))
       }
 
       onResponseChanged (e) {

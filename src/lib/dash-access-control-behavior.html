@@ -8,6 +8,14 @@
         }
       }
 
+      _getModuleAccessControl(modules, moduleName) {
+        for (var i = 0; i < modules.length; i++) {
+          if (modules[i][moduleName] && modules[i][moduleName].actions) {
+            return modules[i][moduleName].actions
+          }
+        }
+      }
+
       _hasAccess(roles, expectedRoles) {
         for (let i in roles) {
           if (expectedRoles.indexOf(roles[i]) > -1) {
