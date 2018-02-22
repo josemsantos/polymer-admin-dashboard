@@ -356,19 +356,15 @@
       }
 
       _goToList (e) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: this.getModuleName() + '/list'},
-          bubbles: true,
-          composed: true
-        }));
+        this._goToPath(this.getModuleName() + '/list');
       }
 
       _goToCollection (e) {
-        this.dispatchEvent(new CustomEvent('dash-go-to', {
-          detail: {route: this.getModuleName() + '/collection/' + this.key},
-          bubbles: true,
-          composed: true
-        }));
+        this._goToPath(this.getModuleName() + '/collection/' + this.key);
+      }
+
+      _goToEdit (e) {
+        this._goToPath(this.getModuleName() + '/edit/' + this.key);
       }
 
       _dropDownChanged (e) {
