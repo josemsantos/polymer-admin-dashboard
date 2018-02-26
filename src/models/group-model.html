@@ -124,12 +124,26 @@
 
       getCreateForm () {
         let form = this.getForm();
+
         form.actions = {
           'create' :{
             label: 'Create',
             event: 'create-group'
           },
         };
+        return form;
+      }
+
+      getViewForm () {
+        let form = this.getForm();
+
+        form.actions = {
+          'edit' :{
+            label: 'Edit',
+            event: 'go-to-edit'
+          },
+        };
+
         return form;
       }
 
