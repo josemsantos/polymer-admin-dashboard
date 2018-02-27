@@ -134,6 +134,9 @@
           let status = this.status;
           let isSuccess = status >= 200 && status < 300 || status === 304;
 
+          // Set the chr request in the response
+          e.target.xhr = xhr;
+
           if (isSuccess) {
             rq.onLoad.call(this, e);
           } else {

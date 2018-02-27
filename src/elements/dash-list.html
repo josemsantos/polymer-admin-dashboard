@@ -142,6 +142,11 @@
                     <iron-icon icon="my-icons:filter-list"></iron-icon> Filters
                   </paper-button>
                 </template>
+                <template is="dom-if" if="[[actions.export]]">
+                  <paper-button on-tap="_exportRequest">
+                    <iron-icon icon="my-icons:file-download"></iron-icon> EXPORT
+                  </paper-button>
+                </template>
                 <template is="dom-if" if="[[actions.create]]">
                   <paper-button on-tap="_notifyGoToCreate">
                     <iron-icon icon="my-icons:playlist-add"></iron-icon> CREATE
@@ -350,6 +355,13 @@
         this._toggleFilters();
       }
 
+      _exportRequest (e) {
+        this.dispatchEvent(new CustomEvent('dash-export-request', {
+          bubbles: true,
+          composed: true
+        }));
+      }
+
       _hasFooterComputed(customPagination, showListOnly, totalItems) {
         return customPagination && !showListOnly && totalItems > 0;
       }
@@ -362,7 +374,7 @@
         if (actions) {
           let _cActions = [];
           for (let action in actions) {
-            if (action !== 'create') {
+            if (action !== 'create' && action !== 'export') {
               _cActions.push({
                 type: action,
                 icon: actions[action].icon
