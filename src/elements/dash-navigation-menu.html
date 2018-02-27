@@ -13,7 +13,7 @@
        :host {
         display: block;
       }
-      
+
       paper-item {
         cursor: pointer;
       }
@@ -73,6 +73,9 @@
       }
       .paper-item-label {
         flex: 1;
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: 400;
       }
     </style>
 
@@ -169,7 +172,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();

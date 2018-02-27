@@ -98,6 +98,8 @@
       }
 
       _getProperty( propertyName, object ) {
+        if(!object) return;
+
         var parts = propertyName.split( "." ),
           length = parts.length,
           i,

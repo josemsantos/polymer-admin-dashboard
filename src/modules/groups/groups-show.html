@@ -102,6 +102,7 @@
        */
       ready() {
         super.ready();
+
         this.groupModel = this.shadowRoot.querySelector(this.model);
         this.form = this.groupModel.getViewForm();
         this.fields = this.form.fields;

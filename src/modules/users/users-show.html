@@ -19,7 +19,7 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-      
+
     <user-model
       fetch-groups
       on-users-groups-changed="_setExternalData"
@@ -86,7 +86,7 @@
           }
         };
       }
-      
+
       _setExternalData (e) {
         let groups = [];
         if (e.detail.length) {
@@ -113,10 +113,11 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized. 
+       * Use for one-time configuration of your component after local DOM is initialized.
        */
       ready() {
         super.ready();
+
         this.userModel = this.shadowRoot.querySelector(this.model);
         this.form = this.userModel.getViewForm();
         this.fields = this.form.fields;
@@ -127,7 +128,6 @@
           this._goToEdit(e)
         }.bind(this));
       }
-
     }
 
     window.customElements.define(UsersShow.is, UsersShow);

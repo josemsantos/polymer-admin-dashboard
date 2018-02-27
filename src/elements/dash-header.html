@@ -13,8 +13,8 @@
       }
       iron-icon {
         color: white;
-        --iron-icon-width: 36px;
-        --iron-icon-height: 36px;
+        --iron-icon-width: 40px;
+        --iron-icon-height: 40px;
         margin-right: 16px;
       }
       .header-content {
@@ -23,11 +23,12 @@
       }
       paper-icon-button {
         color: white;
+        margin-right: 16px;
       }
       h2 {
         color: white;
         font-size: 20px;
-        font-weight: 300;
+        font-weight: 400;
         display: flex;
         align-items: center;
         flex-direction: row;
@@ -40,7 +41,10 @@
       <template is="dom-if" if="[[back]]">
         <paper-icon-button on-tap="_notifyBack" icon="my-icons:back-arrow"></paper-icon-button>
       </template>
-      <h2><iron-icon icon$="[[icon]]"></iron-icon> [[title]]</h2>
+      <template is="dom-if" if="[[icon]]">
+        <iron-icon icon$="[[icon]]"></iron-icon>
+      </template>
+      <h2>[[title]]</h2>
     </div>
 
   </template>
