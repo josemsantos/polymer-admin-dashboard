@@ -410,7 +410,7 @@
               this.shadowRoot.querySelector('dash-form').formReset();
             }
             this.getForm();
-            if (this.key) {
+            if (this.key || this.key === false) {
               this.loadItem();
             }
           } else if (this.pageType === 'collection') {

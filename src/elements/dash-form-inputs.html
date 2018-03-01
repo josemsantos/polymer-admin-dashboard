@@ -51,7 +51,7 @@
       <template is="dom-if" if="[[_isCheckbox(field.type)]]">
         <div class="checkbox-container">
           <paper-checkbox
-            checked$="[[field.checked]]"
+            checked="[[field.checked]]"
             name$="[[field.name]]"
             disabled="[[_isReadonly(field.attributes, showOnly)]]">[[field.label]]</paper-checkbox>
         </div>

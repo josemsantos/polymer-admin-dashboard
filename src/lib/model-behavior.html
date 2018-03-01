@@ -138,6 +138,10 @@
         }));
       }
 
+      _evaluateKey (key) {
+        return (!key) ? '' : '/' + key;
+      }
+
       search(method, itemsPerPage, page, filterQuery, sortQuery) {
         let queryParams = "";
         if (itemsPerPage) {
@@ -179,7 +183,7 @@
         method = method || 'GET';
         var _self = this;
         this.connection.request({
-          url: this.endpoint + '/' + key,
+          url: this.endpoint + this._evaluateKey(key),
           verb: method,
           onLoad(e) {
             try {
@@ -232,7 +236,7 @@
         method = method || 'PUT';
         var _self = this;
         this.connection.request({
-          url: this.endpoint + '/' + key,
+          url: this.endpoint + this._evaluateKey(key),
           verb: method,
           data: payload,
           onLoad(e) {
@@ -259,7 +263,7 @@
         var _self = this;
         method = method || 'DELETE';
         this.connection.request({
-          url: this.endpoint + '/' +  key,
+          url: this.endpoint + this._evaluateKey(key),
           verb: method,
           onLoad(e) {
             _self._posDeleteCallBack.call(_self, {id: key});
