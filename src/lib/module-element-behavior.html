@@ -1,12 +1,13 @@
 <link rel="import" href="../elements/dash-remove-alert.html">
 <link rel="import" href="../lib/request-connection.html">
 <link rel="import" href="../lib/dash-access-control-behavior.html">
+<link rel="import" href="../lib/fragment-behavior.html">
 
 <script>
   'use strict';
 
   function ModuleElementBehavior(superClass) {
-    return class extends DashAccessControlBehavior(superClass) {
+    return class extends FragmentBehavior(DashAccessControlBehavior(superClass)) {
       static get properties() {
         return {
           _formActions: {
@@ -140,6 +141,11 @@
             this._goToList();
           });
         }
+      }
+
+      _updateHeaders () {
+        let headers = Dash.connections[this.connection].headers;
+        this.requestConnections[this.connection].updateHeaders(headers);
       }
 
       _setActionsKey (data) {
@@ -285,7 +291,14 @@
           filterQuery += queryParam;
         }
         this.filterQuery = filterQuery;
-        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery);
+        this.modelElement.search('', this.itemsPerPage, 1, filterQuery, this.sortQuery, false);
+        this.filterSortRequest = false;
+      }
+
+      _export (e) {
+        this.filterSortRequest = true;
+        this.page = 1; //reset pagination element
+        this.modelElement.search('', this.itemsPerPage, 1, this.filterQuery, this.sortQuery, true);
         this.filterSortRequest = false;
       }
 
@@ -322,6 +335,7 @@
       _addListEventListeners () {
         this.addEventListener('dash-list-exec', this._execAction.bind(this));
         this.addEventListener('dash-filter-request', this._filter.bind(this));
+        this.addEventListener('dash-export-request', this._export.bind(this));
         this.addEventListener('dash-list-sort', this._sort.bind(this));
         this.addEventListener('dash-list-page-changed', this._pageChanged.bind(this));
         this.addEventListener('dash-list-selection-changed', this._selectionChanged.bind(this));
@@ -403,6 +417,8 @@
 
       onSelectedChange(selected) {
         if (selected) {
+          this._updateHeaders();
+
           if (this.pageType === 'list') {
             this.getList();
           } else if (this.pageType === 'form') {

@@ -31,7 +31,6 @@
 
     <dash-header
       title="Access Groups [[data.name]]"
-      icon="my-icons:group"
       on-back="_goToList"
       back></dash-header>
 
@@ -42,8 +41,10 @@
         key="[[key]]"
         model="[[groupModel.model]]"
         fields="[[fields]]"
+        actions="[[_formActions]]"
         model-data="[[data]]"
         on-cancel="_goToList"
+        on-submit="_execAction"
         show-only>
       </dash-form>
     </paper-material>
@@ -101,11 +102,16 @@
        */
       ready() {
         super.ready();
-        this.groupModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.groupModel.getForm();
-        this.fields = this.form.fields;
 
+        this.groupModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.groupModel.getViewForm();
+        this.fields = this.form.fields;
+        this.actions = this.form.actions;
         this.isReady = true;
+
+        this.addEventListener('go-to-edit', function (e) {
+          this._goToEdit(e)
+        }.bind(this));
       }
 
     }

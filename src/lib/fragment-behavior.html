@@ -1,0 +1,31 @@
+<script>
+    'use strict';
+
+    /**
+     * Behavior that manages the language and localize settings
+     *
+     * @polymerBehavior FragmentBehavior
+     */
+    function FragmentBehavior(superClass) {
+      return class extends superClass {
+        static get properties() {
+          return {
+          }
+        }
+
+        lazyLoadFragment(resolvedPageUrl, successCallback, errorCallback) {
+          Polymer.importHref(
+            resolvedPageUrl,
+            successCallback,
+            () => {
+              if(errorCallback) {
+                errorCallback()
+              } else {
+                console.log('Error loading')
+              }
+            },
+            true);
+        }
+      }
+    }
+</script>

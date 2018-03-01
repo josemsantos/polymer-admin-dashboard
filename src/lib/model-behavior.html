@@ -142,7 +142,28 @@
         return (!key) ? '' : '/' + key;
       }
 
-      search(method, itemsPerPage, page, filterQuery, sortQuery) {
+      _exportFile(e) {
+        // Use filename provided by the api to generate the file
+        var filename;
+        var disposition = e.target.xhr.getResponseHeader('Content-Disposition');
+        if (disposition && disposition.indexOf('attachment') !== -1) {
+            var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+            var matches = filenameRegex.exec(disposition);
+            if (matches != null && matches[1]) {
+              filename = matches[1].replace(/['"]/g, '');
+            }
+        }
+
+        var blob = new Blob([e.target.responseText], {type: e.target.xhr.getResponseHeader('Content-Type')});
+        var downloadUrl = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+      }
+
+      search(method, itemsPerPage, page, filterQuery, sortQuery, exportResult) {
         let queryParams = "";
         if (itemsPerPage) {
           queryParams = "per_page=" +  itemsPerPage + '&';
@@ -154,14 +175,20 @@
         queryParams += sortQuery ? sortQuery : this.sortQueryDefault;
         method = method || 'GET';
 
+        var endpoint = exportResult ? this.endpoint + '/export' : this.endpoint;
+
         var _self = this;
         this.connection.request({
-          url: this.endpoint,
+          url: endpoint,
           verb: method,
           data: queryParams,
           onLoad(e) {
             try {
-            _self.set('response', JSON.parse(e.target.responseText));
+              if(exportResult) {
+                _self._exportFile(e);
+              } else {
+                _self.set('response', JSON.parse(e.target.responseText));
+              }
             }
             catch(err) {
               _self.set('response', {});

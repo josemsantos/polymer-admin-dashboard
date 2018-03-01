@@ -284,6 +284,19 @@
         return form;
       }
 
+      getViewForm () {
+        let form = this.getForm();
+
+        form.actions = {
+          'edit' :{
+            label: 'Edit',
+            event: 'go-to-edit'
+          },
+        };
+
+        return form;
+      }
+
       getLoginForm () {
         return {
           fields: [
@@ -382,7 +395,6 @@
           }
         };
       }
-
     }
 
     window.customElements.define(UserModel.is, UserModel);
