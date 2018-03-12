@@ -166,6 +166,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               fallback-selection="view404"
               role="main">
             <dashboard-home name="dashboard-home"></dashboard-home>
+            <!-- GROUPS -->
             <groups-list 
               permissions="[[permissions]]" 
               name="groups-list"></groups-list>
@@ -180,6 +181,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]"
               name="groups-show"
               route="[[subroute]]"></groups-show>
+            <!-- USERS -->
             <users-list
               permissions="[[permissions]]"
               name="users-list"></users-list>
@@ -194,12 +196,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
               permissions="[[permissions]]"
               name="users-show"
               route="[[subroute]]"></users-show>
+            <!-- USER PROFILE -->
             <user-profile
               user="[[user]]"
               permissions="[[permissions]]"
               name="user-profile"
               storage="[[fireStorage]]"
               real-db="[[fireDB]]"></user-profile>
+            <!-- LOGIN -->
             <authentication-login
               name$="[[loginPage]]"
               on-dash-user-logged="_setUser"></authentication-login>

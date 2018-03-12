@@ -118,10 +118,11 @@
         }));
       }
 
-      _posUpdateErrorCallBack (response) {
+      _posUpdateErrorCallBack (response, status) {
         this.dispatchEvent(new CustomEvent('model-update-error', {
           detail: {
-            message: response
+            message: response,
+            status: status
           },
           bubbles: true,
           composed: true
@@ -277,7 +278,7 @@
           onError(e) {
             _self._setFailure(true);
             try {
-            _self._posUpdateErrorCallBack.call(_self, JSON.parse(e.target.responseText));
+            _self._posUpdateErrorCallBack.call(_self, JSON.parse(e.target.responseText), e.target.status);
           }
             catch(err) {
               _self._posUpdateErrorCallBack.call(_self, {});

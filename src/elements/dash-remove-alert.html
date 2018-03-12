@@ -11,7 +11,8 @@
         display: block
       }
       h2 {
-        color : var(--paper-blue-grey-900)
+        color : var(--paper-blue-grey-900);
+        white-space: normal;
       }
       iron-icon {
         padding-right: 8px;
@@ -20,11 +21,11 @@
       }
     </style>
     <paper-dialog modal>
-      <h2><iron-icon icon="my-icons:report-problem"></iron-icon> Are you sure you want to delete</h2>
+      <h2><iron-icon icon="my-icons:report-problem"></iron-icon> [[validTitle(title)]]</h2>
       <p inner-h-t-m-l="[[message]]"></p>
       <div class="buttons">
         <paper-button dialog-dismiss>Cancel</paper-button>
-        <paper-button on-tap="delete" dialog-confirm autofocus>OK</paper-button>
+        <paper-button on-tap="_executeAction" dialog-confirm autofocus>OK</paper-button>
       </div>
     </paper-dialog>
 
@@ -54,7 +55,11 @@
         return {
           _dialog: HTMLElement,
           key: String,
-          message: String
+          message: String,
+          title: {
+            type: String,
+          },
+          customAction: String
         };
       }
 
@@ -65,6 +70,25 @@
        */
       constructor() {
         super();
+      }
+
+      validTitle(title) {
+        return title && title != 'undefined' ? title : 'Are you sure you want to delete';
+      }
+
+      _executeAction () {
+        this.customAction && this.customAction != 'undefined'  ? this.custom() : this.delete()
+      }
+
+      custom() {
+        this.dispatchEvent(new CustomEvent('custom-action', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            key: this.key,
+            action: this.customAction
+          }
+        }));
       }
 
       delete () {
@@ -82,7 +106,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized.
+       * Use for one-time configuration of your component after local DOM is initialized. 
        */
       ready() {
         super.ready();
