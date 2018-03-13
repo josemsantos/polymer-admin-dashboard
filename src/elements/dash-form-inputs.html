@@ -38,6 +38,11 @@
       paper-input[type=hidden] {
         display: none;
       }
+      .helper-message {
+        margin: -12px 0 10px 0;
+        color: var(--paper-grey-600);
+        font-size: 10px;
+      }
     </style>
     <template is="dom-repeat" items="[[fields]]" as="field" filter="{{_computeFilterFields(tab)}}">
       <template is="dom-if" if="[[_isInput(field.type)]]">
@@ -123,6 +128,9 @@
           type$="[[field.type]]"
           disabled="[[_isReadonly(field.attributes, showOnly)]]"
           maxlength="[[field.maxlength]]"></paper-textarea>
+      </template>
+      <template is="dom-if" if="[[field.helper]]">
+        <p class="helper-message">[[field.helper]]</p>
       </template>
     </template>
   </template>
