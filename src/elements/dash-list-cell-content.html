@@ -6,9 +6,16 @@
       :host {
         display: block
       }
+      .textoverflow {
+          white-space: normal;
+          overflow: hidden;
+          min-width: 0;
+          text-overflow: ellipsis;
+      }
     </style>
-
-    <slot></slot>
+    <div class="textoverflow">
+      <slot></slot>
+    </div>
 
   </template>
 
