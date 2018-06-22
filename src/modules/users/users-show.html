@@ -19,7 +19,7 @@
       route="{{route}}"
       pattern="/:id"
       data="{{routeData}}"></app-route>
-
+      
     <user-model
       fetch-groups
       on-users-groups-changed="_setExternalData"
@@ -27,6 +27,7 @@
 
     <dash-header
       title="User account - [[data.username]]"
+      icon="my-icons:group"
       on-back="_goToList"
       back></dash-header>
 

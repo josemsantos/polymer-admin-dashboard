@@ -28,6 +28,9 @@
           border-bottom: solid 1px var(--paper-blue-grey-600);
         }
         --paper-chip-autocomplete-suggestion-height: 300px;
+        --paper-input-container: {
+          padding-bottom: 16px;
+        }
       }
       paper-button {
         width: 100px;
@@ -38,17 +41,32 @@
       paper-input[type=hidden] {
         display: none;
       }
+      .helper-message {
+        margin: -12px 0 10px 0;
+        color: var(--paper-grey-600);
+        font-size: 10px;
+      }
+      iron-icon {
+        padding-right: 5px;
+        color: var(--paper-grey-600);
+      }
     </style>
     <template is="dom-repeat" items="[[fields]]" as="field" filter="{{_computeFilterFields(tab)}}">
-      <template is="dom-if" if="[[_isInput(field.type)]]">
+      <template is="dom-if" if="[[_isInput(field.type)]]" restamp>
         <paper-input
           name$="[[field.name]]"
           label="[[field.label]]"
           placeholder="[[field.placeholder]]"
           type$="[[field.type]]"
-          disabled="[[_isReadonly(field.attributes, showOnly)]]"></paper-input>
+          autocomplete$="[[field.autocomplete]]"
+          disabled="[[_isReadonly(field.attributes, showOnly)]]">
+          <template is="dom-if" if="[[_hasFieldIcon(field)]]">
+            <iron-icon icon="[[field.icon]]" slot="suffix"></iron-icon>
+          </template>
+        </paper-input>
       </template>
-      <template is="dom-if" if="[[_isCheckbox(field.type)]]">
+
+      <template is="dom-if" if="[[_isCheckbox(field.type)]]" restamp>
         <div class="checkbox-container">
           <paper-checkbox
             checked="[[field.checked]]"
@@ -57,7 +75,7 @@
         </div>
       </template>
 
-      <template is="dom-if" if="[[_isDropdown(field.type)]]">
+      <template is="dom-if" if="[[_isDropdown(field.type)]]" restamp>
         <div class="checkbox-container">
           <paper-dropdown-menu
             label="[[field.label]]"
@@ -76,20 +94,20 @@
         </div>
       </template>
 
-      <template is="dom-if" if="[[_isDashDropdown(field.type)]]">
+      <template is="dom-if" if="[[_isDashDropdown(field.type)]]" restamp>
         <div class="checkbox-container">
           <dash-form-dropdown
             label="[[field.label]]"
             name$="[[field.name]]"
             options="[[field.items]]"
             disabled="[[_isReadonly(field.attributes, showOnly)]]"
-            selected$="[[field.selected]]"
+            selected="[[field.selected]]"
             on-dash-form-dropdown-changed="_onSelectedItemChanged">
           </dash-form-dropdown>
         </div>
       </template>
 
-      <template is="dom-if" if="[[_isUploadFile(field.type)]]">
+      <template is="dom-if" if="[[_isUploadFile(field.type)]]" restamp>
         <div class="checkbox-container">
           <vaadin-upload
             accept$="[[field.acceptType]]"
@@ -102,20 +120,20 @@
         </div>
       </template>
 
-      <template is="dom-if" if="[[_isCollection(field.type)]]">
+      <template is="dom-if" if="[[_isCollection(field.type)]]" restamp>
         <paper-chip-input-autocomplete
           id="[[field.name]]"
           label="[[_computedLabel(showOnly, field.label)]]"
           name$="[[field.name]]"
           text-only$="[[_isTextonly(field.attributes)]]"
           closable="[[!showOnly]]"
-          disabled="[[showOnly]]"
+          disabled="[[_isReadonly(field.attributes, showOnly)]]"
           source="[[field.source]]"
           min-search-string-length="[[_minSearchLength(field.minSearchLength)]]">
         </paper-chip-input-autcomplete>
       </template>
 
-      <template is="dom-if" if="[[_isTextarea(field.type)]]">
+      <template is="dom-if" if="[[_isTextarea(field.type)]]" restamp>
         <paper-textarea
           always-float-label
           name$="[[field.name]]"
@@ -123,6 +141,9 @@
           type$="[[field.type]]"
           disabled="[[_isReadonly(field.attributes, showOnly)]]"
           maxlength="[[field.maxlength]]"></paper-textarea>
+      </template>
+      <template is="dom-if" if="[[field.helper]]">
+        <p class="helper-message">[[field.helper]]</p>
       </template>
     </template>
   </template>
@@ -274,7 +295,7 @@
         return '';
       }
 
-      _resetInput(fld) {
+      resetInput(fld) {
         if (this._isInput(fld.type)) {
           let el = this.shadowRoot.querySelector('paper-input[name=' + fld.name + ']');
           el.value = '';
@@ -301,12 +322,12 @@
         if (this.tab) {
           this.fields.forEach(fld => {
             if (fld.tab === this.tab) {
-              this._resetInput(fld);
+              this.resetInput(fld);
             }
           });
         } else {
           this.fields.forEach(fld => {
-            this._resetInput(fld);
+            this.resetInput(fld);
           });
         }
       }

@@ -406,9 +406,11 @@
       ready () {
         super.ready();
 
-        this.modelElement = this.shadowRoot.querySelector(this.model);
-        this.modelElement.connection = this.requestConnections[this.connection];
-        this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
+        if (this.model) {
+          this.modelElement = this.shadowRoot.querySelector(this.model);
+          this.modelElement.connection = this.requestConnections[this.connection];
+          this.modelElement.addEventListener('model-response-changed', this.onResponseChanged.bind(this));
+        }
 
         if (this.pageType === 'list' || this.pageType === 'collection') {
           this._addListEventListeners();
@@ -465,6 +467,13 @@
 
       getForm () {
 
+      }
+      
+      _isEmpty(value) {
+        return null === value
+          || undefined === value
+          || "" === value // empty string
+          || (value.constructor === Array && value.length === 0); // empty array
       }
     }
   }

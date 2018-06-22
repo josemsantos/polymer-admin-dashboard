@@ -38,13 +38,19 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         --dash-action-box-form-actions-border: #cccccc;
         --dash-list-header-text-color: #727272;
         --dash-list-header-background-color: #f7f7f7;
-        --dash-list-even-background-color: #f7f7f7;
+        --dash-list-even-background-color: #fDfDfD;
+        --dash-dashboard-card-one: #72a0e9;
+        --dash-dashboard-card-two: #456eae;
       }
 
       :host([name*="-show"]) {
         --dash-form-button-edit: {
           background-color: var(--dash-action-create);
         }
+      }
+
+      a {
+        color: var(--dash-action-create);
       }
 
       .yellow {
@@ -150,6 +156,30 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       .colection-entity-card {
         margin: 0 0 16px 0;
         border-radius: 0;
+      }
+
+      .card {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 32px 16px 16px 16px;
+      }
+
+      .card > .card-content {
+        box-sizing: border-box;
+        flex-basis: 33%;
+        padding-bottom: 16px;
+      }
+
+      .card > .card-content > .label {
+        font-size: 12px;
+        padding: 0 8px;
+        color: rgba(0, 0, 0, 0.38);
+      }
+
+      .card > .card-content > .value {
+        font-size: 16px;
+        padding: 0 8px;
+        color: rgba(0, 0, 0, 0.87);
       }
 
     </style>

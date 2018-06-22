@@ -84,9 +84,20 @@
         };
       }
 
-      _selectedChanged(selected) {
-        this.value = selected;
-        this.shadowRoot.querySelector('select').value = selected;
+      _selectedChanged(selected, oSelected) {
+        if ((selected || selected === 0) && selected != oSelected) {
+          this.value = selected;
+          let select = this.shadowRoot.querySelector('select');
+          select.selectedIndex = 0;
+          for (let i in select.options) {
+            if (select.options[i].value == selected) {
+              select.selectedIndex = i;
+            }
+          }
+          if (select.selectedIndex === 0) {
+            select.options[0].selected = true;
+          }
+        }
       }
 
       _optionsChanged(options) {
