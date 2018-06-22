@@ -38,15 +38,18 @@
             type: Array,
             notify: true
           },
-          rememberMe: {
-            type: Boolean,
-            observer: '_rememberMeChanged'
-          },
+          rememberMe: Boolean,
           isLoggedIn: {
             type: Boolean,
             notify: true
           }
         };
+      }
+
+      static get observers() {
+        return [
+          '_rememberMeChanged(rememberMe, user.id)'
+        ];
       }
 
       /**
@@ -73,12 +76,12 @@
         this._rememberMeChanged(this.rememberMe);
       }
 
-      _rememberMeChanged (rememberMe) {
-        if (rememberMe) {
+      _rememberMeChanged (rememberMe, uid) {
+        if (rememberMe && uid) {
           this.store('user', this.user, 8);
-          if (this.authHeaders) {
-            this.store('auth-headers', this.authHeaders, 8);
-          }
+        }
+        if (rememberMe && this.authHeaders) {
+          this.store('auth-headers', this.authHeaders, 8);
         }
       }
 
@@ -109,6 +112,10 @@
       clearUser () {
         this.delete('auth-headers').then(authHeaders => {
           this.delete('user');
+          
+          if (navigator.credentials && navigator.credentials.preventSilentAccess) {
+            navigator.credentials.preventSilentAccess();
+          }
         });
       }
 

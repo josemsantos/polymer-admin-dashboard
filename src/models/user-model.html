@@ -304,6 +304,7 @@
               label: 'Username',
               name: 'username',
               type: 'text',
+              autocomplete: 'username email',
               validators: [
                 {
                   type: 'regex',
@@ -317,6 +318,7 @@
               label: 'Password',
               name: 'password',
               type: 'password',
+              autocomplete: 'password new-password',
               validators: [
                 {
                   type: 'regex',
@@ -395,6 +397,7 @@
           }
         };
       }
+
     }
 
     window.customElements.define(UserModel.is, UserModel);

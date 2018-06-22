@@ -5,6 +5,10 @@
     return class extends superClass {
       static get properties() {
         return {
+          superAdminRole: {
+            type: String,
+            value: 'ROLE_SUPER_ADMIN'
+          }
         }
       }
 
@@ -17,6 +21,10 @@
       }
 
       _hasAccess(roles, expectedRoles) {
+        //Injected role super admin
+        if (expectedRoles) {
+          expectedRoles.push(this.superAdminRole);
+        }
         for (let i in roles) {
           if (expectedRoles.indexOf(roles[i]) > -1) {
             return true;

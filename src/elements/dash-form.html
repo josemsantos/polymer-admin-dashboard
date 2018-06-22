@@ -83,7 +83,7 @@
     </style>
     <div class="form-wrapper">
       <iron-form>
-        <form>
+        <form id$="[[formId]]">
           <slot></slot>
           <template is="dom-if" if="[[_hasTabs(tabs)]]">
             <paper-tabs selected="{{selected}}" scrollable="[[scrollable]]">
@@ -183,6 +183,7 @@
        */
       static get properties() {
         return {
+          formId: String,
           key: {
             type: Object,
             observer: '_keyChanged'
@@ -347,6 +348,13 @@
           _fields = _fields.concat(_dfi[i].setDataToFormElement(elementName, items, selected, fields));
         }
         return _fields;
+      }
+
+      resetInput(field) {
+        let dashFormInputs = this.shadowRoot.querySelectorAll('dash-form-inputs');
+        for (let i = 0; i<dashFormInputs.length; i++) {
+          dashFormInputs[i].resetInput(field);
+        }
       }
 
       formReset() {
