@@ -214,6 +214,10 @@
         if (!this.dialog) {
           this.dialog = document.createElement('dash-remove-alert');
 
+          let title = document.createAttribute("title");
+          title.value = item.title;
+          this.dialog.setAttributeNode(title);
+
           let message = document.createAttribute("message");
           message.value = item.message;
           this.dialog.setAttributeNode(message);
@@ -222,14 +226,25 @@
           key.value = item.key;
           this.dialog.setAttributeNode(key);
 
+          let customAction = document.createAttribute("custom-action");
+          customAction.value = item.customAction;
+          this.dialog.setAttributeNode(customAction);
+
           document.body.appendChild(this.dialog);
 
           this.dialog.addEventListener('delete-confirmed', function (e) {
             this._deleteConfirmed(e.detail.key);
           }.bind(this));
+          
+          this.dialog.addEventListener('custom-action', function (e) {
+            this._fireCustomAction(e);
+          }.bind(this));
+
         } else {
           this.dialog.setAttribute('key', item.key);
           this.dialog.setAttribute('message', item.message);
+          this.dialog.setAttribute('title', item.title);
+          this.dialog.setAttribute('custom-action', item.customAction);
         }
         this.dialog.open();
       }
@@ -325,6 +340,13 @@
 
       _deleteConfirmed (key) {
         this.shadowRoot.querySelector(this.model).delete(key);
+      }
+
+      _fireCustomAction (e) {
+        this._firEvent({
+          name: 'custom-action',
+          data: {key: e.detail.key, action: e.detail.action}
+        });
       }
 
       _updateList (e) {
@@ -468,7 +490,6 @@
       getForm () {
 
       }
-      
       _isEmpty(value) {
         return null === value
           || undefined === value

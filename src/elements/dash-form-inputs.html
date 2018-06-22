@@ -326,9 +326,11 @@
             }
           });
         } else {
+          if (this.fields) {
           this.fields.forEach(fld => {
             this.resetInput(fld);
           });
+          }
         }
       }
 
