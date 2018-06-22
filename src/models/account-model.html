@@ -1,0 +1,151 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../lib/model-behavior.html">
+
+<dom-module id="account-model">
+  <template>
+    <style>
+       :host {
+        display: block
+      }
+    </style>
+
+
+
+  </template>
+
+  <script>
+    /**
+     * `account-model` Description
+     *
+     * @summary ShortDescription.
+     * @customElement
+     * @polymer
+     * @extends {Polymer.Element}
+     */
+    class AccountModel extends ModelBehavior(Polymer.Element) {
+      /**
+       * String providing the tag name to register the element under.
+       */
+      static get is() {
+        return 'account-model';
+      }
+
+      /**
+       * Object describing property-related metadata used by Polymer features
+       */
+      static get properties() {
+        return {
+          model: {
+            type: Object,
+            value: {
+              id: null,
+              username: null,
+              email: null,
+              inactive: null,
+              password: null,
+              last_login: {
+                date: null,
+                timezone_type: null,
+                timezone: null
+              },
+              locked: null,
+              expired: null,
+              expires_at: null,
+              groups: [],
+              /** Damn it !!! the request should have the same name as this property!! groups and access_groups are the freaking same **/
+              access_groups: [],
+              roles: [],
+              credentials_expired: null,
+              rememberme: null
+            }
+          }
+        };
+      }
+
+      /**
+       * Instance of the element is created/upgraded. Use: initializing state,
+       * set up event listeners, create shadow dom.
+       * @constructor
+       */
+      constructor() {
+        super();
+        this.endpoint = '/account';
+      }
+
+      _responseChanged (response) {
+        let data = response.response;
+        if (data.user) {
+          this.mapUser(data.user);
+        } else {
+          this.model = data;
+        }
+        this.dispatchEvent(new CustomEvent('model-response-changed', {detail: response}));
+      }
+
+      _posUpdateCallBack (response) {
+        this.message = response.response.username + " updated";
+        super._posUpdateCallBack(response);
+      }
+
+      mapUser (data) {
+        this.model = data;
+      }
+
+      getForm () {
+        return {
+          fields: [
+            {
+              label: 'Username',
+              name: 'username',
+              type: 'text',
+              attributes: {
+                readonly: true
+              },
+              validators: []
+            },
+            {
+              label: 'Password',
+              name: 'password',
+              type: 'password',
+              validators: [
+                {
+                  type: 'regex',
+                  regex: this.regex.password,
+                  message: 'Invalid Password. Password should contain at least 1 Upper case, 1 number, 1 special char and minimal of 8 characters',
+                  stop: false
+                }
+              ]
+            },
+            {
+              label: 'E-mail',
+              name: 'email',
+              type: 'email',
+              validators: [
+                {
+                  type: 'required',
+                  message: 'Invalid e-mail',
+                  stop: true
+                },
+                {
+                  type: 'regex',
+                  regex: this.regex.email,
+                  message: 'Invalid e-mail',
+                  stop: false
+                }
+              ]
+            },
+          ],
+          actions: {
+            'edit' :{
+              label: 'Update',
+              event: 'update-user'
+            },
+          }
+        };
+      }
+
+    }
+
+    window.customElements.define(AccountModel.is, AccountModel);
+  </script>
+</dom-module>

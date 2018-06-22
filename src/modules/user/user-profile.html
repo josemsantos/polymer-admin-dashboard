@@ -11,7 +11,7 @@
 <link rel="import" href="../../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../lib/module-element-behavior.html">
 <link rel="import" href="../../lib/dash-firebase-behavior.html">
-<link rel="import" href="../../models/user-model.html">
+<link rel="import" href="../../models/account-model.html">
 <link rel="import" href="../../elements/dash-header.html">
 <link rel="import" href="../../elements/dash-form.html">
 <link rel="import" href="../../elements/dash-funfie.html">
@@ -26,9 +26,9 @@
       }
     </style>
 
-    <user-model
+    <account-model
       on-model-response-changed="_setData"
-      on-model-update-success="_notifyUser"></user-model>
+      on-model-update-success="_notifyUser"></account-model>
 
     <dash-header
       title="My profile [[user.username]]"
@@ -38,7 +38,7 @@
       <dash-form
         class="default"
         key="[[key]]"
-        model="[[userModel.model]]"
+        model="[[entityModel.model]]"
         fields="[[fields]]"
         actions="[[_formActions]]"
         model-data="[[data]]"
@@ -87,7 +87,7 @@
             type: String,
             value: 'seraph'
           },
-          userModel: HTMLElement,
+          entityModel: HTMLElement,
           pageType: {
             type: String,
             value: 'form'
@@ -106,7 +106,7 @@
 
       _userChanged (user) {
         if (user) {
-          this.key = user.id;
+          this.key = false;
         }
       }
 
@@ -115,7 +115,6 @@
       }
 
       _goToList (e) {
-        console.log(e.detail)
       }
 
       _updateUser (e) {
@@ -127,7 +126,7 @@
         }
         //Don't override permissions so remove in the request roles and groups, also is recommended to lock the username
         let payload = this._sanitizePayload(this.payload, e.detail.payload);
-        this.userModel.update(null, this.user.id, JSON.stringify(payload));
+        this.entityModel.update(null, false, JSON.stringify(payload));
       }
 
       /**
@@ -137,7 +136,7 @@
        */
       constructor() {
         super();
-        this.model = 'user-model';
+        this.model = 'account-model';
       }
 
       /**
@@ -145,8 +144,8 @@
        */
       ready() {
         super.ready();
-        this.userModel = this.shadowRoot.querySelector(this.model);
-        this.form = this.userModel.getProfileForm();
+        this.entityModel = this.shadowRoot.querySelector(this.model);
+        this.form = this.entityModel.getForm();
 
         this.fields = this.form.fields;
         this.actions = this.form.actions;

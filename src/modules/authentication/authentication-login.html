@@ -61,6 +61,7 @@
       on-sign-in-failed="_showSignInError"></user-model>
     <paper-material elevation="2">
       <dash-form
+        form-id="signIn"
         class="default"
         model="[[userModel.model]]"
         fields="[[fields]]"
@@ -97,6 +98,7 @@
        */
       static get properties() {
         return {
+          _formData: Object,
           connection: {
             type: String,
             value: 'seraph'
@@ -137,8 +139,57 @@
           permissions: e.detail.user.roles,
           rememberMe: e.detail.rememberMe
         };
-        this._resetLoginForm();
-        this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: appUser}));
+        this._saveCredentials(appUser).then((profile) => {
+          this._resetLoginForm();
+          this.dispatchEvent(new CustomEvent('dash-user-logged', {detail: profile}));
+        }).catch((e) => {
+          console.log(e)
+        }); 
+      }
+
+      async _saveCredentials(uc) {
+        this._formData = this.shadowRoot.querySelector('dash-form').formTarget.serializeForm();
+        if (window.PasswordCredential && this._formData.password && navigator.credentials.create) {
+          var c = await navigator.credentials.create({password: new PasswordCredential({
+                                                        id: this._formData.username,
+                                                        password: this._formData.password,
+                                                        name: this._formData.username,
+                                                      })});
+          return navigator.credentials.store(c).then(() => {
+            return Promise.resolve(uc);
+          });
+        } else {
+          return Promise.resolve(uc);
+        }
+      }
+
+      _getCredentials() {
+        if (window.PasswordCredential) {
+            navigator.credentials.get({
+              password: true,
+              mediation: 'silent'
+            }).then(c => {
+              if (c) {
+                switch (c.type) {
+                  case 'password':
+                    return this._signIn({
+                      detail: {
+                        payload: {
+                          username: c.id,
+                          password: c.password,
+                          rememberme: true
+                        }
+                      }
+                    })
+                    break;
+                }
+              } else {
+                return Promise.resolve();
+              }
+            }).catch(error => {
+              console.log(error)
+            });
+          }
       }
 
       _notifyAuthHeaders (e) {
@@ -152,11 +203,11 @@
           bubbles: true
         }));
       }
-
+      
       _resetLoginForm() {
         this.shadowRoot.querySelector('dash-form').formReset();
       }
-
+      
       /**
        * Instance of the element is created/upgraded. Use: initializing state,
        * set up event listeners, create shadow dom.
@@ -168,7 +219,7 @@
       }
 
       /**
-       * Use for one-time configuration of your component after local DOM is initialized.
+       * Use for one-time configuration of your component after local DOM is initialized. 
        */
       ready() {
         super.ready();
@@ -177,9 +228,14 @@
           this.userModel = this.shadowRoot.querySelector(this.model);
           this.loginForm = this.userModel.getLoginForm();
           this._setAllActionsForAnonymous(['edit']);
-          this.fields = this.loginForm.fields;
-          this.actions = this.loginForm.actions;
-          this.isReady = true;
+
+          setTimeout(() => {
+            this.fields = this.loginForm.fields;
+            this.actions = this.loginForm.actions;
+            this.isReady = true;
+          }, 1);
+
+          this._getCredentials();
         });
       }
 

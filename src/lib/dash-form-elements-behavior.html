@@ -44,6 +44,10 @@
         return (attributes && attributes.textOnly);
       }
 
+      _hasFieldIcon(field) {
+        return (field && field.icon);
+      }
+
       _applyDataToElement(field, data) {
         let formField = this.shadowRoot.querySelector('[name=' + field + ']');
         if (formField) {

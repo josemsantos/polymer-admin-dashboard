@@ -26,10 +26,6 @@
        */
       static get properties() {
         return {
-          superAdminRole: {
-            type: String,
-            value: 'ROLE_SUPER_ADMIN'
-          },
           permissions: {
             type: Array,
             observer: '_permissionsChanged'
@@ -104,10 +100,6 @@
               }
 
               module[name].menuItems.forEach (item => {
-                //Injected role super admin
-                if (item.restrictions) {
-                  item.restrictions.push(this.superAdminRole);
-                }
                 if (this._hasAccess(this.permissions, item.restrictions)) {
                   menu = this._addItemToMenuGroup(group, menu, name, item);
                 }
